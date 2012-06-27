@@ -4,7 +4,7 @@ var passport = require('passport')
 var users = {}
 
 passport.serializeUser(function(user, done) {
-   done(null, user);
+ done(null, user);
 })
 
 passport.deserializeUser(function(obj, done) {
