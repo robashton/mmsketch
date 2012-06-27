@@ -1,31 +1,17 @@
-var http = require('http')
-,   paperboy = require('paperboy')
-,   socketio  = require('socket.io')
+var express = require('express'),
+    socketio = require('socket.io')
 
-,   io = null
-
-
-var server = http.createServer(function(req, res) {
-  paperboy
-    .deliver('site', req, res)
-    .otherwise(function() {
-      res.writeHead({ 'Content-Type' : 'text/plain'})
-      res.end('404 not found ahhahahaah')
-    })
+var server = express.createServer()
+server.configure(function() {
+  server.use(express.static('site'))
+  server.use(express.bodyParser())
+  server.use(express.cookieParser())
+  server.use(express.session({secret : 'ssshlol' }))
+  server.use(express.methodOverride())
+  server.use(passport.initialize())
+  server.use(passport.session())
+  server.use(server.router)
 });
+server.listen(8080);
 
-server.listen(process.env.port || 8000)
-
-io = socketio.listen(server)
-io.set('transports', [
-  'xhr-polling'
-])
-
-io.on('connection', function(socket) {
-  socket.on('command', function(data) {
-    data.sender= socket.id
-    io.sockets.emit('command', data)
-
-  })
-
-})
+require('./routes/index')(app)

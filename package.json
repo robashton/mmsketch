@@ -2,7 +2,9 @@
   "name" : "comdaybe"
 , "version" : "1.0.0"
 , "dependencies" : {
-    "paperboy" : ""
-,   "socket.io" : ""
+    "socket.io" : ""
+,   "express" : ""
+,   "passport" : ""
+,   "passport-twitter" : ""
   }
 }
