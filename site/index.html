@@ -13,6 +13,7 @@
       ,   actions = {}
       ,   socket = null
       ,   colours = {}
+      ,   clientCount = null
 
       function colourForIndex(index) {
         if(colours[index]) return colours[index]
@@ -64,31 +65,47 @@
       }
 
       function createDrawingContext(id) {
-        canvas = document.getElementById(id)
-        context = canvas.getContext('2d')
+        //canvas = document.getElementById(id)
+        //context = canvas.getContext('2d')
       }
 
       function hookEventsFromCanvas(id) {
-        $('#' + id)
-          .hammer({
-            prevent_default: true   
-           })
-          .on({
-            dragstart: onDragStart,
-            drag: onDrag,
-            dragend: onDragEnd
-          })
+        //try {
+        //$('#' + id)
+        //  .hammer({
+        //  //  prevent_default: true   
+        //   })
+        //  //.on({
+        //  //  dragstart: onDragStart,
+        //  //  drag: onDrag,
+        //  //  dragend: onDragEnd
+        //  //  })
+
+        //} catch(ex) {
+        //  console.log(ex)
+        //}
       }
+
       var onServerCommand = function(data) {
         commandHandlers[data.name](data.data, data.sender) 
       }
+      
+      var onServerStatus = function(data) {
+        console.log('hi')
+        if(data.clientCount === 1)
+          clientCount.text("you are the only one connected - link a friend!")
+        else
+          clientCount.text('There are currently ' + data.clientCount + ' players')
+      }
 
       $(document).ready(function() {
+        clientCount = $('#client-count')
         hookEventsFromCanvas('surface')
         createDrawingContext('surface')
         socket = io.connect()
+        socket.on('status', onServerStatus)
         socket.on('command', onServerCommand)
-      });
+      })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   </head>
@@ -96,5 +113,6 @@
     <canvas id="surface" width="800" height="600">
       Your browser doesn't support Canvas - wtf dude?
     </canvas>
+    <div id="client-count"></div>
   </body>
 </html>

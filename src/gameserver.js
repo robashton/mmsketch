@@ -1,8 +1,11 @@
 var express = require('express'),
     socketio = require('socket.io')
     passport = require('passport')
+    EventEmitter = require('events').EventEmitter
+    _ = require('underscore')
 
 var GameServer = function() {
+  EventEmitter.call(this)
   this.app = null
 }
 
@@ -21,8 +24,13 @@ GameServer.prototype = {
     })
     require('../routes/index')(app)
     this.app = app
+    this.app.on('listening', this.onStarted.bind(this))
     this.app.listen(port)
   }
+, onStarted: function() {
+    this.emit('started')
+  }
 }
+_.extend(GameServer.prototype, EventEmitter.prototype)
 
 module.exports = GameServer 

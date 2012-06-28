@@ -8,5 +8,6 @@
 ,   "passport-twitter" : ""
 ,   "zombie" : ""
 ,   "mocha-cakes" : ""
+,   "should" : ""
   }
 }

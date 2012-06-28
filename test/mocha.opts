@@ -1,3 +1,4 @@
+--require should
 --require mocha-cakes
 --reporter spec
 --compilers coffee:coffee-script

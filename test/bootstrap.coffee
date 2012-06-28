@@ -2,26 +2,58 @@ Browser = require 'zombie'
 GameServer = require '../src/gameserver'
 
 class ManualContext
-  @browser = new Browser()
-  @server = new GameServer
-  @port = 8080
+  constructor: ->
+    @server = new GameServer
+    @port = 8080
+    @clients = {}
 
-  start: =>
+  start: (done) =>
+    @server.on 'started', done
     @server.listen(@port)
 
-  browse_to_index: (done) =>
-    @browser.visit 'http://localhost:' + @port, done
+  add_client_called: (name, cb) =>
+    @clients[name] = new ManualClient('http://localhost:' + @port)
+    @clients[name].load_index cb
+    return @clients[name]
 
-  element_exists: =>
-    count = @browser.findAll('canvas')
-    count == 1
+  for: (name) =>
+    @clients[name]
+
+class ManualClient
+  constructor: (base) ->
+    @browser = new Browser({debug: true})
+    @base = base
+
+  load_index: (cb) =>
+    @browser.visit @base, cb
+
+  should_have_element: (selector) =>
+    @browser.queryAll(selector).length.should.equal(1)
+
+  value_of: (selector) =>
+    @browser.text(selector)
 
 Scenario "Bootstrapping the game", ->
   context = new ManualContext()
+  bob = null
+  alice = null
+  
+  Given "a server in a ready state", (done) ->
+    context.start(done)
+  When "bob connects", (cb) ->
+    bob = context.add_client_called 'bob', cb
+  Then "bob should have a canvas displayed", ->
+    bob.should_have_element('canvas')
+  Then "bob should be told he is the only one", ->
+    bob.value_of('#client-count').should.include('only player')
 
-  Given "Nothing is running yet", -> ""
-  When "Starting the server", context.start
-  And "Navigating to the index", context.browse_to_index
-  Then "The home page should contain a canvas", ->
-    assert.that(context.element_exists('canvas'))
+  When "alice connects", (cb) ->
+    alice = context.add_client_called 'alice', cb
+  Then "alice should have a canvas displayed", ->
+    alice.should_have_element('canvas')
+  Then "alice should be told there are two players", ->
+    alice.value_of('#client-count').should.include('2 players')
+  Then "bob should be told there are two players", ->
+    bob.value_of('#client-count').should.include('2 players')
+
 
