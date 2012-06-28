@@ -6,5 +6,7 @@
 ,   "express" : ""
 ,   "passport" : ""
 ,   "passport-twitter" : ""
+,   "zombie" : ""
+,   "mocha-cakes" : ""
   }
 }
