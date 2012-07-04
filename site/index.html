@@ -14,6 +14,7 @@
       ,   socket = null
       ,   colours = {}
       ,   clientCount = null
+      ,   clientStatus = null
 
       function colourForIndex(index) {
         if(colours[index]) return colours[index]
@@ -89,22 +90,37 @@
       var onServerCommand = function(data) {
         commandHandlers[data.name](data.data, data.sender) 
       }
-      
+
       var onServerStatus = function(data) {
-        console.log('hi')
-        if(data.clientCount === 1)
-          clientCount.text("you are the only one connected - link a friend!")
-        else
+        if(data.clientCount === 1) {
+          clientCount.text("you are the only player connected - link a friend!")
+          clientStatus.text('waiting')
+        }
+        else {
           clientCount.text('There are currently ' + data.clientCount + ' players')
+        }
+      }
+
+      var onControllerChosen = function(data) {
+        if(data.user.id === playerId)
+          clientStatus.text('YOU are drawing the word ' + data.word + ' GO GO GO')
+        else
+          clientStatus.text(data.user.name + ' is drawing - GUESS')
       }
 
       $(document).ready(function() {
         clientCount = $('#client-count')
+        clientStatus = $('#client-status')
         hookEventsFromCanvas('surface')
         createDrawingContext('surface')
         socket = io.connect()
         socket.on('status', onServerStatus)
         socket.on('command', onServerCommand)
+        socket.on('chosen', onControllerChosen)
+        $(window).bind("beforeunload", function() { 
+          console.log('UNLOADED')
+          socket.close()
+        });
       })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -114,5 +130,6 @@
       Your browser doesn't support Canvas - wtf dude?
     </canvas>
     <div id="client-count"></div>
+    <div id="client-status"></div>
   </body>
 </html>
