@@ -1,15 +1,19 @@
 Browser = require 'zombie'
-GameServer = require '../src/gameserver'
+fork = require('child_process').fork
 
 class ManualContext
   constructor: ->
-    @server = new GameServer
+    @server = null
     @port = parseInt(Math.random() * 63000) + 1000 
     @clients = {}
 
   start: (done) =>
-    @server.on 'started', done
-    @server.listen(@port)
+    @server= fork(process.cwd() + '/server.js',[], {
+      env: {
+        port: @port
+      }
+    })
+    setTimeout done, 400
 
   add_client_called: (name, cb) =>
     @clients[name] = new ManualClient('http://localhost:' + @port)
@@ -19,8 +23,9 @@ class ManualContext
   for: (name) =>
     @clients[name]
 
-  dispose: =>
-    console.log "TODO: DISPOSE"
+  dispose: (done) =>
+    @server.on('exit', done)
+    @server.kill('SIGHUP')
 
 class ManualClient
   constructor: (base) ->
@@ -52,8 +57,7 @@ class ManualClient
     console.log(err)
 
   close: (done) =>
-    @browser.visit @base + '/wegweg', ->
-      setTimeout done, 1000
+    @browser.visit @base + '/wegweg', done
 
 Scenario "Basic connectivity", ->
   context = new ManualContext()
@@ -61,8 +65,9 @@ Scenario "Basic connectivity", ->
   alice = null
   
   Given "a server in a ready state", (done) ->
-    context.start(done)
+    context.start done
   When "bob connects", (done) ->
+    console.log ('CONNECTING BOB')
     bob = context.add_client_called 'bob', done
   Then "bob should have a canvas displayed", ->
     bob.should_have_element('canvas')

@@ -1,17 +1,22 @@
-var express = require('express'),
-    socketio = require('socket.io')
-    passport = require('passport')
-    EventEmitter = require('events').EventEmitter
-    _ = require('underscore')
+var express = require('express')
+   ,socketio = require('socket.io')
+   ,http = require('http')
+   ,passport = require('passport')
+   ,EventEmitter = require('events').EventEmitter
+   ,_ = require('underscore')
+   ,Lobby = require('./lobby')
 
 var GameServer = function() {
   EventEmitter.call(this)
   this.app = null
+  this.port = 0
+  this.server = null
+  this.lobby = null
 }
 
 GameServer.prototype = {
   listen: function(port) {
-    var app = express.createServer()
+    var app = express()
     app.configure(function() {
       app.use(express.static('site'))
       app.use(express.bodyParser())
@@ -24,8 +29,13 @@ GameServer.prototype = {
     })
     require('../routes/index')(app)
     this.app = app
-    this.app.on('listening', this.onStarted.bind(this))
-    this.app.listen(port)
+    this.port = port
+    this.server = http.createServer(app)
+    this.lobby = new Lobby(this.server)
+    this.server.listen(port, this.onStarted.bind(this))
+  }
+, close: function(cb) {
+    this.server.close(cb)
   }
 , onStarted: function() {
     this.emit('started')

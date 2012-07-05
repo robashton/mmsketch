@@ -3,11 +3,12 @@
 , "version" : "1.0.0"
 , "dependencies" : {
     "socket.io" : ""
-,   "express" : ""
+,   "express" : "3.0.0beta5"
 ,   "passport" : ""
 ,   "passport-twitter" : ""
 ,   "zombie" : ""
 ,   "mocha-cakes" : ""
 ,   "should" : ""
+,   "underscore" : ""
   }
 }
