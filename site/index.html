@@ -91,14 +91,45 @@
         commandHandlers[data.name](data.data, data.sender) 
       }
 
+      var setStatusWaiting = function() {
+        clientStatus.text('Waiting for other players to join')
+      }
+
+      var setStatusDrawing = function(word) {
+        clientStatus.text('Drawing the word ' + word)
+      }
+
+      var setStatusGuessing = function() {
+        clientStatus.text('Guessing what the other player is drawing')
+      }
+
+      var notifyAsOnlyPlayer = function() {
+        clientCount.text('You are the only player, invite your friends to join')
+      }
+
+      var updatePlayerCount = function(count) {
+        clientCount.text('There are ' + count + ' players connected')
+      }
+
       var onServerStatus = function(data) {
-        if(data.clientCount === 1) {
-          clientCount.text("you are the only player connected - link a friend!")
-          clientStatus.text('waiting')
+        switch(data.status) {
+          case 'waiting':
+            setStatusWaiting()
+            break
+          case 'drawing':
+            setStatusDrawing(data.word)
+            break
+          case 'guessing':
+            setStatusGuessing()
+            break
+          default:
+            break
         }
-        else {
-          clientCount.text('There are currently ' + data.clientCount + ' players')
-        }
+
+        if(data.clientCount === 1)
+          notifyAsOnlyPlayer()
+        else 
+          updatePlayerCount(data.clientCount)
       }
 
       var onControllerChosen = function(data) {
@@ -108,6 +139,10 @@
           clientStatus.text(data.user.name + ' is drawing - GUESS')
       }
 
+      function closeSockets() {
+        socket.disconnect()
+      }
+
       $(document).ready(function() {
         clientCount = $('#client-count')
         clientStatus = $('#client-status')
@@ -115,12 +150,6 @@
         createDrawingContext('surface')
         socket = io.connect()
         socket.on('status', onServerStatus)
-        socket.on('command', onServerCommand)
-        socket.on('chosen', onControllerChosen)
-        $(window).bind("beforeunload", function() { 
-          console.log('UNLOADED')
-          socket.close()
-        });
       })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
