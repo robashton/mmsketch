@@ -1,20 +1,23 @@
 var passport = require('passport')
-,   TwitterStrategy = require('passport-twitter').Strategy
+,   FacebookStrategy = require('passport-facebook').Strategy
 
 var users = {}
 
 passport.serializeUser(function(user, done) {
+  console.log('SERIALIZE')
  done(null, user);
 })
 
 passport.deserializeUser(function(obj, done) {
+  console.log('DESERIALIZE')
   done(null, obj);
 })
 
 function configurePassport() {
-  passport.use(new TwitterStrategy({
-    consumerKey: '0dDDs6zADI9Yh3ckzStViw'
-,   consumerSecret: 'MS9CDpSVNjDF6fWRqr3tVXaxiGe29xzkw4084kYTU'
+  passport.use(new FacebookStrategy({
+    clientID: '317150545045671'
+,   clientSecret: 'b5290692796e002d8a442bf346e810db'
+,   callbackURL: "http://localhost:8080/auth/facebook/callback"
   },
   function(token, tokenSecret, profile, done) {
     users[profile.id] = profile
@@ -24,10 +27,9 @@ function configurePassport() {
 
 module.exports = function(app) {
   configurePassport()
- 
-  app.get('/auth/twitter', passport.authenticate('twitter'))
-  app.get('/auth/twitter/callback', 
-    passport.authenticate('twitter', { failureRedirect: '/login' }),
+  app.get('/auth/facebook', passport.authenticate('facebook'))
+  app.get('/auth/facebook/callback', 
+    passport.authenticate('facebook', { failureRedirect: '/login' }),
     function(req, res) {
       res.redirect('/')
   })

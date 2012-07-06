@@ -5,6 +5,8 @@ var express = require('express')
    ,EventEmitter = require('events').EventEmitter
    ,_ = require('underscore')
    ,Lobby = require('./lobby')
+   ,MemoryStore = require('connect').middleware.session.MemoryStore 
+   ,cookie = require('connect').utils
 
 var GameServer = function() {
   EventEmitter.call(this)
@@ -12,30 +14,28 @@ var GameServer = function() {
   this.port = 0
   this.server = null
   this.lobby = null
+  this.sessions = new MemoryStore()
 }
 
 GameServer.prototype = {
   listen: function(port) {
-    var app = express()
+    var app = express.createServer()
+    var self = this
     app.configure(function() {
-      app.use(express.static('site'))
       app.use(express.bodyParser())
       app.use(express.cookieParser())
-      app.use(express.session({secret : 'ssshlol' }))
+      app.use(express.session({ key: 'express.sid', secret: 'ssshlol', store: self.sessions}))
       app.use(express.methodOverride())
       app.use(passport.initialize())
       app.use(passport.session())
       app.use(app.router)
+      app.use(express.static('site'))
     })
     require('../routes/index')(app)
     this.app = app
     this.port = port
-    this.server = http.createServer(app)
-    this.lobby = new Lobby(this.server, this.createWordSource())
-    this.server.listen(port, this.onStarted.bind(this))
-  }
-, close: function(cb) {
-    this.server.close(cb)
+    this.lobby = new Lobby(this.app, this.createSessionStore(), this.createWordSource())
+    this.app.listen(port, this.onStarted.bind(this))
   }
 , onStarted: function() {
     this.emit('started')
@@ -45,11 +45,55 @@ GameServer.prototype = {
       return new SequentialWordSource() 
     else
       return new FixedWordSource() 
+  },
+  createSessionStore: function() {
+    if(process.env.test)
+      return new TestAuthenticationStore()
+    else
+      return new ExpressAuthenticationStore(this.sessions)
   }
 }
 _.extend(GameServer.prototype, EventEmitter.prototype)
 
 module.exports = GameServer 
+
+var TestAuthenticationStore = function() {
+  
+}
+
+TestAuthenticationStore.prototype = {
+  get: function(headers, cb) {
+    console.log(headers.cookie)
+    if(headers.cookie) {
+      var cookieData = cookie.parseCookie(headers.cookie)
+      var username = cookieData['test.cookie']
+      console.log(username)
+      cb(null, {
+        passport: {
+          user: username
+        }
+      })
+    } else {
+      cb("No cookie", null)
+    }
+  }
+}
+
+var ExpressAuthenticationStore = function(store) {
+  this.store = store;
+}
+
+ExpressAuthenticationStore.prototype = {
+  get: function(headers, cb) {
+    if(headers.cookie) {
+      var cookieData = cookie.parseCookie(headers.cookie)
+      var sessionID = cookieData['express.sid']
+      this.store.get(sessionID, cb)
+    } else {
+      cb("No cookie", null)
+    }
+  }
+}
 
 var SequentialWordSource = function() {
   this.words = process.env.words.split(',')

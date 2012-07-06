@@ -3,12 +3,16 @@
 , "version" : "1.0.0"
 , "dependencies" : {
     "socket.io" : ""
-,   "express" : "3.0.0beta5"
+,   "express" : "2.5.11"
+,   "connect" : "1.9.1" 
+,   "cookie" : ""
 ,   "passport" : ""
 ,   "passport-twitter" : ""
 ,   "zombie" : ""
 ,   "mocha-cakes" : ""
 ,   "should" : ""
 ,   "underscore" : ""
+,   "passport" : ""
+,   "passport-facebook": ""
   }
 }

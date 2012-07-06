@@ -2,8 +2,7 @@
 var socketio = require('socket.io')
 ,   util = require('util')
 
-
-var Lobby = function(server, wordSource) {
+var Lobby = function(server, authentication, wordSource) {
   this.server = server
   this.players = {}
   this.wordSource = wordSource
@@ -11,6 +10,7 @@ var Lobby = function(server, wordSource) {
   this.gamestarted = false
   this.currentArtist = null
   this.currentWord = ''
+  this.authentication = authentication
   this.startListening()
 }
 
@@ -48,7 +48,6 @@ Player.prototype = {
     return this.socket.id
   },
   onGuess: function(word) {
-    console.log('GUESSED ' + word)
     if(word === this.lobby.currentWord)
       this.lobby.notifyOfCorrectGuess(this)
     else
@@ -116,17 +115,14 @@ Lobby.prototype = {
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
   },
-  startListening: function() {
-    var io = socketio.listen(this.server)
-       ,self = this
-    this.io = io
-    io.set('log level', 0)
-    io.on('connection', function(socket) {
-      var player = new Player(self, socket)
-      self.addPlayer(player)
-      socket.on('disconnect', function(){ 
-        self.removePlayer(player)
-      })
+  handleAuthorization: function(data, accept) {
+    this.authentication.get(data.headers, function(err, session) {
+      if(err || !session) 
+        return accept("Couldn't find session, please re-login", false)
+      if(!session.passport.user)
+        return accept('Not logged in yet, please log in!', false)
+      data.session = session
+      accept(null, true)
     })
   },
   notifyOfCorrectGuess: function(player) {
@@ -134,6 +130,24 @@ Lobby.prototype = {
       word: this.currentWord
     })
     this.startGameWithArtist(player)
+  },
+  handleNewSocket: function(socket) {
+    var player = new Player(this, socket)
+    this.addPlayer(player)
+    this.hookDisconnection(socket, player)
+  },
+  hookDisconnection: function(socket, player) {
+    var self = this
+    socket.on('disconnect', function(){ 
+      self.removePlayer(player)
+    })
+  },
+  startListening: function() {
+    var io = socketio.listen(this.server)
+    this.io = io
+    io.set('log level', 0)
+    io.set('authorization', this.handleAuthorization.bind(this))
+    io.on('connection', this.handleNewSocket.bind(this))
   }
 }
 
