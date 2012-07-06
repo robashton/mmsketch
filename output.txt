@@ -1,0 +1,58 @@
+
+
+  [32m
+    Scenario: Basic Lobbying[39m
+    [32m◦[39m
+      ◦ [33mGiven: [39ma server in a clean state: [2K[0G      ✓ [33mGiven: [39ma server in a clean state (309ms)
+    [32m◦[39m
+      ◦ [33m When: [39mbob connects: [2K[0G      ✓ [33m When: [39mbob connects (759ms)
+    [32m◦[39m
+      ◦ [33m Then: [39mbob should have a canvas displayed: [2K[0G      ✓ [33m Then: [39mbob should have a canvas displayed 
+    [32m◦[39m
+      ◦ [33m[33m Then: [39m[39mbob should be told he is the only one: [2K[0G      ✓ [33m[33m Then: [39m[39mbob should be told he is the only one 
+    [32m◦[39m
+      ◦ [33m[33m[33m Then: [39m[39m[39mbob should be waiting for other players: [2K[0G      ✓ [33m[33m[33m Then: [39m[39m[39mbob should be waiting for other players 
+    [32m◦[39m
+      ◦ [33m[33m When: [39m[39malice connects: [2K[0G      ✓ [33m[33m When: [39m[39malice connects (172ms)
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m Then: [39m[39m[39m[39malice should have a canvas displayed: [2K[0G      ✓ [33m[33m[33m[33m Then: [39m[39m[39m[39malice should have a canvas displayed 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39malice should be told there are two players: [2K[0G      ✓ [33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39malice should be told there are two players 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39mbob should be told there are two players: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39mbob should be told there are two players 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39meither bob or alice should be told to draw: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39meither bob or alice should be told to draw 
+    [32m◦[39m
+      ◦ [33m[33m[33m When: [39m[39m[39mbob disconnects: [2K[0G      ✓ [33m[33m[33m When: [39m[39m[39mbob disconnects 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39malice should be told she is the only one: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39malice should be told she is the only one 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39malice should be waiting for other players again: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39malice should be waiting for other players again 
+
+  [32m
+    Scenario: New player joining whilst game is underway[39m
+    [32m◦[39m
+      ◦ [33m[33mGiven: [39m[39malice and bob are playing a game together: [2K[0G      ✓ [33m[33mGiven: [39m[39malice and bob are playing a game together (1201ms)
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m When: [39m[39m[39m[39mjames joins the game: [2K[0G      ✓ [33m[33m[33m[33m When: [39m[39m[39m[39mjames joins the game (144ms)
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39mjames should be told there are three players: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39mjames should be told there are three players 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39malice should be told there are three players: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39malice should be told there are three players 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39mbob should be told there are three players: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39mbob should be told there are three players 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39mjames should be guessing the current word: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39mjames should be guessing the current word 
+
+  [32m
+    Scenario: Artist leaves the game and there are enough people to carry on[39m
+    [32m◦[39m
+      ◦ [33m[33m[33mGiven: [39m[39m[39mthere are four people playing a game together: [2K[0G      ✓ [33m[33m[33mGiven: [39m[39m[39mthere are four people playing a game together (1465ms)
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m When: [39m[39m[39m[39m[39mthe current artist leaves: [2K[0G      ✓ [33m[33m[33m[33m[33m When: [39m[39m[39m[39m[39mthe current artist leaves 
+    [32m◦[39m
+      ◦ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39manother player should be chosen as the artist: [2K[0G      ✓ [33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m[33m Then: [39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39m[39manother player should be chosen as the artist 
+
+
+  ✔ 22 tests complete (4184ms)
+

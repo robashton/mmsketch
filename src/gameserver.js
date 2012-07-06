@@ -31,7 +31,7 @@ GameServer.prototype = {
     this.app = app
     this.port = port
     this.server = http.createServer(app)
-    this.lobby = new Lobby(this.server)
+    this.lobby = new Lobby(this.server, this.createWordSource())
     this.server.listen(port, this.onStarted.bind(this))
   }
 , close: function(cb) {
@@ -40,7 +40,25 @@ GameServer.prototype = {
 , onStarted: function() {
     this.emit('started')
   }
+, createWordSource: function() {
+    if(process.env.test)
+      return new SequentialWordSource() 
+    else
+      return new FixedWordSource() 
+  }
 }
 _.extend(GameServer.prototype, EventEmitter.prototype)
 
 module.exports = GameServer 
+
+var SequentialWordSource = function() {
+  this.words = process.env.words.split(',')
+}
+var FixedWordSource = function() {
+  this.words = [ 'orange', 'blue', 'green' ] 
+}
+
+SequentialWordSource.prototype.next = 
+FixedWordSource.prototype.next = function() {
+  return this.words.shift()
+}

@@ -2,9 +2,11 @@
 var socketio = require('socket.io')
 ,   util = require('util')
 
-var Lobby = function(server) {
+
+var Lobby = function(server, wordSource) {
   this.server = server
   this.players = {}
+  this.wordSource = wordSource
   this.playerCount = 0
   this.gamestarted = false
   this.currentArtist = null
@@ -15,6 +17,7 @@ var Lobby = function(server) {
 var Player = function(lobby, socket) {
   this.lobby = lobby
   this.socket = socket
+  this.socket.on('guess', this.onGuess.bind(this))
 }
 
 Player.prototype = {
@@ -43,6 +46,13 @@ Player.prototype = {
   },
   id: function() {
     return this.socket.id
+  },
+  onGuess: function(word) {
+    console.log('GUESSED ' + word)
+    if(word === this.lobby.currentWord)
+      this.lobby.notifyOfCorrectGuess(this)
+    else
+      this.socket.emit('wrong', word)
   }
 }
 
@@ -82,9 +92,6 @@ Lobby.prototype = {
          return this.players[id];
     }
   },
-  chooseNewWord: function() {
-
-  },
   evaluateGameStatus: function() {
     if(this.playerCount < 2 && this.gamestarted)
       this.endCurrentGame()
@@ -101,8 +108,11 @@ Lobby.prototype = {
     })
   },
   startGame: function() {
-    this.currentArtist = this.chooseNewArtist()
-    this.currentWord = this.chooseNewWord()
+    this.startGameWithArtist(this.chooseNewArtist())
+  },
+  startGameWithArtist: function(artist) {
+    this.currentArtist = artist 
+    this.currentWord = this.wordSource.next() 
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
   },
@@ -118,6 +128,12 @@ Lobby.prototype = {
         self.removePlayer(player)
       })
     })
+  },
+  notifyOfCorrectGuess: function(player) {
+    this.io.sockets.emit('endround', {
+      word: this.currentWord
+    })
+    this.startGameWithArtist(player)
   }
 }
 

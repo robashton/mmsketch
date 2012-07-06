@@ -8,13 +8,17 @@
     <script src="socket.io/socket.io.js"></script>
     <script type="text/javascript">
 
+
       var canvas = null
       ,   context = null
       ,   actions = {}
-      ,   socket = null
       ,   colours = {}
       ,   clientCount = null
       ,   clientStatus = null
+      ,   clientInput = null
+      ,   clientInputButton = null
+      ,   clientFeedback = null
+      ,   game = null
 
       function colourForIndex(index) {
         if(colours[index]) return colours[index]
@@ -97,14 +101,17 @@
 
       var setStatusDrawing = function(word) {
         clientStatus.text('Drawing the word ' + word)
+        status = 'drawing'
       }
 
       var setStatusGuessing = function() {
         clientStatus.text('Guessing what the other player is drawing')
+        status = 'guessing'
       }
 
       var notifyAsOnlyPlayer = function() {
         clientCount.text('You are the only player, invite your friends to join')
+        status = 'waiting'
       }
 
       var updatePlayerCount = function(count) {
@@ -131,34 +138,69 @@
         else 
           updatePlayerCount(data.clientCount)
       }
-
-      var onControllerChosen = function(data) {
-        if(data.user.id === playerId)
-          clientStatus.text('YOU are drawing the word ' + data.word + ' GO GO GO')
-        else
-          clientStatus.text(data.user.name + ' is drawing - GUESS')
+    
+      var onWrongGuess = function(word) {
+         clientFeedback.append(
+           $('<p/>').text(word + ' is not the word')
+         )
       }
 
+      function onCorrectGuess(word) {
+        clientFeedback.append( 
+          $('<p/>').text(word + ' was correct!')
+        )
+      }
+
+
+      function onGoodDrawing(word) {
+        clientFeedback.append(
+          $('<p/>').text(word + 'was guessed correctly')
+        )
+      }
+
+      function onRoundEnded(data) {
+        if(status === 'guessing')
+          onCorrectGuess(data.word)
+        else if(status === 'drawing')
+          onGoodDrawing(data.word)
+      } 
+
       function closeSockets() {
-        socket.disconnect()
+        game.stop()
+      }
+
+      function submitWord() {
+        var word = clientInput.val()
+        clientInput.val('')
+        game.submitWord(word)
+      }
+
+      function hookEventsForInput() {
+        clientInputButton.click(submitWord)
       }
 
       $(document).ready(function() {
         clientCount = $('#client-count')
         clientStatus = $('#client-status')
+        clientInput = $('#client-input')
+        clientInputButton = $('#client-input-button')
+        clientFeedback = $('#client-feedback')
         hookEventsFromCanvas('surface')
+        hookEventsForInput()
         createDrawingContext('surface')
-        socket = io.connect()
-        socket.on('status', onServerStatus)
+        game = new Game()
+        game.start()
       })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   </head>
   <body>
     <canvas id="surface" width="800" height="600">
-      Your browser doesn't support Canvas - wtf dude?
+      Your browser doesn't support Canvas wtf dude?
     </canvas>
+    <input type="text" id="client-input"/><input type="button" value="Submit" id="client-input-button"/>
     <div id="client-count"></div>
     <div id="client-status"></div>
+    <div id="client-feedback"></div>
   </body>
 </html>
