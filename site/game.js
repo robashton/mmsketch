@@ -17,11 +17,11 @@
     },
     submitWord: function(word) {
       this.socket.emit('guess', word)
-    }
+    },
     onServerStatus: function(data) {
       this.status = data.status
       this.clientCount = data.clientCount
-      this.raise('StatusUpdate')
+      this.raise('StatusUpdate', data)
     },
     onWrongGuess: function(word) {
       this.raise('WrongGuess', word)

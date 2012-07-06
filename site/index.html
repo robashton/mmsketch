@@ -2,10 +2,14 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script src="underscore-min.js"></script>
     <script src="jquery.js"></script>
     <script src="hammer.js"></script>
     <script src="jquery.hammer.js"></script>
     <script src="socket.io/socket.io.js"></script>
+    <script src="eventable.js"></script>
+    <script src="statusdisplay.js"></script>
+    <script src="game.js"></script>
     <script type="text/javascript">
 
 
@@ -13,12 +17,10 @@
       ,   context = null
       ,   actions = {}
       ,   colours = {}
-      ,   clientCount = null
-      ,   clientStatus = null
       ,   clientInput = null
       ,   clientInputButton = null
-      ,   clientFeedback = null
       ,   game = null
+      ,   statusDisplay = null
 
       function colourForIndex(index) {
         if(colours[index]) return colours[index]
@@ -95,76 +97,6 @@
         commandHandlers[data.name](data.data, data.sender) 
       }
 
-      var setStatusWaiting = function() {
-        clientStatus.text('Waiting for other players to join')
-      }
-
-      var setStatusDrawing = function(word) {
-        clientStatus.text('Drawing the word ' + word)
-        status = 'drawing'
-      }
-
-      var setStatusGuessing = function() {
-        clientStatus.text('Guessing what the other player is drawing')
-        status = 'guessing'
-      }
-
-      var notifyAsOnlyPlayer = function() {
-        clientCount.text('You are the only player, invite your friends to join')
-        status = 'waiting'
-      }
-
-      var updatePlayerCount = function(count) {
-        clientCount.text('There are ' + count + ' players connected')
-      }
-
-      var onServerStatus = function(data) {
-        switch(data.status) {
-          case 'waiting':
-            setStatusWaiting()
-            break
-          case 'drawing':
-            setStatusDrawing(data.word)
-            break
-          case 'guessing':
-            setStatusGuessing()
-            break
-          default:
-            break
-        }
-
-        if(data.clientCount === 1)
-          notifyAsOnlyPlayer()
-        else 
-          updatePlayerCount(data.clientCount)
-      }
-    
-      var onWrongGuess = function(word) {
-         clientFeedback.append(
-           $('<p/>').text(word + ' is not the word')
-         )
-      }
-
-      function onCorrectGuess(word) {
-        clientFeedback.append( 
-          $('<p/>').text(word + ' was correct!')
-        )
-      }
-
-
-      function onGoodDrawing(word) {
-        clientFeedback.append(
-          $('<p/>').text(word + 'was guessed correctly')
-        )
-      }
-
-      function onRoundEnded(data) {
-        if(status === 'guessing')
-          onCorrectGuess(data.word)
-        else if(status === 'drawing')
-          onGoodDrawing(data.word)
-      } 
-
       function closeSockets() {
         game.stop()
       }
@@ -180,16 +112,14 @@
       }
 
       $(document).ready(function() {
-        clientCount = $('#client-count')
-        clientStatus = $('#client-status')
         clientInput = $('#client-input')
         clientInputButton = $('#client-input-button')
-        clientFeedback = $('#client-feedback')
         hookEventsFromCanvas('surface')
         hookEventsForInput()
         createDrawingContext('surface')
         game = new Game()
         game.start()
+        statusDisplay = new StatusDisplay(game)
       })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
