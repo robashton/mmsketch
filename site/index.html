@@ -17,45 +17,6 @@
     <script src="input.js"></script>
     <script src="artpad.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-
-      var canvas = null
-      ,   clientInput = null
-      ,   clientInputButton = null
-      ,   game = null
-      ,   statusDisplay = null
-
-      function closeSockets() {
-        game.stop()
-      }
-
-      function submitWord() {
-        var word = clientInput.val()
-        clientInput.val('')
-        game.submitWord(word)
-      }
-
-      function hookEventsForInput() {
-        clientInputButton.click(submitWord)
-      }
-
-      function onGameStarted() {
-        $('#loading').hide()
-        $('#content').show()
-      }
-
-      $(document).ready(function() {
-        clientInput = $('#client-input')
-        clientInputButton = $('#client-input-button')
-        hookEventsForInput()
-        game = new Game()
-        statusDisplay = new StatusDisplay(game)
-        input = new Input(game)
-        if(!TEST) artpad = new ArtPad(game)
-        game.on('Started', onGameStarted)
-        game.start()
-      })
-    </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   </head>
   <body>
@@ -114,5 +75,57 @@
         <p>Copyright <a href="http://twitter.com/robashton">@robashton</a> 2012</p>
       </div>
     </div>
+    <script type="text/javascript">
+     
+      var canvas = null
+      ,   clientInput = null
+      ,   clientInputButton = null
+      ,   game = null
+      ,   statusDisplay = null
+      ,   artPad = null
+
+      function closeSockets() {
+        game.stop()
+      }
+
+      function submitWord() {
+        var word = clientInput.val()
+        clientInput.val('')
+        game.submitWord(word)
+      }
+
+      function hookEventsForInput() {
+        clientInputButton.click(submitWord)
+      }
+
+      function onGameStarted() {
+        $('#loading').hide()
+        $('#content').show()
+      }
+
+      if(TEST) {
+        var testScript = document.createElement('script')
+        var head = document.getElementsByTagName('head')[0]
+        testScript.setAttribute('src', 'test.js')
+        head.appendChild(testScript)
+        testScript.onload = function() {
+          $(document).ready(startGame)
+        }
+      } else {
+        $(document).ready(startGame)
+      }
+
+      function startGame() {
+        clientInput = $('#client-input')
+        clientInputButton = $('#client-input-button')
+        hookEventsForInput()
+        game = new Game()
+        statusDisplay = new StatusDisplay(game)
+        input = new Input(game)
+        artPad = new ArtPad(game)
+        game.on('Started', onGameStarted)
+        game.start()
+      }
+    </script>
   </body>
 </html>

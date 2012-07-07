@@ -42,13 +42,16 @@ class ManualContext
     @server.on('exit', done)
     @server.kill('SIGHUP')
 
+  wait_for_sockets: (done) =>
+    done() 
+
 class ManualClient
   constructor: (base) ->
     @browser = new Browser({debug: debug})
     @closed = false
     @page = null
     @base = base
-    
+    @pad = null
 
   loaded: =>
     @browser.text('#client-status') != '' or @was_redirected()
@@ -70,11 +73,13 @@ class ManualClient
     @page = @base + '/'
     @browser.visit @page
     @browser.on 'loaded', @hookCanvasElements
-    @wait @loaded, cb
+    @wait @loaded, =>
+      @pad = @browser.evaluate('artPad')
+      cb()
 
   hookCanvasElements: =>
     @browser.evaluate('TEST = true')
-      
+    
   guess: (word, cb) =>
     @browser
       .fill('#client-input', word)
