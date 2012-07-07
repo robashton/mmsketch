@@ -44,8 +44,12 @@ Player.prototype = {
       status: 'guessing'
     })
   },
+  rejectAsDuplicate: function() {
+    this.socket.emit('reject', 'duplicate');
+    this.socket.disconnect()
+  },
   id: function() {
-    return this.socket.id
+    return this.socket.handshake.user.id
   },
   onGuess: function(word) {
     if(word === this.lobby.currentWord)
@@ -57,6 +61,9 @@ Player.prototype = {
 
 Lobby.prototype = {
   addPlayer: function(player) {
+    if(this.players[player.id()])
+      return player.rejectAsDuplicate()
+
     this.players[player.id()] = player
     this.updatePlayerCount(this.playerCount+1)
     if(this.gamestarted) {
@@ -117,11 +124,12 @@ Lobby.prototype = {
   },
   handleAuthorization: function(data, accept) {
     this.authentication.get(data.headers, function(err, session) {
-      if(err || !session) 
+      if(err || !session) {
         return accept("Couldn't find session, please re-login", false)
+      }
       if(!session.passport.user)
         return accept('Not logged in yet, please log in!', false)
-      data.session = session
+      data.user = session.passport.user
       accept(null, true)
     })
   },

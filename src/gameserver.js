@@ -63,14 +63,13 @@ var TestAuthenticationStore = function() {
 
 TestAuthenticationStore.prototype = {
   get: function(headers, cb) {
-    console.log(headers.cookie)
     if(headers.cookie) {
       var cookieData = cookie.parseCookie(headers.cookie)
       var username = cookieData['test.cookie']
-      console.log(username)
+      if(!username) return cb(null, null)
       cb(null, {
         passport: {
-          user: username
+          user: { id:  username }
         }
       })
     } else {

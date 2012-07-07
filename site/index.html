@@ -111,6 +111,11 @@
         clientInputButton.click(submitWord)
       }
 
+      function onGameStarted() {
+        $('#loading').hide()
+        $('#content').show()
+      }
+
       $(document).ready(function() {
         clientInput = $('#client-input')
         clientInputButton = $('#client-input-button')
@@ -118,6 +123,7 @@
         hookEventsForInput()
         createDrawingContext('surface')
         game = new Game()
+        game.on('Started', onGameStarted)
         game.start()
         statusDisplay = new StatusDisplay(game)
       })
@@ -125,12 +131,37 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   </head>
   <body>
-    <canvas id="surface" width="800" height="600">
-      Your browser doesn't support Canvas wtf dude?
-    </canvas>
-    <input type="text" id="client-input"/><input type="button" value="Submit" id="client-input-button"/>
-    <div id="client-count"></div>
-    <div id="client-status"></div>
-    <div id="client-feedback"></div>
+    <div id="loading">
+      <h1>We Draw Things</h1>
+      <div id="loading-spinner">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+        <div class="bar4"></div>
+        <div class="bar5"></div>
+        <div class="bar6"></div>
+        <div class="bar7"></div>
+        <div class="bar8"></div>
+        <div class="bar9"></div>
+        <div class="bar10"></div>
+        <div class="bar11"></div>
+        <div class="bar12"></div>
+      </div>
+      <div id="loading-text">
+        <p>Loading - please wait</p>
+      </div>
+    </div>
+    <div id="content">
+      <div id="client-status"></div>
+      <canvas id="surface" width="800" height="600">
+        Your browser doesn't support Canvas wtf dude?
+      </canvas>
+      <div id="client-input-container">
+        <input type="text" id="client-input"/>
+        <input type="button" value="Guess" id="client-input-button"/>
+      </div>
+      <div id="client-count"></div>
+      <div id="client-feedback"></div>
+    </div>
   </body>
 </html>

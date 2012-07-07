@@ -5,16 +5,18 @@ ManualContext = require('./context')
 Scenario "An unauthenticated user", (done) ->
   context = new ManualContext()
   unknownUser = null
+  knownUser = null
 
-  When "An anonyous user joins", (done) ->
+  When "An anonymous user joins", (done) ->
     context.start ->
-      unknownUser = context.add_anonymous_client done
+      unknownUser = context.add_anonymous_client ->
+        knownUser = context.add_client_called 'bob', done
   
-  Then "They are asked to authentiate", ->
-    unknownUser.clientStatus().should.include('please login')
+  Then "They are redirected to a login page", ->
+    unknownUser.was_redirected().should.equal(true)
 
   And "They don't add to the total player count", ->
-    unknownUser.clientCount().should.include('0 players')
+    knownUser.clientCount().should.include('only player')
 
 Scenario "An authenticated user tries to play twice", (done) ->
   context = new ManualContext()
@@ -32,5 +34,5 @@ Scenario "An authenticated user tries to play twice", (done) ->
     attemptOne.isWaiting().should.equal(true)
 
   And "The second attempt is told to sod off", ->
-    attemptOne.clientStatus().should.include('cheating')
+    attemptTwo.clientStatus().should.include('cheating')
 

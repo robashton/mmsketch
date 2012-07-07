@@ -1,4 +1,4 @@
-debug = true
+debug = false
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -24,6 +24,8 @@ class ManualContext
     })
     setTimeout done, 300
 
+
+
   add_client_called: (name, cb) =>
     @clients[name] = new ManualClient('http://localhost:' + @port)
     @clients[name].login name
@@ -48,11 +50,13 @@ class ManualClient
     @closed = false
     @base = base
 
-  status_received: =>
-    @browser.text('#client-count') != ''
+  loaded: =>
+    @browser.text('#client-status') != '' or @browser.redirected
+
+  was_redirected: => @browser.redirected
 
   login: (name) =>
-   @browser.cookies(@base, '/', { httpOnly: true} ).set("test.cookie", name)
+   @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", name)
    
   wait: (test, cb) =>
     check = =>
@@ -64,7 +68,7 @@ class ManualClient
 
   load_index: (cb) =>
     @browser.visit @base, =>
-      @wait this.status_received, cb
+      @wait this.loaded, cb
 
   guess: (word, cb) =>
     @browser
