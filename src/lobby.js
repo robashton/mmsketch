@@ -18,9 +18,15 @@ var Player = function(lobby, socket) {
   this.lobby = lobby
   this.socket = socket
   this.socket.on('guess', this.onGuess.bind(this))
+  this.socket.on('drawingstart', this.onDrawingStart.bind(this))
+  this.socket.on('drawingmove', this.onDrawingMove.bind(this))
+  this.socket.on('drawingend', this.onDrawingEnd.bind(this))
 }
 
 Player.prototype = {
+  isDrawing: function() {
+    return this === this.lobby.currentArtist 
+  },
   startDrawing: function(word) {
     this.socket.emit('status', {
       clientCount: this.lobby.playerCount,
@@ -56,6 +62,20 @@ Player.prototype = {
       this.lobby.notifyOfCorrectGuess(this)
     else
       this.socket.emit('wrong', word)
+  },
+  onDrawingStart: function(position) {
+    console.log('Start drawing')
+    if(!this.isDrawing()) return
+    console.log('Broadcasting')
+    this.socket.broadcast.emit('drawingstart', position)
+  },
+  onDrawingMove: function(position) {
+    if(!this.isDrawing()) return
+    this.socket.broadcast.emit('drawingmove', position)
+  },
+  onDrawingEnd: function(position) {
+    if(!this.isDrawing()) return
+    this.socket.broadcast.emit('drawingend', position)
   }
 }
 

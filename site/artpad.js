@@ -11,12 +11,12 @@
   }
 
   ArtPad.prototype = {
-    onDrawingStart: function(data) {
-      this.lastPosition = data.position
+    onDrawingStart: function(position) {
+      this.lastPosition = position
     },
-    onDrawingMove: function(data) {
-      this.drawLine(this.lastPosition, data.position)
-      this.lastPosition = data.position
+    onDrawingMove: function(position) {
+      this.drawLine(this.lastPosition, position)
+      this.lastPosition = position
     },
     onDrawingEnd: function(data) {
       this.lastPosition = null
@@ -29,23 +29,23 @@
       this.context.stroke()
     },
     hookDrawingInput: function() {
-      $('surface')
+      $('#surface')
        .hammer({
         prevent_default: true   
        })
       .on({
         dragstart: _.bind(this.onDragStart, this),
-        drag: _.bind(this.onDrag, this)
+        drag: _.bind(this.onDrag, this),
         dragend: _.bind(this.onDragEnd, this)
        })
     },
-    onDragStart: function() {
+    onDragStart: function(ev) {
       this.game.sendDrawingStart(ev.position)
     },
-    onDrag: function() {
+    onDrag: function(ev) {
       this.game.sendDrawingMove(ev.position) 
     },
-    onDragEnd: function() {
+    onDragEnd: function(ev) {
       this.game.sendDrawingEnd(ev.position)
     }
   }

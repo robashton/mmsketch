@@ -62,7 +62,7 @@
       this.socket.emit('drawingmove', position)
       this.onDrawingMove(position)
     },
-    sendDrawingEnd: function() {
+    sendDrawingEnd: function(position) {
       if(!this.isDrawing()) return
       this.socket.emit('drawingend', position)
       this.onDrawingEnd(position)
