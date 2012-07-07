@@ -1,58 +1,7 @@
 should = require('should')
 _ = require('underscore')
+find_artist = require('./util').find_artist
 ManualContext = require('./context')
-
-find_artist = (players) ->
-  artist = null
-  for player in players
-    if(player.isActive() and player.isDrawing())
-      artist = player
-  return artist
-
-Scenario "Basic Lobbying", ->
-  context = new ManualContext()
-  bob = null
-  alice = null
-  
-  Given "a server in a clean state", (done) ->
-    context.next_word 'fibble'
-    context.start done
-  When "bob connects", (done) ->
-    bob = context.add_client_called 'bob', done
-  Then "bob should have a canvas displayed", ->
-    bob.should_have_element('canvas')
-  And "bob should be told he is the only one", ->
-    bob.clientCount().should.include('only player')
-  And  "bob should be waiting for other players", ->
-    bob.isWaiting().should.equal(true)
-
-  When "alice connects", (cb) ->
-    alice = context.add_client_called 'alice', cb
-  Then "alice should have a canvas displayed", ->
-    alice.should_have_element('canvas')
-  And "alice should be told there are two players", ->
-    alice.clientCount().should.include('2 players')
-  And "bob should be told there are two players", ->
-    bob.clientCount().should.include('2 players')
-  And "either bob or alice should be told to draw", ->
-    bobControl = bob.isDrawing() ? 1 : 0
-    aliceControl = alice.isDrawing() ? 1 : 0
-    total = bobControl + aliceControl
-    total.should.equal(1)
-
-  And "the artist should have the word displayed", ->
-    artist = find_artist [bob, alice]
-    artist.clientStatus().should.include 'fibble'
-  
-  When "bob disconnects", (done) ->
-    bob.close done
-  Then "alice should be told she is the only one", ->
-    alice.clientCount().should.include('only player')
-  And "alice should be waiting for other players again", ->
-    alice.isWaiting().should.equal(true)
-  after (done) ->
-    context.dispose done
-
 
 Scenario "New player joining whilst game is underway", ->
   context = new ManualContext()

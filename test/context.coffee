@@ -48,6 +48,7 @@ class ManualClient
     @closed = false
     @page = null
     @base = base
+    
 
   loaded: =>
     @browser.text('#client-status') != '' or @was_redirected()
@@ -68,8 +69,12 @@ class ManualClient
   load_index: (cb) =>
     @page = @base + '/'
     @browser.visit @page
-    @wait this.loaded, cb
+    @browser.on 'loaded', @hookCanvasElements
+    @wait @loaded, cb
 
+  hookCanvasElements: =>
+    @browser.evaluate('TEST = true')
+      
   guess: (word, cb) =>
     @browser
       .fill('#client-input', word)
@@ -85,6 +90,19 @@ class ManualClient
 
   value_of: (selector) =>
     @browser.text(selector)
+
+  jQuery: (selector) =>
+    @browser.evaluate("$('" + selector + "')")
+    
+  can_see: (selector) =>
+    element = @jQuery selector  #Evil - YAY
+    element.is(':visible')
+
+  can_see_paintbrushes: =>
+    @can_see '#client-paintbrush-container'
+
+  can_see_text_input: =>
+    @can_see '#client-input-container'
 
   clientCount: =>
     @value_of '#client-count'
@@ -111,6 +129,5 @@ class ManualClient
     @closed = true
     @browser.evaluate('closeSockets()')
     setTimeout done, 20
-
 
 module.exports = ManualContext

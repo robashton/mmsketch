@@ -3,3 +3,4 @@
 --reporter spec
 --compilers coffee:coffee-script
 --recursive
+--globals attr

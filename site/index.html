@@ -11,93 +11,17 @@
     <script src="eventable.js"></script>
     <script src="statusdisplay.js"></script>
     <script src="game.js"></script>
+    <script src="input.js"></script>
+    <script src="artpad.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
 
       var canvas = null
-      ,   context = null
-      ,   actions = {}
-      ,   colours = {}
       ,   clientInput = null
       ,   clientInputButton = null
       ,   game = null
       ,   statusDisplay = null
-
-      function colourForIndex(index) {
-        if(colours[index]) return colours[index]
-        colours[index] = '#'+Math.floor(Math.random()*16777215).toString(16)
-        return colours[index]
-      }
-
-      function drawLine(from, to, index) {
-        context.strokeStyle = colourForIndex(index)
-        context.beginPath()
-        context.moveTo(from.x, from.y)
-        context.lineTo(to.x, to.y)
-        context.stroke()
-      }
-
-      var commandHandlers = {
-        'start': function(position, index) {
-          actions[index] = position
-        },
-        'move': function(position, index) {
-          var oldPosition = actions[index]
-          drawLine(oldPosition, position, index)
-          actions[index] = position
-        },
-        'end': function(position, index) {
-          delete actions[index]
-        }
-      }
-
-      function dispatch(command, data) {
-        var handler = commandHandlers[command]
-        handler(data, 0)
-        socket.emit('command', {
-          name: command,
-          data: data
-         })
-      }
-
-      function onDragStart(ev) {
-        dispatch('start', ev.position)
-      }
-
-      function onDrag(ev) {
-        dispatch('move', ev.position)
-      }
-
-      function onDragEnd(ev) {
-        dispatch('end', ev.position)
-      }
-
-      function createDrawingContext(id) {
-        //canvas = document.getElementById(id)
-        //context = canvas.getContext('2d')
-      }
-
-      function hookEventsFromCanvas(id) {
-        //try {
-        //$('#' + id)
-        //  .hammer({
-        //  //  prevent_default: true   
-        //   })
-        //  //.on({
-        //  //  dragstart: onDragStart,
-        //  //  drag: onDrag,
-        //  //  dragend: onDragEnd
-        //  //  })
-
-        //} catch(ex) {
-        //  console.log(ex)
-        //}
-      }
-
-      var onServerCommand = function(data) {
-        commandHandlers[data.name](data.data, data.sender) 
-      }
 
       function closeSockets() {
         game.stop()
@@ -125,9 +49,11 @@
         hookEventsForInput()
         createDrawingContext('surface')
         game = new Game()
+        statusDisplay = new StatusDisplay(game)
+        input = new Input(game)
+        if(!TEST) artpad = new ArtPad(game)
         game.on('Started', onGameStarted)
         game.start()
-        statusDisplay = new StatusDisplay(game)
       })
     </script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -171,7 +97,6 @@
         </div>
         <div class="span4">
          <div id="client-feedback"></div>
-          
         </div>
       </div>
       <div class="row-fluid">
@@ -179,6 +104,9 @@
           <div id="client-input-container">
             <input type="text" id="client-input"/>
             <input class="btn btn-primary" type="button" value="Guess" id="client-input-button"/>
+          </div>
+          <div id="client-paintbrush-container">
+            <!-- TODO: PAINTBRUSHES GO HERE-->
           </div>
         </div>
       </div>

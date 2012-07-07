@@ -14,6 +14,9 @@
       this.socket.on('endround', _.bind(this.onRoundEnded, this))
       this.socket.on('reject', _.bind(this.onReject, this))
       this.socket.on('error', _.bind(this.onError, this))
+      this.socket.on('drawingstart', _.bind(this.onDrawingStart, this))
+      this.socket.on('drawingmove', _.bind(this.onDrawingMove, this))
+      this.socket.on('drawingend', _.bind(this.onDrawingEnd, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -45,6 +48,33 @@
         this.raise('CorrectGuess', data)
       else if(this.status === 'drawing')
         this.raise('GoodDrawing', data)
+    },
+    isDrawing: function() {
+      return this.status === 'drawing'
+    },
+    sendDrawingStart: function(position) {
+      if(!this.isDrawing()) return
+      this.socket.emit('drawingstart', position)
+      this.onDrawingStart(position)
+    },
+    sendDrawingMove: function(position) {
+      if(!this.isDrawing()) return
+      this.socket.emit('drawingmove', position)
+      this.onDrawingMove(position)
+    },
+    sendDrawingEnd: function() {
+      if(!this.isDrawing()) return
+      this.socket.emit('drawingend', position)
+      this.onDrawingEnd(position)
+    },
+    onDrawingStart: function(position) {
+      this.raise('DrawingStart', position)
+    },
+    onDrawingMove: function(position) {
+      this.raise('DrawingMove', position)
+    },
+    onDrawingEnd: function(position) {
+      this.raise('DrawingEnd', position)
     }
   }
   _.extend(Game.prototype, Eventable.prototype)
