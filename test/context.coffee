@@ -24,8 +24,6 @@ class ManualContext
     })
     setTimeout done, 500
 
-
-
   add_client_called: (name, cb) =>
     @clients[name] = new ManualClient('http://localhost:' + @port)
     @clients[name].login name

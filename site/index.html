@@ -1,6 +1,7 @@
 <DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="style.css"></link>
     <script src="underscore-min.js"></script>
     <script src="jquery.js"></script>
@@ -10,6 +11,7 @@
     <script src="eventable.js"></script>
     <script src="statusdisplay.js"></script>
     <script src="game.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
 
@@ -151,17 +153,34 @@
         <p>Loading - please wait</p>
       </div>
     </div>
-    <div id="content">
-      <div id="client-status"></div>
-      <canvas id="surface" width="800" height="600">
-        Your browser doesn't support Canvas wtf dude?
-      </canvas>
-      <div id="client-input-container">
-        <input type="text" id="client-input"/>
-        <input type="button" value="Guess" id="client-input-button"/>
+    <div id="content" class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <h4 id="client-status"></h4>
+        </div>
+        <div class="span5"></div>
+        <div class="span4">
+          <h4 id="client-count"></h4>
+        </div>
       </div>
-      <div id="client-count"></div>
-      <div id="client-feedback"></div>
+      <div class="row-fluid">
+        <div class="span8">
+          <canvas id="surface" width="800" height="600">
+            Your browser doesn't support Canvas wtf dude?
+          </canvas>
+        </div>
+        <div class="span4">
+         <div id="client-feedback"></div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span8">
+          <div id="client-input-container">
+            <input type="text" id="client-input"/>
+            <input type="button" value="Guess" id="client-input-button"/>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
