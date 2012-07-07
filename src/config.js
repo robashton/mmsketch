@@ -1,0 +1,19 @@
+var config = {
+  'dev': {
+    fbcallback: 'http://localhost:8080/auth/facebook/callback',
+    fbclientid: '317150545045671',
+    fbclientsecret: 'b5290692796e002d8a442bf346e810db',
+    port: 8080,
+    secret: 'i like coffee'
+  },
+  'prod': {
+    fbcallback: 'http://wedrawthings.com/auth/facebook/callback',
+    fbclientid: '317150545045671',
+    fbclientsecret: 'b5290692796e002d8a442bf346e810db',
+    port: 8004,
+    secret: '23g24ngk2mtg23ntgi23ngk2gn23g22'
+  }
+}
+
+module.exports = config[process.env.node_env || 'dev']
+

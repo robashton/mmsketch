@@ -7,6 +7,7 @@ var express = require('express')
    ,Lobby = require('./lobby')
    ,MemoryStore = require('connect').middleware.session.MemoryStore 
    ,cookie = require('connect').utils
+   ,config = require('./config')
 
 var GameServer = function() {
   EventEmitter.call(this)
@@ -24,7 +25,7 @@ GameServer.prototype = {
     app.configure(function() {
       app.use(express.bodyParser())
       app.use(express.cookieParser())
-      app.use(express.session({ key: 'express.sid', secret: 'ssshlol', store: self.sessions}))
+      app.use(express.session({ key: 'express.sid', secret: config.secret, store: self.sessions}))
       app.use(express.methodOverride())
       app.use(passport.initialize())
       app.use(passport.session())

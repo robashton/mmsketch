@@ -1,4 +1,5 @@
 var passport = require('passport')
+    config = require('../src/config')
 ,   FacebookStrategy = require('passport-facebook').Strategy
 
 var users = {}
@@ -13,9 +14,9 @@ passport.deserializeUser(function(obj, done) {
 
 function configurePassport() {
   passport.use(new FacebookStrategy({
-    clientID: '317150545045671'
-,   clientSecret: 'b5290692796e002d8a442bf346e810db'
-,   callbackURL: "http://localhost:8080/auth/facebook/callback"
+    clientID: config.fbclientid 
+,   clientSecret: config.fbclientsecret 
+,   callbackURL: config.fbcallback 
   },
   function(token, tokenSecret, profile, done) {
     users[profile.id] = profile
