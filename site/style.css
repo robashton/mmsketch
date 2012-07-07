@@ -33,6 +33,13 @@ canvas {
   background-color: #FFF;
   border: 1px solid #DDD;
   height: 80%;
+  overflow: auto;
+}
+
+#footnote {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
 }
 
 #loading {
