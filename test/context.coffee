@@ -22,7 +22,7 @@ class ManualContext
         words: @words.join()
       }
     })
-    setTimeout done, 300
+    setTimeout done, 500
 
 
 
@@ -48,12 +48,13 @@ class ManualClient
   constructor: (base) ->
     @browser = new Browser({debug: debug})
     @closed = false
+    @page = null
     @base = base
 
   loaded: =>
-    @browser.text('#client-status') != '' or @browser.redirected
+    @browser.text('#client-status') != '' or @was_redirected()
 
-  was_redirected: => @browser.redirected
+  was_redirected: => @browser.location.toString() != @page
 
   login: (name) =>
    @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", name)
@@ -67,8 +68,9 @@ class ManualClient
     check()
 
   load_index: (cb) =>
-    @browser.visit @base, =>
-      @wait this.loaded, cb
+    @page = @base + '/'
+    @browser.visit @page
+    @wait this.loaded, cb
 
   guess: (word, cb) =>
     @browser
