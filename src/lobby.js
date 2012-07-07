@@ -64,9 +64,7 @@ Player.prototype = {
       this.socket.emit('wrong', word)
   },
   onDrawingStart: function(position) {
-    console.log('Start drawing')
     if(!this.isDrawing()) return
-    console.log('Broadcasting')
     this.socket.broadcast.emit('drawingstart', position)
   },
   onDrawingMove: function(position) {
