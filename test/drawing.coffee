@@ -63,6 +63,9 @@ Scenario "Players drawing stuff", ->
   Then "the artist sees nothing", ->
     artist.pad.sawDrawStart(5,5).should.equal(false)
 
+  And "the guesser sees nothing", ->
+    guesser.pad.sawDrawStart(5,5).should.equal(false)
+
   When "the guesser tries to move while drawing", (done) ->
     guesser.pad.doDrawMove(10,10)
     context.wait_for_sockets(done)
@@ -70,12 +73,19 @@ Scenario "Players drawing stuff", ->
   Then "the artist sees nothing", ->
     artist.pad.sawDrawMove(10,10).should.equal(false)
 
+  And "the guesser sees nothing", ->
+    guesser.pad.sawDrawMove(10,10).should.equal(false)
+    
   When "the guesser tries to finish while drawing", (done) ->
+
     guesser.pad.doDrawEnd()
     context.wait_for_sockets(done)
 
   Then "the artist sees nothing", ->
     artist.pad.sawDrawEnd().should.equal(false)
+
+  And "the guesser sees nothing", ->
+    guesser.pad.sawDrawEnd().should.equal(false)
 
   When "The guesser tries to choose a brush", (done) ->
     guesser.pad.doChooseBrush 0
@@ -84,9 +94,16 @@ Scenario "Players drawing stuff", ->
   Then "The artist sees nothing", ->
     (artist.pad.sawBrushChosen 0).should.equal(false)
 
+  And "the guesser sees nothing", ->
+    (guesser.pad.sawBrushChosen 0).should.equal(false)
+
   When "the guesser tries to choose a colour", (done) ->
     guesser.pad.doChooseColour '#FFF'
     context.wait_for_sockets done
 
   Then "The artist sees nothing", ->
     (artist.pad.sawColourChosen '#FFF').should.equal(false)
+
+  And "the guesser sees nothing", ->
+    (guesser.pad.sawColourChosen '#FFF').should.equal(false)
+
