@@ -41,4 +41,17 @@ Scenario "Guessers trying to send drawing commands", ->
   Then "the artist sees nothing", ->
     artist.pad.sawDrawEnd().should.equal(false)
 
+  When "the guesser tries to send brush commands", (done) ->
+    guesser.pad.game.sendSelectBrush 0
+    context.wait_for_sockets done
+
+  Then "the artist sees nothing", ->
+    (artist.pad.sawBrushChosen 0).should.equal(false)
+
+  When "the guesser tries to send colour commands", (done) ->
+    guesser.pad.game.sendSelectColour '#FFF'
+    context.wait_for_sockets done
+
+  Then "the artist sees nothing", ->
+    (artist.pad.sawColourChosen '#FFF').should.equal(false)
 
