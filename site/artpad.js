@@ -132,13 +132,32 @@
       this.selectColour(colour)
     },
     onDragStart: function(ev) {
-      this.game.sendDrawingStart(ev.position)
+      var position = this.screenToCanvas(ev.position)
+      this.game.sendDrawingStart(position)
     },
     onDrag: function(ev) {
-      this.game.sendDrawingMove(ev.position) 
+      var position = this.screenToCanvas(ev.position)
+      this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
-      this.game.sendDrawingEnd(ev.position)
+      this.game.sendDrawingEnd()
+    },
+    screenToCanvas: function(pos) {
+      // TODO: Think about using different pixel sizes for different
+      // Devices (sadly) and be a bit more creative about mapping using
+      // canvas scale tricks
+      var canvasWidth = this.canvas.width
+      var canvasHeight = this.canvas.height
+      var screenWidth = $(this.canvas).width()
+      var screenHeight = $(this.canvas).height()
+
+      var xmod = canvasWidth / screenWidth
+      var ymod = canvasHeight / screenHeight
+      
+      return {
+        x: pos.x * xmod,
+        y: pos.y * ymod
+      }
     }
   }
   exports.ArtPad = ArtPad
