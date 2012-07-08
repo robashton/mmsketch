@@ -13,10 +13,10 @@
     this.colours = {}
     this.brushes = {}
     this.game.autoHook(this)
-    this.hookDrawingInput()
     this.createPalette()
     this.selectColour('#000')
     this.selectBrush(2)
+    this.hookDrawingInput()
   }
 
   ArtPad.prototype = {
@@ -102,6 +102,7 @@
       this.context.stroke()
     },
     hookDrawingInput: function() {
+      var self = this
       $('#surface')
        .hammer({
         prevent_default: true   
@@ -111,6 +112,24 @@
         drag: _.bind(this.onDrag, this),
         dragend: _.bind(this.onDragEnd, this)
        })
+      $('.paintbrush-brush')
+        .hammer({ prevent_defaults: true })
+        .on({tap: function() {
+          var brush = $(this).data('brush')
+          self.game.sendSelectBrush(brush)
+        }})
+      $('.paintbrush-colour')
+        .hammer({ prevent_defaults: true})
+        .on({tap: function() {
+          var colour = $(this).data('colour')
+          self.game.sendSelectColour(colour)
+        }})
+    },
+    onBrushSelected: function(brush) {
+      this.selectBrush(brush)
+    },
+    onColourSelected: function(colour) {
+      this.selectColour(colour)
     },
     onDragStart: function(ev) {
       this.game.sendDrawingStart(ev.position)

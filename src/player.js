@@ -5,6 +5,8 @@ var Player = function(lobby, socket) {
   this.socket.on('drawingstart', this.onDrawingStart.bind(this))
   this.socket.on('drawingmove', this.onDrawingMove.bind(this))
   this.socket.on('drawingend', this.onDrawingEnd.bind(this))
+  this.socket.on('selectbrush', this.onBrushSelected.bind(this))
+  this.socket.on('selectcolour', this.onColourSelected.bind(this))
 }
 
 Player.prototype = {
@@ -71,6 +73,14 @@ Player.prototype = {
   onDrawingEnd: function(position) {
     if(!this.isDrawing()) return
     this.socket.broadcast.emit('drawingend', position)
+  },
+  onBrushSelected: function(brush) {
+    if(!this.isDrawing()) return
+    this.socket.broadcast.emit('selectbrush', brush)
+  },
+  onColourSelected: function(colour) {
+    if(!this.isDrawing()) return
+    this.socket.broadcast.emit('selectcolour', colour)
   }
 }
 module.exports = Player

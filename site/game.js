@@ -21,6 +21,8 @@
       this.socket.on('drawingmove', _.bind(this.onDrawingMove, this))
       this.socket.on('drawingend', _.bind(this.onDrawingEnd, this))
       this.socket.on('countdown', _.bind(this.onCountdown, this))
+      this.socket.on('selectbrush', _.bind(this.onBrushSelected, this))
+      this.socket.on('selectcolour', _.bind(this.onColourSelected, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -81,6 +83,16 @@
       this.socket.emit('drawingend', position)
       this.onDrawingEnd(position)
     },
+    sendSelectBrush: function(brush) {
+      if(!this.isDrawing()) return
+      this.socket.emit('selectbrush', brush)
+      this.onBrushSelected(brush)
+    },
+    sendSelectColour: function(colour) {
+      if(!this.isDrawing()) return
+      this.socket.emit('selectcolour', colour)
+      this.onColourSelected(colour)
+    },
     onDrawingStart: function(position) {
       this.raise('DrawingStart', position)
     },
@@ -89,7 +101,14 @@
     },
     onDrawingEnd: function(position) {
       this.raise('DrawingEnd', position)
+    },
+    onBrushSelected: function(brush) {
+      this.raise('BrushSelected', brush)
+    },
+    onColourSelected: function(colour) {
+      this.raise('ColourSelected', colour)
     }
+    
   }
   _.extend(Game.prototype, Eventable.prototype)
 
