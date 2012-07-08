@@ -20,6 +20,7 @@
       this.socket.on('drawingstart', _.bind(this.onDrawingStart, this))
       this.socket.on('drawingmove', _.bind(this.onDrawingMove, this))
       this.socket.on('drawingend', _.bind(this.onDrawingEnd, this))
+      this.socket.on('countdown', _.bind(this.onCountdown, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -33,6 +34,9 @@
     },
     onError: function() {
       this.raise('NeedAuth')
+    },
+    onCountdown: function(time) {
+      this.raise('Countdown', time)
     },
     onServerStatus: function(data) {
       this.status = data.status

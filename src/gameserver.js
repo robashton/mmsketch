@@ -8,6 +8,7 @@ var express = require('express')
    ,MemoryStore = require('connect').middleware.session.MemoryStore 
    ,cookie = require('connect').utils
    ,config = require('./config')
+   ,TimedGameEnder = require('./timedgameender')
 
 var GameServer = function() {
   EventEmitter.call(this)
@@ -58,7 +59,7 @@ GameServer.prototype = {
     if(process.env.test)
       return new ManualGameEnder(this.lobby)
     else
-      return new TimedGameEnder(this.lobby)
+      return new TimedGameEnder(this.lobby, process.env.roundtime || 60)
 
   }
 }
@@ -125,12 +126,3 @@ var ManualGameEnder = function(lobby) {
 ManualGameEnder.prototype = {
 
 }
-
-var TimedGameEnder = function(lobby) {
-  
-}
-
-TimedGameEnder.prototype = {
-
-}
-

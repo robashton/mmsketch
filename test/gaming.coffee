@@ -65,7 +65,7 @@ Scenario "Players guessing the word", ->
       context.wait_for_all_clients done
 
   When "The wrong word is guessed", (done) ->
-    artist = find_artist [alice, bob]
+    artist = find_artist [alice, bob, james]
     guessers = (player for player in [alice, bob, james] when !player.isDrawing())
     guesser1 = guessers[0]
     guesser2 = guessers[1]

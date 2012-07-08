@@ -61,11 +61,11 @@ class ManualContext
     @server.kill('SIGHUP')
 
   wait_for_sockets: (done) =>
-    done()
+    setTimeout done, 20
 
   force_round_over: (done) =>
     @server.send('next-game')
-    done()
+    setTimeout done, 20
 
 class ManualClient
   constructor: (name, base) ->
@@ -99,12 +99,14 @@ class ManualClient
     @browser.visit @page
     @browser.on 'loaded', @hookCanvasElements
     @wait @loaded, =>
-      try
-        @pad = @browser.evaluate('artPad')
-      catch ex
-        console.log(ex)
-      finally
-        cb()
+      setTimeout =>
+        try
+          @pad = @browser.evaluate('artPad')
+        catch ex
+          console.log(ex)
+        finally
+          cb()
+      ,20
 
   hookCanvasElements: =>
     @browser.evaluate('TEST = true')
