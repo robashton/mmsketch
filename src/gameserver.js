@@ -9,7 +9,9 @@ var express = require('express')
    ,cookie = require('connect').utils
    ,config = require('./config')
    ,TimedGameEnder = require('./timedgameender')
+   ,path = require('path')
 
+   ,WEBROOT = path.join(path.dirname(__filename), 'site');
 var GameServer = function() {
   EventEmitter.call(this)
   this.app = null
