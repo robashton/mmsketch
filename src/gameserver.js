@@ -1,49 +1,23 @@
-var express = require('express')
-   ,socketio = require('socket.io')
-   ,http = require('http')
-   ,passport = require('passport')
-   ,EventEmitter = require('events').EventEmitter
-   ,_ = require('underscore')
+var EventEmitter = require('events').EventEmitter
    ,Lobby = require('./lobby')
-   ,MemoryStore = require('connect').middleware.session.MemoryStore 
-   ,cookie = require('connect').utils
+   ,_ = require('underscore')
    ,config = require('./config')
    ,TimedGameEnder = require('./timedgameender')
-   ,path = require('path')
-
-   ,WEBROOT = path.join(path.dirname(__filename), 'site');
+   ,cookie = require('connect').utils
+   , MemoryStore = require('connect').middleware.session.MemoryStore 
+   
 var GameServer = function() {
   EventEmitter.call(this)
   this.app = null
-  this.port = 0
-  this.server = null
   this.lobby = null
   this.sessions = new MemoryStore()
 }
 
 GameServer.prototype = {
-  listen: function(port) {
-    var app = express.createServer()
-    var self = this
-    app.configure(function() {
-      app.use(express.bodyParser())
-      app.use(express.cookieParser())
-      app.use(express.session({ key: 'express.sid', secret: config.secret, store: self.sessions}))
-      app.use(express.methodOverride())
-      app.use(passport.initialize())
-      app.use(passport.session())
-      app.use(app.router)
-      app.use(express.static(WEBROOT))
-    })
-    require('../routes/index')(app)
+  bootstrap: function(app) {
     this.app = app
-    this.port = port
     this.lobby = new Lobby(this.app, this.createSessionStore(), this.createWordSource())
     this.gametimer = this.createGameTimer()
-    this.app.listen(port, this.onStarted.bind(this))
-  }
-, onStarted: function() {
-    this.emit('started')
   }
 , createWordSource: function() {
     if(process.env.test)
