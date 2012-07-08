@@ -77,25 +77,13 @@
     </div>
     <script type="text/javascript">
      
-      var canvas = null
-      ,   clientInput = null
-      ,   clientInputButton = null
-      ,   game = null
+      var game = null
       ,   statusDisplay = null
       ,   artPad = null
+      ,   input = null
 
       function closeSockets() {
         game.stop()
-      }
-
-      function submitWord() {
-        var word = clientInput.val()
-        clientInput.val('')
-        game.submitWord(word)
-      }
-
-      function hookEventsForInput() {
-        clientInputButton.click(submitWord)
       }
 
       function onGameStarted() {
@@ -116,9 +104,6 @@
       }
 
       function startGame() {
-        clientInput = $('#client-input')
-        clientInputButton = $('#client-input-button')
-        hookEventsForInput()
         game = new Game()
         statusDisplay = new StatusDisplay(game)
         input = new Input(game)

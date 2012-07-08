@@ -1,6 +1,7 @@
 
 var socketio = require('socket.io')
 ,   util = require('util')
+,   Player = require('./player')
 
 var Lobby = function(server, authentication, wordSource) {
   this.server = server
@@ -9,73 +10,12 @@ var Lobby = function(server, authentication, wordSource) {
   this.playerCount = 0
   this.gamestarted = false
   this.currentArtist = null
+  this.firstCorrectGuesser = null
   this.currentWord = ''
   this.authentication = authentication
   this.startListening()
 }
 
-var Player = function(lobby, socket) {
-  this.lobby = lobby
-  this.socket = socket
-  this.socket.on('guess', this.onGuess.bind(this))
-  this.socket.on('drawingstart', this.onDrawingStart.bind(this))
-  this.socket.on('drawingmove', this.onDrawingMove.bind(this))
-  this.socket.on('drawingend', this.onDrawingEnd.bind(this))
-}
-
-Player.prototype = {
-  isDrawing: function() {
-    return this === this.lobby.currentArtist 
-  },
-  startDrawing: function(word) {
-    this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
-      status: 'drawing',
-      word: word
-    })
-    this.socket.broadcast.emit('status', {
-      clientCount: this.lobby.playerCount,
-      status: 'guessing'
-    })
-  },
-  startWaiting: function() {
-    this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
-      status: 'waiting'
-    })
-  },
-  startGuessing: function() {
-    this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
-      status: 'guessing'
-    })
-  },
-  rejectAsDuplicate: function() {
-    this.socket.emit('reject', 'duplicate');
-    this.socket.disconnect()
-  },
-  id: function() {
-    return this.socket.handshake.user.id
-  },
-  onGuess: function(word) {
-    if(word === this.lobby.currentWord)
-      this.lobby.notifyOfCorrectGuess(this)
-    else
-      this.socket.emit('wrong', word)
-  },
-  onDrawingStart: function(position) {
-    if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingstart', position)
-  },
-  onDrawingMove: function(position) {
-    if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingmove', position)
-  },
-  onDrawingEnd: function(position) {
-    if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingend', position)
-  }
-}
 
 Lobby.prototype = {
   addPlayer: function(player) {
@@ -118,11 +58,11 @@ Lobby.prototype = {
   },
   evaluateGameStatus: function() {
     if(this.playerCount < 2 && this.gamestarted)
-      this.endCurrentGame()
+      this.suspendGaming()
     else if (this.playerCount >= 2 && !this.gamestarted) 
       this.startGame()
   },
-  endCurrentGame: function() {
+  suspendGaming: function() {
     this.currentArtist = null
     this.currentWord = null
     this.gamestarted = false
@@ -133,6 +73,20 @@ Lobby.prototype = {
   },
   startGame: function() {
     this.startGameWithArtist(this.chooseNewArtist())
+  },
+  nextGame: function() {
+    var nextPlayer = null
+    var winner = null
+    if(this.firstCorrectGuesser) {
+      nextPlayer = this.firstCorrectGuesser
+      winner = this.firstCorrectGuesser.displayName()
+      firstCorrectGuesser = null
+    }
+    this.io.sockets.emit('endround', {
+      winner: winner,
+      word: this.currentWord
+    })
+    this.startGameWithArtist(nextPlayer || this.chooseNewArtist())
   },
   startGameWithArtist: function(artist) {
     this.currentArtist = artist 
@@ -147,15 +101,15 @@ Lobby.prototype = {
       }
       if(!session.passport.user)
         return accept('Not logged in yet, please log in!', false)
+      console.log(session.passport.user)
       data.user = session.passport.user
       accept(null, true)
     })
   },
   notifyOfCorrectGuess: function(player) {
-    this.io.sockets.emit('endround', {
-      word: this.currentWord
-    })
-    this.startGameWithArtist(player)
+    if(this.firstCorrectGuesser === null) {
+      this.firstCorrectGuesser = player
+    }
   },
   handleNewSocket: function(socket) {
     var player = new Player(this, socket)

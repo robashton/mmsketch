@@ -35,10 +35,11 @@ Scenario "Artist leaves the game and there are enough people to carry on", ->
 
   Given "there are four people playing a game together", (done) ->
     context.start ->
-      bob = context.add_client_called 'bob', ->
-        alice = context.add_client_called 'alice', ->
-          james = context.add_client_called 'james', ->
-            hilda = context.add_client_called 'hilda', done
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      james = context.add_client_called 'james'
+      hilda = context.add_client_called 'hilda'
+      context.wait_for_all_clients done
   When "the current artist leaves", (done) ->
     artist =  find_artist([bob, alice, james, hilda])
     artist.close done
@@ -50,39 +51,66 @@ Scenario "Players guessing the word", ->
   context = new ManualContext()
   bob = null
   alice = null
+  james = null
   artist = null
-  guesser = null
+  guesser1 = null
+  guesser2 = null
 
-  Given "Two people are playing a game together", (done) ->
+  Given "Three people are playing a game together", (done) ->
     context.next_word 'flibble'
     context.start ->
-      bob = context.add_client_called 'bob', ->
-        alice = context.add_client_called 'alice', done
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      james = context.add_client_called 'james'
+      context.wait_for_all_clients done
 
   When "The wrong word is guessed", (done) ->
     artist = find_artist [alice, bob]
-    guesser = if bob is artist then alice else bob
-    guesser.guess 'orange', done
+    guessers = (player for player in [alice, bob, james] when !player.isDrawing())
+    guesser1 = guessers[0]
+    guesser2 = guessers[1]
+    guesser1.guess 'orange', done
 
   Then "The guesser is told that he guessed wrong", ->
-    guesser.lastGuess().should.include 'orange is not the word'
+    guesser1.lastGuess().should.include 'orange is not the word'
 
   And "the artist is still the artist", ->
     (artist is find_artist [alice, bob]).should.equal(true)
     
-  When "The correct word is guessed", (done) ->
-    guesser.guess 'flibble', done
+  When "The correct word is guessed by guesser #1", (done) ->
+    guesser1.guess 'flibble', done
 
-  Then "The guesser is told that he guessed correctly", ->
-    guesser.lastGuess().should.include 'flibble was correct!'
+  Then "guesser #1 is told that he guessed correctly", ->
+    guesser1.lastGuess().should.include 'flibble was correct!'
 
-  And "the artist is told that he drew something useful", ->
-    artist.lastGuess().should.include 'guessed correctly'
+  And "guesser #1 can no longer see the text input", ->
+    guesser1.can_see_text_input().should.equal(false)
+
+  And "the artist is told that the guesser guessed it correctly", ->
+    artist.lastGuess().should.include 'guessed correctly by ' + guesser1.displayName()
+
+  And "guesser #2 is told that guesser #1 beat him to the punch", ->
+    guesser2.lastGuess().should.include 'guessed correctly by ' + guesser1.displayName()
+
+  When "The correct word is guessed by guesser #2", (done) ->
+    guesser2.guess 'flibble', done
+
+  Then "guesser #2 is told that he guessed correctly", ->
+    guesser2.lastGuess().should.include 'flibble was correct!'
+    
+  And "the artist is told that the guesser guessed it correctly", ->
+    artist.lastGuess().should.include 'guessed correctly by ' + guesser2.displayName()
+  
+  And "guesser #2 can no longer see the text input", ->
+    guesser2.can_see_text_input().should.equal(false)
+
+  When "The game is over", (done) ->
+    context.force_round_over(done)
 
   And "the artist becomes the guesser", ->
     (artist is find_artist [alice, bob]).should.equal(false)
 
-  And "the guesser becomes the artist", ->
-    (guesser is find_artist [alice, bob]).should.equal(true)
+  And "guesser #1 becomes the artist", ->
+    (guesser1 is find_artist [alice, bob]).should.equal(true)
 
 

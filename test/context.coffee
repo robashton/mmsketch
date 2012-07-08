@@ -8,6 +8,7 @@ class ManualContext
     @server = null
     @port = parseInt(Math.random() * 63000) + 1000 
     @clients = {}
+    @pendingClients = 0
     @words = []
 
   next_word: (word) =>
@@ -25,15 +26,32 @@ class ManualContext
     setTimeout done, 500
 
   add_client_called: (name, cb) =>
-    @clients[name] = new ManualClient('http://localhost:' + @port)
+    @pendingClients++
+    @clients[name] = new ManualClient(name, 'http://localhost:' + @port)
     @clients[name].login name
-    @clients[name].load_index cb
+    @clients[name].load_index =>
+      @pendingClients--
+      if(cb)
+        cb()
+        
     return @clients[name]
 
   add_anonymous_client: (cb) =>
+    @pendingClients++
     client = new ManualClient('http://localhost:' + @port)
-    client.load_index cb
+    client.load_index =>
+      @pendingClients--
+      if(cb)
+        cb()
     return client
+
+  wait_for_all_clients: (done) =>
+    check = =>
+      if (@pendingClients == 0)
+        done()
+      else
+        setTimeout check, 50
+    check()
 
   for: (name) =>
     @clients[name]
@@ -43,13 +61,18 @@ class ManualContext
     @server.kill('SIGHUP')
 
   wait_for_sockets: (done) =>
-    done() 
+    done()
+
+  force_round_over: (done) =>
+    @server.send('next-game')
+    done()
 
 class ManualClient
-  constructor: (base) ->
+  constructor: (name, base) ->
     @browser = new Browser({debug: debug})
     @closed = false
     @page = null
+    @name = name
     @base = base
     @pad = null
 
@@ -57,6 +80,8 @@ class ManualClient
     @browser.text('#client-status') != '' or @was_redirected()
 
   was_redirected: => @browser.location.toString() != @page
+
+  displayName: => (@name + 'display')
 
   login: (name) =>
    @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", name)
@@ -74,8 +99,12 @@ class ManualClient
     @browser.visit @page
     @browser.on 'loaded', @hookCanvasElements
     @wait @loaded, =>
-      @pad = @browser.evaluate('artPad')
-      cb()
+      try
+        @pad = @browser.evaluate('artPad')
+      catch ex
+        console.log(ex)
+      finally
+        cb()
 
   hookCanvasElements: =>
     @browser.evaluate('TEST = true')

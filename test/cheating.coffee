@@ -2,7 +2,7 @@ _ = require('underscore')
 find_artist = require('./util').find_artist
 ManualContext = require('./context')
 
-Scenario "Players trying to work around API protection", ->
+Scenario "Guessers trying to send drawing commands", ->
   context = new ManualContext()
   bob = null
   alice = null
@@ -11,11 +11,12 @@ Scenario "Players trying to work around API protection", ->
 
   Given "alice and bob are playing a game together", (done) ->
     context.start ->
-      bob = context.add_client_called 'bob', ->
-        alice = context.add_client_called 'alice', ->
-          artist = find_artist [bob, alice]
-          guesser = if bob is artist then alice else bob
-          done()
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      context.wait_for_all_clients ->
+        artist = find_artist [bob, alice]
+        guesser = if bob is artist then alice else bob
+        done()
 
   When "the guessers tries to send start drawing commands", (done) ->
     artist.pad.reset()
@@ -37,7 +38,7 @@ Scenario "Players trying to work around API protection", ->
     guesser.pad.game.sendDrawingEnd()
     context.wait_for_sockets(done)
 
-
   Then "the artist sees nothing", ->
     artist.pad.sawDrawEnd().should.equal(false)
+
 

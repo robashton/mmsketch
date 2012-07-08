@@ -11,6 +11,7 @@
       this.socket = io.connect()
       this.socket.on('status', _.bind(this.onServerStatus, this))
       this.socket.on('wrong', _.bind(this.onWrongGuess, this))
+      this.socket.on('correct', _.bind(this.onCorrectGuess, this))
       this.socket.on('endround', _.bind(this.onRoundEnded, this))
       this.socket.on('reject', _.bind(this.onReject, this))
       this.socket.on('error', _.bind(this.onError, this))
@@ -43,11 +44,15 @@
     onWrongGuess: function(word) {
       this.raise('WrongGuess', word)
     },
+    onCorrectGuess: function(data) {
+      if(data.win) {
+        this.status = 'waiting'
+        this.raise('MyCorrectGuess', data)
+      } else 
+        this.raise('OtherCorrectGuess', data)
+    },
     onRoundEnded: function(data) {
-      if(this.status === 'guessing')
-        this.raise('CorrectGuess', data)
-      else if(this.status === 'drawing')
-        this.raise('GoodDrawing', data)
+      this.raise('RoundEnded', data)
     },
     isDrawing: function() {
       return this.status === 'drawing'

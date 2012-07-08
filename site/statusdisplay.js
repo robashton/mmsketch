@@ -29,11 +29,17 @@
     onWrongGuess: function(word) {
       this.addMessage(word + ' is not the word')
     },
-    onCorrectGuess: function(data) {
+    onMyCorrectGuess: function(data) {
       this.addMessage(data.word + ' was correct!')
     },
-    onGoodDrawing: function(data) {
-      this.addMessage(data.word + ' was guessed correctly')
+    onOtherCorrectGuess: function(data) {
+      this.addMessage('Word was guessed correctly by ' + data.player)
+    },
+    onRoundEnded: function(data) {
+      if(data.winner)
+        this.addMessage(data.word + ' was guessed first by ' + data.player)
+      else
+        this.addMessage('Nobody guessed the word ' + data.word)
     },
     onNeedAuth: function() {
       window.location = '/login'

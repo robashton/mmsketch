@@ -36,6 +36,7 @@ GameServer.prototype = {
     this.app = app
     this.port = port
     this.lobby = new Lobby(this.app, this.createSessionStore(), this.createWordSource())
+    this.gametimer = this.createGameTimer()
     this.app.listen(port, this.onStarted.bind(this))
   }
 , onStarted: function() {
@@ -52,6 +53,13 @@ GameServer.prototype = {
       return new TestAuthenticationStore()
     else
       return new ExpressAuthenticationStore(this.sessions)
+  },
+  createGameTimer: function() {
+    if(process.env.test)
+      return new ManualGameEnder(this.lobby)
+    else
+      return new TimedGameEnder(this.lobby)
+
   }
 }
 _.extend(GameServer.prototype, EventEmitter.prototype)
@@ -70,7 +78,7 @@ TestAuthenticationStore.prototype = {
       if(!username) return cb(null, null)
       cb(null, {
         passport: {
-          user: { id:  username }
+          user: { id:  username, displayName: username + 'display' }
         }
       })
     } else {
@@ -106,3 +114,23 @@ SequentialWordSource.prototype.next =
 FixedWordSource.prototype.next = function() {
   return this.words.shift()
 }
+
+var ManualGameEnder = function(lobby) {
+  process.on('message', function(m) {
+    if(m === 'next-game')
+      lobby.nextGame()
+  })
+}
+
+ManualGameEnder.prototype = {
+
+}
+
+var TimedGameEnder = function(lobby) {
+  
+}
+
+TimedGameEnder.prototype = {
+
+}
+

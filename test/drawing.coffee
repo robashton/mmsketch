@@ -12,11 +12,12 @@ Scenario "Players drawing stuff", ->
 
   Given "alice and bob are playing a game together", (done) ->
     context.start ->
-      bob = context.add_client_called 'bob', ->
-        alice = context.add_client_called 'alice', ->
-          artist = find_artist [bob, alice]
-          guesser = if bob is artist then alice else bob
-          done()
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      context.wait_for_all_clients ->
+        artist = find_artist [bob, alice]
+        guesser = if bob is artist then alice else bob
+        done()
 
   When "the artist starts drawing", (done) ->
     artist.pad.doDrawStart(5,5)

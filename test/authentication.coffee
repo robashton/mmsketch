@@ -9,8 +9,9 @@ Scenario "An unauthenticated user", (done) ->
 
   When "An anonymous user joins", (done) ->
     context.start ->
-      unknownUser = context.add_anonymous_client ->
-        knownUser = context.add_client_called 'bob', done
+      unknownUser = context.add_anonymous_client()
+      knownUser = context.add_client_called 'bob'
+      context.wait_for_all_clients done
   
   Then "They are redirected to a login page", ->
     unknownUser.was_redirected().should.equal(true)
