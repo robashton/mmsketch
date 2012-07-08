@@ -3,6 +3,7 @@
     Eventable.call(this)
     this.socket = null
     this.started = false
+    this.roundstarted = false
     this.status = 'waiting'
   }
 
@@ -12,6 +13,7 @@
       this.socket.on('status', _.bind(this.onServerStatus, this))
       this.socket.on('wrong', _.bind(this.onWrongGuess, this))
       this.socket.on('correct', _.bind(this.onCorrectGuess, this))
+      this.socket.on('startround', _.bind(this.onRoundStarted, this))
       this.socket.on('endround', _.bind(this.onRoundEnded, this))
       this.socket.on('reject', _.bind(this.onReject, this))
       this.socket.on('error', _.bind(this.onError, this))
@@ -50,6 +52,9 @@
         this.raise('MyCorrectGuess', data)
       } else 
         this.raise('OtherCorrectGuess', data)
+    },
+    onRoundStarted: function() {
+      this.raise('RoundStarted')
     },
     onRoundEnded: function(data) {
       this.raise('RoundEnded', data)

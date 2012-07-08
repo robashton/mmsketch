@@ -16,6 +16,9 @@
     onDrawingEnd: function() {
       this.drawingEnded = true
     },
+    onRoundStarted: function() {
+      this.wiped = true
+    },
     doDrawStart: function(x, y) {
       this.game.sendDrawingStart({
         x: x,
@@ -44,10 +47,14 @@
     sawDrawEnd: function() {
       return !!this.drawingEnded
     },
+    was_wiped: function() {
+      return this.wiped;
+    },
     reset: function() {
       this.drawingStart = null
       this.drawingMove = null
       this.drawingEnded = false
+      this.wiped = false
     }
   }
   exports.ArtPad = ArtPad

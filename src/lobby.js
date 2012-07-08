@@ -52,9 +52,14 @@ Lobby.prototype = {
        ,current = 0
        
     for(var id in this.players) {
-      if(current++ === index) 
+      if(current++ >= index) {
+        var player = this.players[id]
+        if(player === this.currentArtist)
+          continue;
          return this.players[id];
+      }
     }
+    return this.chooseNewArtist()
   },
   evaluateGameStatus: function() {
     if(this.playerCount < 2 && this.gamestarted)
@@ -93,6 +98,7 @@ Lobby.prototype = {
     this.currentWord = this.wordSource.next() 
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
+    this.io.sockets.emit('startround')
   },
   handleAuthorization: function(data, accept) {
     this.authentication.get(data.headers, function(err, session) {
