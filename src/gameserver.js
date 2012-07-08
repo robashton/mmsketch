@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter
    ,_ = require('underscore')
    ,config = require('./config')
    ,TimedGameEnder = require('./timedgameender')
+   ,FixedWordSource = require('./fixedwordsource')
    ,cookie = require('connect').utils
    , MemoryStore = require('connect').middleware.session.MemoryStore 
    
@@ -35,8 +36,7 @@ GameServer.prototype = {
     if(process.env.test)
       return new ManualGameEnder(this.lobby)
     else
-      return new TimedGameEnder(this.lobby, process.env.roundtime || 10, process.env.intervalTime || 5)
-
+      return new TimedGameEnder(this.lobby, config.roundtime, config.intervalTime)
   }
 }
 _.extend(GameServer.prototype, EventEmitter.prototype)
@@ -83,12 +83,8 @@ ExpressAuthenticationStore.prototype = {
 var SequentialWordSource = function() {
   this.words = process.env.words.split(',')
 }
-var FixedWordSource = function() {
-  this.words = [ 'orange', 'blue', 'green' ] 
-}
 
-SequentialWordSource.prototype.next = 
-FixedWordSource.prototype.next = function() {
+SequentialWordSource.prototype.next = function() {
   return this.words.shift()
 }
 

@@ -85,6 +85,7 @@
     },
     onDrawingStart: function(position) {
       this.lastPosition = position
+      this.drawLine(position, position)
     },
     onDrawingMove: function(position) {
       this.drawLine(this.lastPosition, position)
@@ -109,7 +110,8 @@
       var self = this
       $('#surface')
        .hammer({
-        prevent_default: true   
+        prevent_default: true,
+        drag_min_distance: 1
        })
       .on({
         dragstart: _.bind(this.onDragStart, this),
