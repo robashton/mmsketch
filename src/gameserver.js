@@ -33,7 +33,7 @@ GameServer.prototype = {
       app.use(passport.initialize())
       app.use(passport.session())
       app.use(app.router)
-      app.use(express.static('site'))
+      app.use(express.static(WEBROOT))
     })
     require('../routes/index')(app)
     this.app = app
