@@ -19,6 +19,20 @@ Scenario "Players drawing stuff", ->
         guesser = if bob is artist then alice else bob
         done()
 
+  When "the artist chooses a brush", (done) ->
+    artist.pad.doChooseBrush 0
+    context.wait_for_sockets done
+
+  Then "the guesser sees that a brush was selected", ->
+    (guesser.pad.sawBrushChosen 0).should.equal(true)
+
+  When "the artist chooses a colour", (done) ->
+    artist.pad.doChooseColour '#FFF'
+    context.wait_for_sockets done
+
+  Then "the guesser sees that a colour was selected", ->
+    (guesser.pad.sawColourChosen '#FFF').should.equal(true)
+
   When "the artist starts drawing", (done) ->
     artist.pad.doDrawStart(5,5)
     context.wait_for_sockets(done)
@@ -60,7 +74,19 @@ Scenario "Players drawing stuff", ->
     guesser.pad.doDrawEnd()
     context.wait_for_sockets(done)
 
-
   Then "the artist sees nothing", ->
     artist.pad.sawDrawEnd().should.equal(false)
 
+  When "The guesser tries to choose a brush", (done) ->
+    guesser.pad.doChooseBrush 0
+    context.wait_for_sockets done
+
+  Then "The artist sees nothing", ->
+    (artist.pad.sawBrushChosen 0).should.equal(false)
+
+  When "the guesser tries to choose a colour", (done) ->
+    guesser.pad.doChooseColour '#FFF'
+    context.wait_for_sockets done
+
+  Then "The artist sees nothing", ->
+    (artist.pad.sawColourChosen '#FFF').should.equal(false)

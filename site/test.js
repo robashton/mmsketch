@@ -19,6 +19,12 @@
     onRoundStarted: function() {
       this.wiped = true
     },
+    onBrushSelected: function(brush) {
+      this.chosenBrush = brush
+    },
+    onColourSelected: function(colour) {
+      this.chosenColour = colour
+    },
     doDrawStart: function(x, y) {
       this.game.sendDrawingStart({
         x: x,
@@ -30,6 +36,12 @@
         x: x,
         y: y
       })
+    },
+    doChooseBrush: function(brush) {
+      this.game.sendSelectBrush(brush)
+    },  
+    doChooseColour: function(colour) {
+      this.game.sendSelectColour(colour)
     },
     doDrawEnd: function() {
       this.game.sendDrawingEnd()
@@ -47,6 +59,12 @@
     sawDrawEnd: function() {
       return !!this.drawingEnded
     },
+    sawBrushChosen: function(brush) {
+      return this.chosenBrush === brush
+    },
+    sawColourChosen: function(colour) {
+      return this.chosenColour === colour
+    },
     was_wiped: function() {
       return this.wiped;
     },
@@ -54,6 +72,8 @@
       this.drawingStart = null
       this.drawingMove = null
       this.drawingEnded = false
+      this.chosenColour = null
+      this.chosenBrush = null
       this.wiped = false
     }
   }
