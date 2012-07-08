@@ -24,7 +24,7 @@
       if(data.clientCount === 1)
         this.setCountMessageTo('You are the only player, invite your friends to join')
       else
-        this.setCountMessageTo('There are ' + data.clientCount + ' players connected')
+        this.setCountMessageTo('There are ' + data.clientCount + ' players online')
     },
     onWrongGuess: function(word) {
       this.addMessage(word + ' is not the word')
@@ -36,6 +36,7 @@
       this.addMessage('Word was guessed correctly by ' + data.player)
     },
     onRoundEnded: function(data) {
+      this.setStatusMessageTo('Waiting for the next round')
       if(data.winner)
         this.addMessage(data.word + ' was guessed first by ' + data.player)
       else

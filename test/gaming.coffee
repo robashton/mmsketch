@@ -75,7 +75,7 @@ Scenario "Players guessing the word", ->
     guesser1.lastGuess().should.include 'orange is not the word'
 
   And "the artist is still the artist", ->
-    (artist is find_artist [alice, bob]).should.equal(true)
+    (artist is find_artist [alice, bob, james]).should.equal(true)
     
   When "The correct word is guessed by guesser #1", (done) ->
     guesser1.guess 'flibble', done
@@ -108,10 +108,10 @@ Scenario "Players guessing the word", ->
     context.force_round_over(done)
 
   And "the artist becomes the guesser", ->
-    (artist is find_artist [alice, bob]).should.equal(false)
+    (artist is find_artist [alice, bob, james]).should.equal(false)
 
   And "guesser #1 becomes the artist", ->
-    (guesser1 is find_artist [alice, bob]).should.equal(true)
+    (guesser1 is find_artist [alice, bob, james]).should.equal(true)
 
 
 Scenario "Game ends with nobody guessing the word", ->

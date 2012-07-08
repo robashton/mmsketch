@@ -84,7 +84,7 @@ Lobby.prototype = {
   startGame: function() {
     this.startGameWithArtist(this.chooseNewArtist())
   },
-  nextGame: function() {
+  nextGame: function(delay) {
     var nextPlayer = null
     var winner = null
     if(this.firstCorrectGuesser) {
@@ -97,7 +97,10 @@ Lobby.prototype = {
       word: this.currentWord
     })
     this.emit('GameEnded')
-    this.startGameWithArtist(nextPlayer || this.chooseNewArtist())
+    var self = this
+    setTimeout(function() {
+      self.startGameWithArtist(nextPlayer || self.chooseNewArtist())
+    }, delay)
   },
   notifyClientsOfTimeLeft: function(timeLeft) {
     this.io.sockets.emit('countdown', timeLeft)

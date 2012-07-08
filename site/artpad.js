@@ -11,6 +11,9 @@
   }
 
   ArtPad.prototype = {
+    onRoundStarted: function() {
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    },
     onDrawingStart: function(position) {
       this.lastPosition = position
     },

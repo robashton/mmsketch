@@ -6,6 +6,9 @@
   }
 
   Timer.prototype = {
+    onRoundEnded: function() {
+      this.timerText.text('Next round starting shortly')
+    },
     onCountdown: function(timeLeft) {
       this.timerText.text(timeLeft + ' seconds left') 
     }

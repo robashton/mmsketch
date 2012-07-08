@@ -59,7 +59,7 @@ GameServer.prototype = {
     if(process.env.test)
       return new ManualGameEnder(this.lobby)
     else
-      return new TimedGameEnder(this.lobby, process.env.roundtime || 60)
+      return new TimedGameEnder(this.lobby, process.env.roundtime || 10, process.env.intervalTime || 5)
 
   }
 }
@@ -119,7 +119,7 @@ FixedWordSource.prototype.next = function() {
 var ManualGameEnder = function(lobby) {
   process.on('message', function(m) {
     if(m === 'next-game')
-      lobby.nextGame()
+      lobby.nextGame(0)
   })
 }
 

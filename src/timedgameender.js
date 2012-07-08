@@ -1,7 +1,8 @@
 
-var TimedGameEnder = function(game, gameTime) {
+var TimedGameEnder = function(game, gameTime, intervalTime) {
   this.game = game
   this.gameTime = gameTime
+  this.intervalTime = intervalTime * 1000
   this.lastStartTime = null
   this.running = false
   this.game.on('GameStarted', this.onGameStarted.bind(this))
@@ -23,7 +24,7 @@ TimedGameEnder.prototype = {
     var now = new Date()
     var diff = this.gameTime - Math.floor((now - this.lastStartTime) / 1000);
     if(diff <= 0)
-      this.game.nextGame()
+      this.game.nextGame(this.intervalTime)
     else 
       this.warnClientsOfImpendingDoom(diff)
   },
