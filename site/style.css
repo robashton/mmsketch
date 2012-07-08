@@ -173,7 +173,7 @@ canvas {
   to {opacity: 0.25; }
 }
 
-@media all and (min-height: 800px) {
+@media all and (min-width: 1300px) {
   canvas {
     height: 80%;
   }
@@ -183,7 +183,7 @@ canvas {
 }
 
 
-@media all and (max-height: 800px) {
+@media all and (max-width: 1299px) {
   canvas {
     height: 70%;
   }
