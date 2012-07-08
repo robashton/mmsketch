@@ -32,6 +32,11 @@
       this.addBrush(1)
       this.addBrush(2)
       this.addBrush(3)
+      this.addBrush(4)
+      this.addBrush(5)
+      this.addBrush(6)
+      this.addBrush(7)
+      this.addBrush(8)
     },
     addColour: function(hex) {
       var element = $('<span/>')
@@ -49,12 +54,20 @@
         this.selectedColour.removeClass('selected')
       this.selectedColour = colour
       this.selectedColour.addClass('selected')
+      $('.paintbrush-brush').css('background-color', hex)
     },
     addBrush: function(brush) {
+      var pixels = brush * 5
+      var halfPixels = pixels / 2
+      var containerHeight = this.brushContainer.height()
       var element = $('<span/>')
             .attr('data-brush', brush)
-            .css('height', brush * 10 + 'px')
-            .css('width', brush * 10 + 'px')
+            .css('height', pixels + 'px')
+            .css('width', pixels + 'px')
+            .css('border-radius', halfPixels + 'px') 
+            .css('-webkit-border-radius',  halfPixels + 'px')
+            .css('-moz-border-radius', halfPixels + 'px') 
+            .css('margin-top', (containerHeight - pixels)/2  + 'px')
             .addClass('paintbrush-brush')
       this.brushContainer.append(element)
       this.brushes[brush] = element
