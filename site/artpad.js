@@ -15,7 +15,7 @@
     this.game.autoHook(this)
     this.createPalette()
     this.selectColour('#000')
-    this.selectBrush(2)
+    this.selectBrush(20)
     this.hookDrawingInput()
   }
 
@@ -29,14 +29,14 @@
       this.addColour('#FF0')
       this.addColour('#F0F')
       this.addColour('#0FF')
-      this.addBrush(1)
-      this.addBrush(2)
-      this.addBrush(3)
-      this.addBrush(4)
       this.addBrush(5)
-      this.addBrush(6)
-      this.addBrush(7)
-      this.addBrush(8)
+      this.addBrush(10)
+      this.addBrush(15)
+      this.addBrush(20)
+      this.addBrush(25)
+      this.addBrush(30)
+      this.addBrush(35)
+      this.addBrush(40)
     },
     addColour: function(hex) {
       var element = $('<span/>')
@@ -57,17 +57,16 @@
       $('.paintbrush-brush').css('background-color', hex)
     },
     addBrush: function(brush) {
-      var pixels = brush * 5
-      var halfPixels = pixels / 2
+      var halfPixels = brush / 2
       var containerHeight = this.brushContainer.height()
       var element = $('<span/>')
             .attr('data-brush', brush)
-            .css('height', pixels + 'px')
-            .css('width', pixels + 'px')
+            .css('height', brush + 'px')
+            .css('width', brush + 'px')
             .css('border-radius', halfPixels + 'px') 
             .css('-webkit-border-radius',  halfPixels + 'px')
             .css('-moz-border-radius', halfPixels + 'px') 
-            .css('margin-top', (containerHeight - pixels)/2  + 'px')
+            .css('margin-top', (containerHeight - brush)/2  + 'px')
             .addClass('paintbrush-brush')
       this.brushContainer.append(element)
       this.brushes[brush] = element
@@ -95,7 +94,12 @@
       this.lastPosition = null
     },
     drawLine: function(from, to) { 
-      this.context.strokeStyle = '#000' 
+      var brush = this.selectedBrush.data('brush')
+      var colour = this.selectedColour.data('colour')
+      this.context.strokeStyle = colour 
+      this.context.lineWidth = brush 
+      this.context.lineCap = 'round'
+      this.context.lineJoin = 'bevel'
       this.context.beginPath()
       this.context.moveTo(from.x, from.y)
       this.context.lineTo(to.x, to.y)
