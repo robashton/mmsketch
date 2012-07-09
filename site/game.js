@@ -23,12 +23,16 @@
       this.socket.on('countdown', _.bind(this.onCountdown, this))
       this.socket.on('selectbrush', _.bind(this.onBrushSelected, this))
       this.socket.on('selectcolour', _.bind(this.onColourSelected, this))
+      this.socket.on('you', _.bind(this.onPersonalInfoReceived, this))
     },
     stop: function() {
       this.socket.disconnect()
     },
     submitWord: function(word) {
       this.socket.emit('guess', word)
+    },
+    onPersonalInfoReceived: function(player) {
+      this.raise('PersonalInfoReceived', player)
     },
     onReject: function() {
       this.raise('Rejected')

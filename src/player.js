@@ -1,6 +1,7 @@
 var Player = function(lobby, socket) {
   this.lobby = lobby
   this.socket = socket
+  this.globalScore = null
   this.socket.on('guess', this.onGuess.bind(this))
   this.socket.on('drawingstart', this.onDrawingStart.bind(this))
   this.socket.on('drawingmove', this.onDrawingMove.bind(this))
@@ -39,6 +40,10 @@ Player.prototype = {
       player: this.lobby.currentArtist.getJSON()
     })
   },
+  sendGlobalScore: function(score) {
+    this.globalScore = score
+    this.socket.emit('you', this.getJSON())
+  },
   rejectAsDuplicate: function() {
     this.socket.emit('reject', 'duplicate');
     this.socket.disconnect()
@@ -49,7 +54,8 @@ Player.prototype = {
   getJSON: function() {
     return {
       displayName: this.displayName(),
-      displayPicture: this.displayPicture()
+      displayPicture: this.displayPicture(),
+      globalScore: this.globalScore
     }
   },
   displayName: function() {

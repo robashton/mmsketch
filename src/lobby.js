@@ -34,6 +34,7 @@ Lobby.prototype = {
       player.startWaiting()
       this.evaluateGameStatus()
     }
+    this.raise('PlayerJoined', player)
   },
   removePlayer: function(player) {
     delete this.players[player.id()]

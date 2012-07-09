@@ -69,8 +69,8 @@ class ManualContext
 
   set_global_score_of: (username, score) =>
     @server.send({
-      command: 'set_global_score'
-      username: username
+      command: 'SetGlobalScore'
+      userid: username
       score: score
     })
 
@@ -84,7 +84,7 @@ class ManualClient
     @pad = null
 
   loaded: =>
-    @browser.text('#client-status') != '' or @was_redirected()
+    @browser.text('#player-name') != '' or @was_redirected()
 
   was_redirected: => @browser.location.toString() != @page
 
