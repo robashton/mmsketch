@@ -1,8 +1,9 @@
+var config = require('./config')
 
-var TimedGameEnder = function(game, gameTime, intervalTime) {
+var TimedGameEnder = function(game) {
   this.game = game
-  this.gameTime = gameTime
-  this.intervalTime = intervalTime * 1000
+  this.gameTime = config.roundTime
+  this.intervalTime = config.roundIntervalTime 
   this.lastStartTime = null
   this.running = false
   this.game.on('GameStarted', this.onGameStarted.bind(this))

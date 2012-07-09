@@ -21,7 +21,7 @@ Scenario "Various displays of personal status", ->
     bob.displayed_name().should.equal('displaybob')
 
   And "bob is told what his global score is", ->
-    bob.global_score().should.equal(0)
+    bob.global_score().should.equal('0')
 
   And "bob should see his avatar", ->
     bob.displayed_avatar().should.include('bob')
@@ -37,7 +37,7 @@ Scenario "Various displays of personal status", ->
     guesser.guess 'flibble', done
 
   Then "alice has her score updated", ->
-    alice.global_score().should.not.equal(0)
+    alice.global_score().should.not.equal('0')
 
   And "bob has his score updated", ->
-    bob.global_score().should.not.equal(0)
+    bob.global_score().should.not.equal('0')

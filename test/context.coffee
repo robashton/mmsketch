@@ -64,7 +64,7 @@ class ManualContext
     setTimeout done, 20
 
   force_round_over: (done) =>
-    @server.send('next-game')
+    @server.send({ command: 'next-game'})
     setTimeout done, 20
 
   set_global_score_of: (username, score) =>
@@ -128,15 +128,14 @@ class ManualClient
 
   lastGuess: => @browser.text('#client-feedback > span:last > p')
 
-
   global_score: =>
-    ""
+    @value_of '#player-score'
 
   displayed_avatar: =>
-    ""
+    (@jQuery '#player-avatar').attr('src')
 
   displayed_name: =>
-    ""
+    @value_of '#player-name'
 
   should_have_element: (selector) =>
     @browser.queryAll(selector).length.should.equal(1)
