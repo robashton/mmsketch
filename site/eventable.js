@@ -94,5 +94,9 @@
     }
   };
   
-  exports.Eventable = Eventable
+  if(typeof module !== 'undefined' && module.exports) 
+    module.exports = Eventable
+  else
+    exports.Eventable = Eventable
+      
 }).call(this, this)

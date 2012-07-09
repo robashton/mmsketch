@@ -1,12 +1,11 @@
-
 var socketio = require('socket.io')
 ,   util = require('util')
 ,   Player = require('./player')
-,   EventEmitter = require('events').EventEmitter
+,   Eventable = require('./eventable')
 ,   _ = require('underscore')
 
 var Lobby = function(server, authentication, wordSource) {
-  EventEmitter.call(this)
+  Eventable.call(this)
 
   this.server = server
   this.players = {}
@@ -79,7 +78,6 @@ Lobby.prototype = {
       clientCount: this.playerCount,
       status: 'waiting'
     })
-    this.emit('GameEnded')
   },
   startGame: function() {
     this.startGameWithArtist(this.chooseNewArtist())
@@ -96,7 +94,6 @@ Lobby.prototype = {
       winner: winner,
       word: this.currentWord
     })
-    this.emit('GameEnded')
     var self = this
     setTimeout(function() {
       self.startGameWithArtist(nextPlayer || self.chooseNewArtist())
@@ -111,7 +108,6 @@ Lobby.prototype = {
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
     this.io.sockets.emit('startround')
-    this.emit('GameStarted')
   },
   handleAuthorization: function(data, accept) {
     this.authentication.get(data.headers, function(err, session) {
@@ -149,6 +145,6 @@ Lobby.prototype = {
     io.on('connection', this.handleNewSocket.bind(this))
   }
 }
-_.extend(Lobby.prototype, EventEmitter.prototype)
+_.extend(Lobby.prototype, Eventable.prototype)
 
 module.exports = Lobby

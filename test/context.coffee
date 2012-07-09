@@ -1,4 +1,4 @@
-debug = false
+debug = true
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -6,7 +6,7 @@ cookie = require('connect').utils
 class ManualContext
   constructor: ->
     @server = null
-    @port = parseInt(Math.random() * 63000) + 1000 
+    @port = parseInt(Math.random() * 63000) + 1000
     @clients = {}
     @pendingClients = 0
     @words = []

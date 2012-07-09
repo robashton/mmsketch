@@ -6,17 +6,16 @@ var TimedGameEnder = function(game) {
   this.intervalTime = config.roundIntervalTime 
   this.lastStartTime = null
   this.running = false
-  this.game.on('GameStarted', this.onGameStarted.bind(this))
-  this.game.on('GameEnded', this.onGameEnded.bind(this))
+  this.game.autoHook(this)
   setInterval(this.onTick.bind(this), 1000)
 }
 
 TimedGameEnder.prototype = {
-  onGameStarted: function() {
+  onRoundStarted: function() {
     this.lastStartTime = new Date() 
     this.running = true
   },
-  onGameEnded: function() {
+  onRoundEnded: function() {
     this.lastStartTime = null
     this.running = false
   },
