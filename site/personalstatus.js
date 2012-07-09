@@ -10,12 +10,12 @@
   
   PersonalStatusDisplay.prototype = {
     onPersonalInfoReceived: function(player) {
-      this.score.text(player.globalScore)
+      this.score.text('' + player.globalScore)
       this.name.text(player.displayName)
       this.avatar.attr('src', player.displayPicture) 
       
     },
-    onScoreChanged: function(score) {
+    onGlobalScoreChanged: function(score) {
       this.score.text(score) 
     }
   }

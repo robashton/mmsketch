@@ -24,6 +24,7 @@
       this.socket.on('selectbrush', _.bind(this.onBrushSelected, this))
       this.socket.on('selectcolour', _.bind(this.onColourSelected, this))
       this.socket.on('you', _.bind(this.onPersonalInfoReceived, this))
+      this.socket.on('globalscorechanged', _.bind(this.onGlobalScoreChanged, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -33,6 +34,9 @@
     },
     onPersonalInfoReceived: function(player) {
       this.raise('PersonalInfoReceived', player)
+    },
+    onGlobalScoreChanged: function(score) {
+      this.raise('GlobalScoreChanged', score)
     },
     onReject: function() {
       this.raise('Rejected')

@@ -120,7 +120,6 @@ Lobby.prototype = {
       }
       if(!session.passport.user)
         return accept('Not logged in yet, please log in!', false)
-      console.log(session.passport.user)
       data.user = session.passport.user
       accept(null, true)
     })
@@ -129,6 +128,7 @@ Lobby.prototype = {
     if(this.firstCorrectGuesser === null) {
       this.firstCorrectGuesser = player
     }
+    this.raise('CorrectGuess', player)
   },
   handleNewSocket: function(socket) {
     var player = new Player(this, socket)

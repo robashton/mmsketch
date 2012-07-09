@@ -27,7 +27,7 @@ class ManualContext
 
   add_client_called: (name, cb) =>
     @pendingClients++
-    @clients[name] = new ManualClient(name, 'http://localhost:' + @port)
+    @clients[name] = new ManualClient(this, name, 'http://localhost:' + @port)
     @clients[name].login name
     @clients[name].load_index =>
       @pendingClients--
@@ -38,7 +38,7 @@ class ManualContext
 
   add_anonymous_client: (cb) =>
     @pendingClients++
-    client = new ManualClient('http://localhost:' + @port)
+    client = new ManualClient(this, 'http://localhost:' + @port)
     client.load_index =>
       @pendingClients--
       if(cb)
@@ -75,16 +75,17 @@ class ManualContext
     })
 
 class ManualClient
-  constructor: (name, base) ->
+  constructor: (context, name, base) ->
     @browser = new Browser({debug: debug})
     @closed = false
     @page = null
     @name = name
     @base = base
     @pad = null
+    @context = context
 
   loaded: =>
-    @browser.text('#player-name') != '' or @was_redirected()
+    @browser.text('#client-status') != '' or @was_redirected()
 
   was_redirected: => @browser.location.toString() != @page
 
@@ -122,9 +123,7 @@ class ManualClient
     @browser
       .fill('#client-input', word)
       .pressButton('#client-input-button')
-    @wait =>
-      @lastGuess().indexOf(word) >= 0
-    ,cb
+    @context.wait_for_sockets cb
 
   lastGuess: => @browser.text('#client-feedback > span:last > p')
 

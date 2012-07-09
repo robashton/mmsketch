@@ -18,7 +18,7 @@ Scenario "Various displays of personal status", ->
         done()
 
   Then "bob is told he is playing", ->
-    bob.displayed_name().should.equal('displaybob')
+    bob.displayed_name().should.equal('bobdisplay')
 
   And "bob is told what his global score is", ->
     bob.global_score().should.equal('0')
@@ -34,10 +34,11 @@ Scenario "Various displays of personal status", ->
       done()
 
   And "the guesser guesses the word correctly", (done) ->
-    guesser.guess 'flibble', done
+    guesser.guess 'flibble', ->
+      context.force_round_over done
 
-  Then "alice has her score updated", ->
-    alice.global_score().should.not.equal('0')
+  Then "guesser has her score updated", ->
+    guesser.global_score().should.not.equal('0')
 
-  And "bob has his score updated", ->
-    bob.global_score().should.not.equal('0')
+  And "artist has his score updated", ->
+    artist.global_score().should.not.equal('0')

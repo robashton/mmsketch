@@ -14,6 +14,10 @@ Player.prototype = {
   isDrawing: function() {
     return this === this.lobby.currentArtist 
   },
+  addToScore: function(amount) {
+    this.globalScore += amount
+    this.socket.emit('globalscorechanged', this.globalScore)
+  },
   startDrawing: function(word) {
     this.socket.emit('status', {
       clientCount: this.lobby.playerCount,
