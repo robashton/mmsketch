@@ -78,6 +78,7 @@ Lobby.prototype = {
       clientCount: this.playerCount,
       status: 'waiting'
     })
+    this.raise('RoundEnded')
   },
   startGame: function() {
     this.startGameWithArtist(this.chooseNewArtist())
@@ -88,12 +89,13 @@ Lobby.prototype = {
     if(this.firstCorrectGuesser) {
       nextPlayer = this.firstCorrectGuesser
       winner = this.firstCorrectGuesser.displayName()
-      firstCorrectGuesser = null
+      this.firstCorrectGuesser = null
     }
     this.io.sockets.emit('endround', {
       winner: winner,
       word: this.currentWord
     })
+    this.raise('RoundEnded')
     var self = this
     setTimeout(function() {
       self.startGameWithArtist(nextPlayer || self.chooseNewArtist())
@@ -108,6 +110,7 @@ Lobby.prototype = {
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
     this.io.sockets.emit('startround')
+    this.raise('RoundStarted')
   },
   handleAuthorization: function(data, accept) {
     this.authentication.get(data.headers, function(err, session) {
