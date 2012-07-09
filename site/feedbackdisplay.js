@@ -14,14 +14,8 @@
     },
     onOtherCorrectGuess: function(data) {
       this.addRichMessage(
-        $('<span/>')
-          .append(
-            $('<img/>')
-              .attr('src', data.player.displayPicture))
-          .append(
-            $('<p/>').text(data.player.displayName + 
-              ' guessed the word correctly!'))
-      )
+        data.player.displayPicture,
+        data.player.displayName + ' guessed the word correctly')
     },
     onRoundEnded: function(data) {
       if(data.winner)
@@ -31,14 +25,8 @@
     },
     addPlayerGuessedFirstMessage: function(data) {
       this.addRichMessage(
-        $('<span/>')
-          .append(
-            $('<img/>')
-              .attr('src', data.player.displayPicture))
-          .append(
-            $('<p/>').text(data.player.displayName + 
-              ' guessed the word ' + data.word + 'first'))
-      )
+          data.player.displayPicture,
+          data.player.displayName + 'guessed the word ' + data.word + 'first')
     },
     addMessage: function(message) {
       this.clientFeedback.append(
@@ -47,7 +35,13 @@
               $('<p/>').text(message))
       )
     },
-    addRichMessage: function(html) {
+    addRichMessage: function(picture, message) {
+      var html =
+        $('<span/>')
+          .append(
+            $('<img/>')
+              .attr('src', picture))
+          .append($('<p/>').text(message))
       this.clientFeedback.append(html)
     }  
   }
