@@ -13,6 +13,7 @@
     <script src="socket.io/socket.io.js"></script>
     <script src="eventable.js"></script>
     <script src="statusdisplay.js"></script>
+    <script src="feedbackdisplay.js"></script>
     <script src="game.js"></script>
     <script src="input.js"></script>
     <script src="artpad.js"></script>
@@ -88,6 +89,7 @@
      
       var game = null
       ,   statusDisplay = null
+      ,   feedbackDisplay = null
       ,   artPad = null
       ,   input = null
       ,   timer = null
@@ -116,6 +118,7 @@
       function startGame() {
         game = new Game()
         statusDisplay = new StatusDisplay(game)
+        feedbackDisplay = new FeedbackDisplay(game)
         input = new Input(game)
         artPad = new ArtPad(game)
         timer = new Timer(game)

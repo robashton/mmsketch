@@ -2,7 +2,6 @@
   var StatusDisplay = function(game) {
     this.clientCount = $('#client-count')
     this.clientStatus = $('#client-status')
-    this.clientFeedback = $('#client-feedback')
     game.autoHook(this)
   }
   StatusDisplay.prototype = {
@@ -10,46 +9,14 @@
       this.updateStatusMessage(data)
       this.updatePlayerCount(data)
     },
-    onWrongGuess: function(word) {
-      this.addMessage(word + ' is not the word')
-    },
-    onMyCorrectGuess: function(data) {
-      this.addMessage('You guessed ' +  data.word + ' correctly!')
-    },
-    onOtherCorrectGuess: function(data) {
-      this.addRichMessage(
-        $('<span/>')
-          .append(
-            $('<img/>')
-              .attr('src', data.player.displayPicture))
-          .append(
-            $('<p/>').text(data.player.displayName + 
-              ' guessed the word correctly!'))
-      )
-    },
     onRoundEnded: function(data) {
       this.setStatusMessageTo('Waiting for the next round')
-      if(!data.winner)
-        this.addPlayerGuessedFirstMessage(data)
-      else
-        this.addMessage('Nobody guessed the word ' + data.word)
     },
     onNeedAuth: function() {
       window.location = '/login'
     },
     onRejected: function() {
       this.setStatusMessageTo('Multiple logins from the same account forbidden to prevent cheating')
-    },
-    addPlayerGuessedFirstMessage: function(data) {
-      this.addRichMessage(
-        $('<span/>')
-          .append(
-            $('<img/>')
-              .attr('src', data.player.displayPicture))
-          .append(
-            $('<p/>').text(data.player.displayName + 
-              ' guessed the word ' + data.word + 'first'))
-      )
     },
     updateStatusMessage: function(data) {
       switch(data.status) {
@@ -67,16 +34,6 @@
       else
         this.setCountMessageTo('There are ' + data.clientCount + ' players online')
     },
-    addMessage: function(message) {
-      this.clientFeedback.append(
-          $('<span/>')
-            .append(
-              $('<p/>').text(message))
-      )
-    },
-    addRichMessage: function(html) {
-      this.clientFeedback.append(html)
-    },  
     setCountMessageTo: function(message) {
       this.clientCount.text(message)
     },
