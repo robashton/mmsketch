@@ -67,6 +67,13 @@ class ManualContext
     @server.send('next-game')
     setTimeout done, 20
 
+  set_global_score_of: (username, score) =>
+    @server.send({
+      command: 'set_global_score'
+      username: username
+      score: score
+    })
+
 class ManualClient
   constructor: (name, base) ->
     @browser = new Browser({debug: debug})
@@ -120,6 +127,16 @@ class ManualClient
     ,cb
 
   lastGuess: => @browser.text('#client-feedback > span:last > p')
+
+
+  global_score: =>
+    ""
+
+  displayed_avatar: =>
+    ""
+
+  displayed_name: =>
+    ""
 
   should_have_element: (selector) =>
     @browser.queryAll(selector).length.should.equal(1)
