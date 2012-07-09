@@ -23,7 +23,8 @@ ScoreKeeper.prototype = {
       var winner = this.winners[i]
       winner.addToScore(1)
     }
-    this.artist.addToScore(1)
+    if(this.winners.length > 0)
+      this.artist.addToScore(1)
   }   
 }
 

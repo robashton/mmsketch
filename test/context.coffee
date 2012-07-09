@@ -83,6 +83,7 @@ class ManualClient
     @base = base
     @pad = null
     @context = context
+    @lastscore = "1337"
 
   loaded: =>
     @browser.text('#client-status') != '' or @was_redirected()
@@ -107,6 +108,7 @@ class ManualClient
     @browser.visit @page
     @browser.on 'loaded', @hookCanvasElements
     @wait @loaded, =>
+      @reset_listeners()
       setTimeout =>
         try
           @pad = @browser.evaluate('artPad')
@@ -115,6 +117,9 @@ class ManualClient
         finally
           cb()
       ,20
+
+  reset_listeners: =>
+    @last_score = @global_score()
 
   hookCanvasElements: =>
     @browser.evaluate('TEST = true')
@@ -129,6 +134,9 @@ class ManualClient
 
   global_score: =>
     @value_of '#player-score'
+
+  global_score_changed: =>
+    @last_score isnt @global_score()
 
   displayed_avatar: =>
     (@jQuery '#player-avatar').attr('src')
