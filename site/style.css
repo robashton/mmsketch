@@ -34,7 +34,7 @@ canvas {
   margin-top: 10px;
   height: 60px;
   float: left;
-  width: 40%;
+  width: 37%;
 }
 
 #paintbrush-brushes span {
@@ -52,7 +52,7 @@ canvas {
 
 #paintbrush-colours {
   margin-top: 10px;
-  width: 58%;
+  width: 60%;
   float: right;
 }
 

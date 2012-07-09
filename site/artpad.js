@@ -29,6 +29,7 @@
       this.addColour('#FF0')
       this.addColour('#F0F')
       this.addColour('#0FF')
+      this.addColour('#FFA500')
       this.addBrush(5)
       this.addBrush(10)
       this.addBrush(15)
