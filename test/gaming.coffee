@@ -81,25 +81,25 @@ Scenario "Players guessing the word", ->
     guesser1.guess 'flibble', done
 
   Then "guesser #1 is told that he guessed correctly", ->
-    guesser1.lastGuess().should.include 'flibble was correct!'
+    guesser1.lastGuess().should.include 'flibble correctly'
 
   And "guesser #1 can no longer see the text input", ->
     guesser1.can_see_text_input().should.equal(false)
 
   And "the artist is told that the guesser guessed it correctly", ->
-    artist.lastGuess().should.include 'guessed correctly by ' + guesser1.displayName()
+    artist.lastGuess().should.include guesser1.displayName() + ' guessed the word'
 
   And "guesser #2 is told that guesser #1 beat him to the punch", ->
-    guesser2.lastGuess().should.include 'guessed correctly by ' + guesser1.displayName()
+    guesser2.lastGuess().should.include guesser1.displayName() + ' guessed the word'
 
   When "The correct word is guessed by guesser #2", (done) ->
     guesser2.guess 'flibble', done
 
   Then "guesser #2 is told that he guessed correctly", ->
-    guesser2.lastGuess().should.include 'flibble was correct!'
+    guesser2.lastGuess().should.include 'flibble correctly'
     
   And "the artist is told that the guesser guessed it correctly", ->
-    artist.lastGuess().should.include 'guessed correctly by ' + guesser2.displayName()
+    artist.lastGuess().should.include guesser2.displayName() + ' guessed the word'
   
   And "guesser #2 can no longer see the text input", ->
     guesser2.can_see_text_input().should.equal(false)

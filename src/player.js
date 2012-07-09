@@ -17,23 +17,26 @@ Player.prototype = {
     this.socket.emit('status', {
       clientCount: this.lobby.playerCount,
       status: 'drawing',
-      word: word
+      word: word,
+      player: this.getJSON()
     })
     this.socket.broadcast.emit('status', {
       clientCount: this.lobby.playerCount,
-      status: 'guessing'
+      status: 'guessing',
+      player: this.getJSON()
     })
   },
   startWaiting: function() {
     this.socket.emit('status', {
       clientCount: this.lobby.playerCount,
-      status: 'waiting'
+      status: 'waiting',
     })
   },
   startGuessing: function() {
     this.socket.emit('status', {
       clientCount: this.lobby.playerCount,
-      status: 'guessing'
+      status: 'guessing',
+      player: this.lobby.currentArtist.getJSON()
     })
   },
   rejectAsDuplicate: function() {
@@ -43,19 +46,29 @@ Player.prototype = {
   id: function() {
     return this.socket.handshake.user.id
   },
+  getJSON: function() {
+    return {
+      displayName: this.displayName(),
+      displayPicture: this.displayPicture()
+    }
+  },
   displayName: function() {
     return this.socket.handshake.user.displayName
+  },
+  displayPicture: function() {
+    return 'https://graph.facebook.com/' + 
+            this.socket.handshake.user.username + '/picture'
   },
   onGuess: function(word) {
     if(word === this.lobby.currentWord) {
       this.lobby.notifyOfCorrectGuess(this)
       this.socket.emit('correct', {
         word: word,
-        player: this.displayName(),
+        player: this.getJSON(),
         win: true
       })
       this.socket.broadcast.emit('correct', {
-        player: this.displayName(),
+        player: this.getJSON(),
         win: false
       })
     }

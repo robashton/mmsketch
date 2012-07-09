@@ -4,3 +4,4 @@
 --compilers coffee:coffee-script
 --recursive
 --globals attr
+-t 5000

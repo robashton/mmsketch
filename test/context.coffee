@@ -116,10 +116,10 @@ class ManualClient
       .fill('#client-input', word)
       .pressButton('#client-input-button')
     @wait =>
-      @value_of('#client-feedback > p:last').indexOf(word) >= 0
+      @lastGuess().indexOf(word) >= 0
     ,cb
 
-  lastGuess: => @browser.text('#client-feedback > p:last')
+  lastGuess: => @browser.text('#client-feedback > span:last > p')
 
   should_have_element: (selector) =>
     @browser.queryAll(selector).length.should.equal(1)
@@ -147,13 +147,13 @@ class ManualClient
     @value_of '#client-status'
 
   isDrawing: =>
-    @clientStatus().indexOf('Drawing') >= 0
+    @clientStatus().indexOf('Drawing the word') >= 0
 
   isGuessing: =>
-    @clientStatus().indexOf('Guessing') >= 0
+    @clientStatus().indexOf('is drawing') >= 0
 
   isWaiting: =>
-    @clientStatus().indexOf('Waiting') >= 0
+    @clientStatus().indexOf('Waiting for other players') >= 0
 
   onBrowserError: (err) =>
     console.log(err)

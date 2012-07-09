@@ -14,8 +14,6 @@ canvas {
   box-shadow: 2px 2px 10px 1px rgba(128, 128, 128, 0.5);
 }
 
-
-
 #client-input {
   height: 30px;
   font-size: 24px;
@@ -79,6 +77,11 @@ canvas {
   -webkit-box-shadow: 2px 2px 10px 1px rgba(128, 128, 128, 0.5);
   box-shadow: 2px 2px 10px 1px rgba(128, 128, 128, 0.5);
 }
+
+#client-status img {
+  float: left;
+  margin-right: 10px;
+} 
 
 #footnote {
   position: absolute;

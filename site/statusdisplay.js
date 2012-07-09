@@ -10,12 +10,53 @@
       this.updateStatusMessage(data)
       this.updatePlayerCount(data)
     },
+    onWrongGuess: function(word) {
+      this.addMessage(word + ' is not the word')
+    },
+    onMyCorrectGuess: function(data) {
+      this.addMessage('You guessed ' +  data.word + ' correctly!')
+    },
+    onOtherCorrectGuess: function(data) {
+      this.addRichMessage(
+        $('<span/>')
+          .append(
+            $('<img/>')
+              .attr('src', data.player.displayPicture))
+          .append(
+            $('<p/>').text(data.player.displayName + 
+              ' guessed the word correctly!'))
+      )
+    },
+    onRoundEnded: function(data) {
+      this.setStatusMessageTo('Waiting for the next round')
+      if(!data.winner)
+        this.addPlayerGuessedFirstMessage(data)
+      else
+        this.addMessage('Nobody guessed the word ' + data.word)
+    },
+    onNeedAuth: function() {
+      window.location = '/login'
+    },
+    onRejected: function() {
+      this.setStatusMessageTo('Multiple logins from the same account forbidden to prevent cheating')
+    },
+    addPlayerGuessedFirstMessage: function(data) {
+      this.addRichMessage(
+        $('<span/>')
+          .append(
+            $('<img/>')
+              .attr('src', data.player.displayPicture))
+          .append(
+            $('<p/>').text(data.player.displayName + 
+              ' guessed the word ' + data.word + 'first'))
+      )
+    },
     updateStatusMessage: function(data) {
       switch(data.status) {
         case 'drawing':
           return this.setStatusMessageTo('Drawing the word ' + data.word)
         case 'guessing':
-          return this.setStatusMessageTo('Guessing what the other player is drawing')
+          return this.setStatusMessageToGuessing(data) 
         case 'waiting':
           return this.setStatusMessageTo('Waiting for other players to join')
       }
@@ -26,33 +67,29 @@
       else
         this.setCountMessageTo('There are ' + data.clientCount + ' players online')
     },
-    onWrongGuess: function(word) {
-      this.addMessage(word + ' is not the word')
-    },
-    onMyCorrectGuess: function(data) {
-      this.addMessage(data.word + ' was correct!')
-    },
-    onOtherCorrectGuess: function(data) {
-      this.addMessage('Word was guessed correctly by ' + data.player)
-    },
-    onRoundEnded: function(data) {
-      this.setStatusMessageTo('Waiting for the next round')
-      if(data.winner)
-        this.addMessage(data.word + ' was guessed first by ' + data.player)
-      else
-        this.addMessage('Nobody guessed the word ' + data.word)
-    },
-    onNeedAuth: function() {
-      window.location = '/login'
-    },
-    onRejected: function() {
-      this.setStatusMessageTo('Multiple logins from the same account forbidden to prevent cheating')
-    },
     addMessage: function(message) {
-      this.clientFeedback.append($('<p/>').text(message))
+      this.clientFeedback.append(
+          $('<span/>')
+            .append(
+              $('<p/>').text(message))
+      )
     },
+    addRichMessage: function(html) {
+      this.clientFeedback.append(html)
+    },  
     setCountMessageTo: function(message) {
       this.clientCount.text(message)
+    },
+    setStatusMessageToGuessing: function(data) {
+      var content = 
+        $('<span/>')
+          .append(
+            $('<img/>')
+            .attr('src', data.player.displayPicture) 
+            .css('height', '25px'))
+         .append(
+             $('<h4/>').text(data.player.displayName + ' is drawing'))
+      this.clientStatus.html(content)
     },
     setStatusMessageTo: function(message) {
       this.clientStatus.text(message)
