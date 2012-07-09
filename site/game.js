@@ -116,7 +116,6 @@
     onColourSelected: function(colour) {
       this.raise('ColourSelected', colour)
     }
-    
   }
   _.extend(Game.prototype, Eventable.prototype)
 

@@ -5,7 +5,7 @@ var InMemoryPersistence = function() {
 
 InMemoryPersistence.prototype = {
   getGlobalScoreForPlayer: function(id, cb) {
-    var score = this.scores[id]
+    var score = this.scores[id] || 0
     process.nextTick(function() {
       cb(score)
     })
