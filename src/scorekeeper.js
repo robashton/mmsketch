@@ -3,13 +3,22 @@ var ScoreKeeper = function(persistence, game) {
   this.persistence = persistence
   this.game.autoHook(this)
   this.winners = []
+  this.onPlayerLoaded = this.onPlayerLoaded.bind(this)
 }
 
 ScoreKeeper.prototype = {
   onPlayerJoined: function(player) {
+    player.on('Loaded', this.onPlayerLoaded)
     this.persistence.getGlobalScoreForPlayer(player.id(), function(score) {
       player.sendGlobalScore(score)
     })
+  },
+  onPlayerLeft: function(player) {
+    this.game.broadcast('playerleft', player.getJSON())
+    player.off('Loaded', this.onPlayerLoaded)
+  },
+  onPlayerLoaded: function(data, player) {
+    this.game.broadcast('playerjoined', player.getJSON())
   },
   onRoundStarted: function() {
     this.artist = this.game.currentArtist

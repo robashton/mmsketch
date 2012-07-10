@@ -150,7 +150,7 @@ class ManualClient
     @browser.queryAll(selector).length.should.equal(1)
 
   player_list_has_player: (name) =>
-    players = @jQuery('#game-feedback > span')
+    players = @jQuery('#room-feedback > span')
     found = false
     for x in [0..players.length]
       player = players.eq x
@@ -161,7 +161,7 @@ class ManualClient
       
 
   player_list_count: =>
-    @browser.queryAll('#game-feedback > span').length
+    @browser.queryAll('#room-feedback > span').length
 
   value_of: (selector) =>
     @browser.text(selector)

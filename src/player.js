@@ -1,4 +1,8 @@
+var Eventable = require('./eventable')
+var _ = require('underscore')
+
 var Player = function(lobby, socket) {
+  Eventable.call(this)
   this.lobby = lobby
   this.socket = socket
   this.globalScore = null
@@ -47,6 +51,7 @@ Player.prototype = {
   sendGlobalScore: function(score) {
     this.globalScore = score
     this.socket.emit('you', this.getJSON())
+    this.raise('Loaded')
   },
   rejectAsDuplicate: function() {
     this.socket.emit('reject', 'duplicate');
@@ -107,4 +112,7 @@ Player.prototype = {
     this.socket.broadcast.emit('selectcolour', colour)
   }
 }
+
+_.extend(Player.prototype, Eventable.prototype)
+  
 module.exports = Player

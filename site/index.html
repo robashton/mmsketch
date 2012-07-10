@@ -14,6 +14,7 @@
     <script src="eventable.js"></script>
     <script src="statusdisplay.js"></script>
     <script src="feedbackdisplay.js"></script>
+    <script src="playerlistdisplay.js"></script>
     <script src="game.js"></script>
     <script src="input.js"></script>
     <script src="artpad.js"></script>
@@ -117,6 +118,7 @@
       ,   feedbackDisplay = null
       ,   roomScoresDisplay = null
       ,   personalStatusDisplay = null
+      ,   playerListDisplay = null
       ,   artPad = null
       ,   input = null
       ,   timer = null
@@ -147,6 +149,7 @@
         statusDisplay = new StatusDisplay(game)
         feedbackDisplay = new FeedbackDisplay(game)
         personalStatusDisplay = new PersonalStatusDisplay(game)
+        playerListDisplay = new PlayerListDisplay(game)
         input = new Input(game)
         artPad = new ArtPad(game)
         timer = new Timer(game)

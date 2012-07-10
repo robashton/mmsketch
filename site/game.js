@@ -25,12 +25,20 @@
       this.socket.on('selectcolour', _.bind(this.onColourSelected, this))
       this.socket.on('you', _.bind(this.onPersonalInfoReceived, this))
       this.socket.on('globalscorechanged', _.bind(this.onGlobalScoreChanged, this))
+      this.socket.on('playerjoined', _.bind(this.onPlayerJoined, this))
+      this.socket.on('playerleft', _.bind(this.onPlayerLeft, this))
     },
     stop: function() {
       this.socket.disconnect()
     },
     submitWord: function(word) {
       this.socket.emit('guess', word)
+    },
+    onPlayerJoined: function(player) {
+      this.raise('PlayerJoined', player)
+    },
+    onPlayerLeft: function(player) {
+      this.raise('PlayerLeft', player)
     },
     onPersonalInfoReceived: function(player) {
       this.raise('PersonalInfoReceived', player)

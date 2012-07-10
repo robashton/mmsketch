@@ -47,6 +47,7 @@ Lobby.prototype = {
       this.currentArtist = this.chooseNewArtist()
       this.currentArtist.startDrawing(this.currentWord)
     }
+    this.raise('PlayerLeft', player)
   },
   updatePlayerCount: function(count) {
     this.playerCount = count
@@ -143,6 +144,9 @@ Lobby.prototype = {
     socket.on('disconnect', function(){ 
       self.removePlayer(player)
     })
+  },
+  broadcast: function(msg, data) {
+    this.io.sockets.emit(msg, data)
   },
   startListening: function() {
     var io = socketio.listen(this.server)
