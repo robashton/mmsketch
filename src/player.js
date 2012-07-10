@@ -57,6 +57,7 @@ Player.prototype = {
   },
   getJSON: function() {
     return {
+      id: this.id(),
       displayName: this.displayName(),
       displayPicture: this.displayPicture(),
       globalScore: this.globalScore

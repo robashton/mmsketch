@@ -17,7 +17,7 @@ app.configure(function() {
   app.use(app.router)
   app.use(express.static(WEBROOT))
 })
-require('./routes/index')(app)
 
 app.listen(process.env.port || config.port)
 game.bootstrap(app)
+require('./routes/index')(app, game.lobby)

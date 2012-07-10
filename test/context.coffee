@@ -1,7 +1,8 @@
-debug = false
+debug = true
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
+http = require('http')
 
 class ManualContext
   constructor: ->
@@ -27,7 +28,7 @@ class ManualContext
 
   add_client_called: (name, cb) =>
     @pendingClients++
-    @clients[name] = new ManualClient(this, name, 'http://localhost:' + @port)
+    @clients[name] = new ManualClient(this, name, @port)
     @clients[name].login name
     @clients[name].load_index =>
       @pendingClients--
@@ -38,7 +39,7 @@ class ManualContext
 
   add_anonymous_client: (cb) =>
     @pendingClients++
-    client = new ManualClient(this, 'http://localhost:' + @port)
+    client = new ManualClient(this, @port)
     client.load_index =>
       @pendingClients--
       if(cb)
@@ -75,12 +76,13 @@ class ManualContext
     })
 
 class ManualClient
-  constructor: (context, name, base) ->
+  constructor: (context, name, port) ->
     @browser = new Browser({debug: debug})
     @closed = false
     @page = null
     @name = name
-    @base = base
+    @port = port
+    @base = 'http://localhost:' + port
     @pad = null
     @context = context
     @lastscore = "1337"
@@ -147,12 +149,39 @@ class ManualClient
   should_have_element: (selector) =>
     @browser.queryAll(selector).length.should.equal(1)
 
+  player_list_has_player: (name) =>
+    players = @jQuery('#game-feedback > span')
+    found = false
+    for x in [0..players.length]
+      player = players.eq x
+      if player.data('userid') is name
+        found = true
+        break
+    return found
+      
+
+  player_list_count: =>
+    @browser.queryAll('#game-feedback > span').length
+
   value_of: (selector) =>
     @browser.text(selector)
 
   jQuery: (selector) =>
     @browser.evaluate("$('" + selector + "')")
-    
+
+  getJson: (path, cb) =>
+    http.get({
+      host: 'localhost'
+      port: @port
+      path: path
+      method: 'GET'
+    }, (res) ->
+      data = ''
+      res.setEncoding('utf8')
+      res.on 'data', (chunk) -> (data += chunk)
+      res.on 'end', -> (cb(JSON.parse(data)))
+    )
+
   can_see: (selector) =>
     element = @jQuery selector  #Evil - YAY
     element.is(':visible')

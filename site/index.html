@@ -63,7 +63,21 @@
           </canvas>
         </div>
         <div class="span4">
-         <div id="client-feedback"></div>
+          <div id="feedback-container">
+          <ul class="nav nav-tabs">
+            <li class="active">
+              <a href="#">Log</a>
+            </li>
+            <li><a href="#">Room</a></li>
+          </ul>
+          <div id="client-feedback">
+
+          </div>
+
+          <div id="room-feedback">
+
+          </div>
+          </div>
         </div>
       </div>
       <div class="row-fluid">
@@ -86,7 +100,7 @@
             <img src="" id="player-avatar"/>
             <div>
               <h4 id="player-name"></h4>
-              <p><strong>Level</strong>:<span id="player-score"></span></p>
+              <p><strong>EXP earned</strong>: <span id="player-score"></span>xp</p>
             </div>
           </div>
         </div>
@@ -101,6 +115,7 @@
       var game = null
       ,   statusDisplay = null
       ,   feedbackDisplay = null
+      ,   roomScoresDisplay = null
       ,   personalStatusDisplay = null
       ,   artPad = null
       ,   input = null

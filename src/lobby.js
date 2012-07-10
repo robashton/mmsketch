@@ -21,6 +21,9 @@ var Lobby = function(server, authentication, wordSource) {
 
 
 Lobby.prototype = {
+  getPlayers: function() {
+    return this.players
+  },
   addPlayer: function(player) {
     if(this.players[player.id()])
       return player.rejectAsDuplicate()

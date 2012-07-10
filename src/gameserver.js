@@ -59,7 +59,3 @@ function setupOptionalDependencies() {
     Persistence = require('./mocks/inmemorypersistence')
   }
 }
-
-
-
-
