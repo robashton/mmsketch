@@ -18,7 +18,6 @@
       })
     },
     onPlayerJoined: function(data) {
-      if(!this.initialised) return
       this.addPlayer(data)
     },
     onPlayerLeft: function(data) {
@@ -26,6 +25,7 @@
       this.removePlayer(data)
     },
     addPlayer: function(player) {
+      if(this.playerElements[player.id]) return
       var element = 
         $('<span/>')
           .append(
@@ -39,8 +39,8 @@
        this.playerElements[player.id] = element
     },
     removePlayer: function(player) {
+      console.log('Removing', player.id, this.playerElements)
       var element = this.playerElements[player.id]
-      console.log('Removing shit')
       delete this.playerElements[player.id]
       element.remove()
     }

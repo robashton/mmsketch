@@ -46,6 +46,30 @@ Scenario "Artist leaves the game and there are enough people to carry on", ->
   Then "another player should be chosen as the artist", ->
     artist = find_artist([bob, alice, james, hilda])
     should.exist(artist)
+   
+
+Scenario "Players guessing the word on an iPad", ->
+  context = new ManualContext()
+  bob = null
+  alice = null
+  artist = null
+  guesser = null
+
+  Given "alice and bob are playing a game together", (done) ->
+    context.next_word 'flibble'
+    context.start ->
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      context.wait_for_all_clients done
+
+  When "the guesser guesses the word on an iPad", (done) ->
+    artist = find_artist [bob, alice]
+    guesser = if bob is artist then alice else bob
+    guesser.guess 'Flibble', done
+
+  Then "the guesser is told he did good",  ->
+    guesser.lastGuess().should.include('flibble correctly')
+
 
 Scenario "Players guessing the word", ->
   context = new ManualContext()

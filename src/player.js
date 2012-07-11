@@ -76,10 +76,10 @@ Player.prototype = {
             this.socket.handshake.user.username + '/picture'
   },
   onGuess: function(word) {
-    if(word === this.lobby.currentWord) {
+    if(word.toUpperCase() === this.lobby.currentWord.toUpperCase()) {
       this.lobby.notifyOfCorrectGuess(this)
       this.socket.emit('correct', {
-        word: word,
+        word: this.lobby.currentWord,
         player: this.getJSON(),
         win: true
       })
