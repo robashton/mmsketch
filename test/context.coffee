@@ -175,7 +175,15 @@ class ManualClient
         found = true
         break
     return found
-      
+
+  player_in_list_at: (index) =>
+    players = @jQuery('#room-feedback > span')
+    players.eq(index).data('userid')
+
+  score_in_list_at: (index) =>
+    players = @jQuery('#room-feedback > span')
+    player = players.eq(index)
+    player.find('.score').text()
 
   player_list_count: =>
     @browser.queryAll('#room-feedback > span').length

@@ -28,12 +28,23 @@ ScoreKeeper.prototype = {
     this.winners.push(player) 
   },
   onRoundEnded: function() {
+    var scoreChanges = []
     for(var i =0 ; i < this.winners.length; i++) {
       var winner = this.winners[i]
       winner.addToScore(1)
+      scoreChanges.push({
+        player: winner.id(),
+        score: winner.gameScore
+      })
     }
-    if(this.winners.length > 0)
+    if(this.winners.length > 0) {
       this.artist.addToScore(1)
+      scoreChanges.push({
+        player: this.artist.id(),
+        score: this.artist.gameScore
+      })
+    }
+    this.game.sendScoreUpdate(scoreChanges)
   }   
 }
 

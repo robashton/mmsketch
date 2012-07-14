@@ -133,6 +133,52 @@ Scenario "consecutive games with a winner", ->
   after (done) ->
     context.dispose done
 
+Scenario "Local displays of score in the player list", ->
+  context = new ManualContext()
+  bob = null
+  alice = null
+  james = null
+  artist = null
+  guessers = null
+ 
+  Given "bob, james, and alice are playing a game together", (done) ->
+    context.next_word 'flibble'
+    context.start ->
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      james = context.add_client_called 'james'
+      context.wait_for_all_clients ->
+        artist = find_artist [bob, alice, james]
+        guessers = (player for player in [alice, bob, james] when !player.isDrawing())
+        done()
+
+  When "guesser #1 guesses the word correctly", (done) ->
+    guessers[0].guess 'flibble', done
+
+  And "the game ends", (done) ->
+    context.force_round_over done
+
+  Then "guesser #1 should be on top of the score list", ->
+    bob.player_in_list_at(0).should.equal(guessers[0].name)
+
+  And "the artist should be second in the score list", ->
+    bob.player_in_list_at(1).should.equal(artist.name)
+
+  And "guesser #2 should be on the bottom of the score list", ->
+    bob.player_in_list_at(2).should.equal(guessers[1].name)
+
+  And "the score of guesser #1 has been updated in the score list", ->
+    bob.score_in_list_at(0).should.not.equal('0')
+
+  And "the score of the artist has been updated in the score list", ->
+    bob.score_in_list_at(1).should.not.equal('0')
+
+  And "the score of guesser #2 has stayed at zero :'(", ->
+    bob.score_in_list_at(2).should.equal('0')
+
+
+
+
 
 
 

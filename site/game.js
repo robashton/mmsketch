@@ -27,6 +27,7 @@
       this.socket.on('globalscorechanged', _.bind(this.onGlobalScoreChanged, this))
       this.socket.on('playerjoined', _.bind(this.onPlayerJoined, this))
       this.socket.on('playerleft', _.bind(this.onPlayerLeft, this))
+      this.socket.on('scorechanges', _.bind(this.onScoreChanges, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -45,6 +46,9 @@
     },
     onGlobalScoreChanged: function(score) {
       this.raise('GlobalScoreChanged', score)
+    },
+    onScoreChanges: function(changes) {
+      this.raise('ScoresUpdated', changes)
     },
     onReject: function() {
       this.raise('Rejected')

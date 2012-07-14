@@ -1,5 +1,7 @@
 (function(exports) {
   
+    _ = (typeof _ === 'undefined') ?  require('underscore') : _
+
   var EventContainer = function(defaultContext) {
     this.handlers = [];
     this.defaultContext = defaultContext;
