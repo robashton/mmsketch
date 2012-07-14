@@ -26,6 +26,8 @@ Scenario "Basic Lobbying", ->
     bob.can_see_text_input().should.equal(false)
   And "bob shouldn't see the paintbrush controls", ->
     bob.can_see_paintbrushes().should.equal(false)
+  And "bob shouldn't see the time left", ->
+    bob.can_see_time_left().should.equal(false)
 
   When "alice connects", (cb) ->
     alice = context.add_client_called 'alice', cb
@@ -63,5 +65,8 @@ Scenario "Basic Lobbying", ->
     alice.can_see_text_input().should.equal(false)
   And "alice shouldn't see the paintbrush controls", ->
     alice.can_see_paintbrushes().should.equal(false)
+  And "alice shouldn't see the time left", ->
+    alice.can_see_time_left().should.equal(false)
+    
   after (done) ->
     context.dispose done

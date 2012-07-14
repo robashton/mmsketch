@@ -4,11 +4,13 @@ var ScoreKeeper = function(persistence, game) {
   this.game.autoHook(this)
   this.winners = []
   this.onPlayerLoaded = this.onPlayerLoaded.bind(this)
+  this.onPlayerScoreChanged = this.onPlayerScoreChanged.bind(this)
 }
 
 ScoreKeeper.prototype = {
   onPlayerJoined: function(player) {
     player.on('Loaded', this.onPlayerLoaded)
+    player.on('ScoreChanged', this.onPlayerScoreChanged)
     this.persistence.getGlobalScoreForPlayer(player.id(), function(score) {
       player.sendGlobalScore(score)
     })
@@ -16,6 +18,7 @@ ScoreKeeper.prototype = {
   onPlayerLeft: function(player) {
     this.game.broadcast('playerleft', player.getJSON())
     player.off('Loaded', this.onPlayerLoaded)
+    player.off('ScoreChanged', this.onPlayerScoreChanged)
   },
   onPlayerLoaded: function(data, player) {
     this.game.broadcast('playerjoined', player.getJSON())
@@ -26,6 +29,9 @@ ScoreKeeper.prototype = {
   },
   onCorrectGuess: function(player) {
     this.winners.push(player) 
+  },
+  onPlayerScoreChanged: function(data, sender) {
+    this.persistence.setGlobalScoreForPlayer(sender.id(), sender.globalScore)
   },
   onRoundEnded: function() {
     var scoreChanges = []

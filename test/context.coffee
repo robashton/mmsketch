@@ -1,4 +1,4 @@
-debug = false
+debug = true
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -221,6 +221,9 @@ class ManualClient
 
   can_see_text_input: =>
     @can_see '#client-input-container'
+
+  can_see_time_left: =>
+    @can_see '#timer-text'
 
   clientCount: =>
     @value_of '#client-count'

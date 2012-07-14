@@ -10,6 +10,10 @@ InMemoryPersistence.prototype = {
       cb(score)
     })
   },
+  setGlobalScoreForPlayer: function(id, score, cb) {
+    this.scores[id] = score
+    if(cb) process.nextTick(cb)
+  },
   onMessage: function(msg) {
     var handler = this['handle' + msg.command]    
     if(handler)

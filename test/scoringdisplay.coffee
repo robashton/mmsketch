@@ -176,10 +176,34 @@ Scenario "Local displays of score in the player list", ->
   And "the score of guesser #2 has stayed at zero :'(", ->
     bob.score_in_list_at(2).should.equal('0')
 
+Scenario "persistence of scores across sessions", ->
+  context = new ManualContext()
+  bob = null
+  alice = null
+  artist = null
+  guesser = null
 
+  Given "alice and bob are playing a game together", (done) ->
+    context.next_word 'flibble'
+    context.start ->
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      context.wait_for_all_clients ->
+        artist = find_artist [bob, alice]
+        guesser = if bob is artist then alice else bob
+        done()
 
+  When "the guesser guesses sucessfully", (done) ->
+    guesser.guess 'flibble', done
 
+  And "the round ends", (done) ->
+    context.force_round_over done
 
+  And "alice leaves the game", (done) ->
+    alice.close done
 
+  And "alice re-joins the game", (done) ->
+    alice = context.add_client_called 'alice', done
 
-
+  Then "alice should have her points from the previous game", ->
+    alice.global_score().should.not.equal('0')
