@@ -16,27 +16,18 @@ InMemoryPersistence.prototype = {
     this.scores[id] = score
     if(cb) process.nextTick(cb)
   },
-  createRound: function(player, word, cb) {
+  createRound: function(player, cb) {
     this.rounds.push({
       player: player,
-      events: [],
-      word: word
+      events: []
     })
-    var id = this.rounds.length-1
+    var id = this.rounds.length
     process.nextTick(function(){ 
       cb(id)
     })
   },
   getRound: function(id, cb) {
-    var round = this.rounds[id]
-    var user = this.users[round.player]
-    process.nextTick(function() {
-      cb(null, {
-        player: user,
-        events: round.events,
-        word: round.word
-      })
-    })
+
   },
   logDrawEvent: function(roundId, ev) {
     this.rounds[roundId].events.push(ev)

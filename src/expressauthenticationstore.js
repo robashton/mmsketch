@@ -1,7 +1,8 @@
 var cookie = require('connect').utils
 
-var ExpressAuthenticationStore = function(store) {
+var ExpressAuthenticationStore = function(store, persistence) {
   this.store = store;
+  this.persistence = persistence;
 }
 
 ExpressAuthenticationStore.prototype = {

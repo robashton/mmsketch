@@ -1,4 +1,4 @@
-debug = false
+debug = true
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -204,7 +204,8 @@ class ManualClient
       data = ''
       res.setEncoding('utf8')
       res.on 'data', (chunk) -> (data += chunk)
-      res.on 'end', -> (cb(JSON.parse(data)))
+      res.on 'end', ->
+        cb(JSON.parse(data))
     )
 
   click: (selector, done) =>

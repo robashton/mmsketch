@@ -3,7 +3,8 @@ var EventEmitter = require('events').EventEmitter,
     _ = require('underscore'),
     config = require('./config'),
     MemoryStore = require('connect').middleware.session.MemoryStore,
-    ScoreKeeper = require('./scorekeeper')
+    ScoreKeeper = require('./scorekeeper'),
+    GameLogger = require('./gamelogger')
     
 var WordSource = null,
     AuthStore = null,
@@ -17,6 +18,7 @@ var GameServer = function() {
   this.sessions = new MemoryStore()
   this.persistence = null
   this.scoreKeeper = null
+  this.gamelogger = null
   setupOptionalDependencies()
 }
 
@@ -30,12 +32,13 @@ GameServer.prototype = {
         this.createWordSource())
     this.scoreKeeper = new ScoreKeeper(this.persistence, this.lobby)
     this.gametimer = this.createGameTimer()
+    this.gamelogger = new GameLogger(this)
   }
 , createWordSource: function() {
     return new WordSource()
   },
   createSessionStore: function() {
-    return new AuthStore(this.sessions)
+    return new AuthStore(this.sessions, this.persistence)
   },
   createGameTimer: function() {
     return new GameEnder(this.lobby)

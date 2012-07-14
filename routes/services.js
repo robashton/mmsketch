@@ -6,6 +6,12 @@ module.exports = function(app, game) {
     res.send(playerData) 
   })
 
+  app.get('/round/:id', function(req, res) {
+    game.persistence.getRound(req.params.id, function(err, round) {
+      res.send(round) 
+    })
+  })
+
   function refreshPlayerData() {
     playerData = []
     var players = lobby.getPlayers()
