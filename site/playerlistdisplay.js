@@ -39,8 +39,8 @@
        this.playerElements[player.id] = element
     },
     removePlayer: function(player) {
-      console.log('Removing', player.id, this.playerElements)
       var element = this.playerElements[player.id]
+      if(!element) return
       delete this.playerElements[player.id]
       element.remove()
     }

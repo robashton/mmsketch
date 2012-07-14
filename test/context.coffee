@@ -1,4 +1,4 @@
-debug = true
+debug = false
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -24,7 +24,24 @@ class ManualContext
         words: @words.join()
       }
     })
-    setTimeout done, 500
+    @server.on 'message', (msg) =>
+      if(msg.command == 'ready')
+        @wait_for_sockets_to_be_ready(done)
+
+  wait_for_sockets_to_be_ready: (done) =>
+    try_get_socket_io = =>
+      http.get({
+        host: 'localhost'
+        port: @port
+        path: '/socket.io/socket.io.js'
+        method: 'GET'
+      }, (res) ->
+        if(res.statusCode == 404)
+          setTimeout try_get_socket_io, 20
+        else
+          done()
+      )
+    try_get_socket_io()
 
   add_client_called: (name, cb) =>
     @pendingClients++
@@ -58,8 +75,8 @@ class ManualContext
     @clients[name]
 
   dispose: (done) =>
-    @server.on('exit', done)
-    @server.kill('SIGHUP')
+    @server.kill('SIGKILL')
+    done()
 
   wait_for_sockets: (done) =>
     setTimeout done, 20
@@ -181,6 +198,11 @@ class ManualClient
       res.on 'data', (chunk) -> (data += chunk)
       res.on 'end', -> (cb(JSON.parse(data)))
     )
+
+  click: (selector, done) =>
+    element = @browser.querySelector(selector)
+    @browser.fire 'click', element, done
+
 
   can_see: (selector) =>
     element = @jQuery selector  #Evil - YAY
