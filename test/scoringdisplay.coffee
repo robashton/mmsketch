@@ -186,6 +186,7 @@ Scenario "persistence of scores across sessions", ->
   Given "alice and bob are playing a game together", (done) ->
     context.next_word 'flibble'
     context.start ->
+      context.set_global_score_of 'alice', 0
       bob = context.add_client_called 'bob'
       alice = context.add_client_called 'alice'
       context.wait_for_all_clients ->

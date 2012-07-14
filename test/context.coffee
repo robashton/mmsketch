@@ -1,4 +1,5 @@
-debug = true
+debug = false
+redis = false
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
@@ -11,6 +12,7 @@ class ManualContext
     @clients = {}
     @pendingClients = 0
     @words = []
+    @last_round_id = -1
 
   next_word: (word) =>
     @words.push word
@@ -21,12 +23,15 @@ class ManualContext
       env: {
         port: @port
         test: true
+        redis: redis
         words: @words.join()
       }
     })
     @server.on 'message', (msg) =>
       if(msg.command == 'ready')
         @wait_for_sockets_to_be_ready(done)
+      if(msg.command == 'lastround')
+        @last_round_id = msg.id
 
   wait_for_sockets_to_be_ready: (done) =>
     try_get_socket_io = =>

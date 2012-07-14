@@ -16,8 +16,9 @@ TestAuthenticationStore.prototype = {
         displayName: username + 'display',
         username: username
       }
-      this.persistence.savePlayer(username, user)
-      cb(null, { passport: { user: user }})
+      this.persistence.savePlayer(username, user, function() {
+        cb(null, { passport: { user: user }})
+      })
     } else {
       cb("No cookie", null)
     }

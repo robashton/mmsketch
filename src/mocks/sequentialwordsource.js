@@ -3,7 +3,7 @@ var SequentialWordSource = function() {
 }
 
 SequentialWordSource.prototype.next = function() {
-  return this.words.shift()
+  return this.words.shift() || "blah"
 }
 
 

@@ -2,7 +2,6 @@ var InMemoryPersistence = function() {
   this.scores = {}
   this.rounds = []
   this.users = {}
-  process.on('message', this.onMessage.bind(this))
 }
 
 InMemoryPersistence.prototype = {
@@ -46,14 +45,6 @@ InMemoryPersistence.prototype = {
   },
   getPlayer: function(id, cb) {
     cb(this.users[id])
-  },
-  onMessage: function(msg) {
-    var handler = this['handle' + msg.command]    
-    if(handler)
-      handler.call(this, msg)
-  },
-  handleSetGlobalScore: function(msg) {
-    this.scores[msg.userid] = msg.score
   }
 }
 

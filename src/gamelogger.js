@@ -1,4 +1,8 @@
+var Eventable = require('./eventable'),
+    _ = require('underscore')
+
 var GameLogger = function(game) {
+  Eventable.call(this)
   this.game = game
   this.persistence = this.game.persistence
   this.lobby = this.game.lobby
@@ -20,10 +24,13 @@ GameLogger.prototype = {
   },
   onRoundEnded: function() {
     this.currentArtist.off('DrawingEvent', this.onPlayerDrawEvent) 
+    this.raise('RoundSaved', this.currentRoundId)
   },
   onPlayerDrawEvent: function(ev) {
     this.persistence.logDrawEvent(this.currentRoundId, ev)
   }
 }
+
+_.extend(GameLogger.prototype, Eventable.prototype)
 
 module.exports = GameLogger

@@ -33,7 +33,7 @@ Scenario "Replaying events from a finished game", ->
     context.force_round_over done
 
   And "the game is requested from the endpoint", (done) ->
-    artist.getJson '/round/0', (data) ->
+    artist.getJson '/round/' + context.last_round_id, (data) ->
       gameData = data
       done()
 

@@ -126,7 +126,6 @@ Lobby.prototype = {
       }
       if(!session.passport.user)
         return accept('Not logged in yet, please log in!', false)
-      console.log(session.passport)
       data.user = session.passport.user
       accept(null, true)
     })
@@ -157,7 +156,7 @@ Lobby.prototype = {
   startListening: function() {
     var io = socketio.listen(this.server)
     this.io = io
-    io.set('log level', 0)
+    io.set('log level', 3)
     io.set('authorization', this.handleAuthorization.bind(this))
     io.on('connection', this.handleNewSocket.bind(this))
   }

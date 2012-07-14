@@ -53,7 +53,12 @@ function setupOptionalDependencies() {
     AuthStore = require('./mocks/testauthenticationstore')
     GameEnder = require('./mocks/manualgameender')
     WordSource = require('./mocks/sequentialwordsource')
-    Persistence = require('./mocks/inmemorypersistence')
+    if(process.env.redis) {
+      Persistence = require('./redispersistence')
+    }
+    else {
+      Persistence = require('./mocks/inmemorypersistence')
+    }
   } else {
     AuthStore = require('./expressauthenticationstore')
     GameEnder = require('./timedgameender')
