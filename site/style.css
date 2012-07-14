@@ -79,7 +79,7 @@ canvas {
   box-shadow: 2px 2px 10px 1px rgba(128, 128, 128, 0.5);
 }
 
-#feedback-container span {
+#feedback-container > div > span {
   display: block;
   margin-top: 5px;
   margin-left: 5px;
@@ -94,7 +94,8 @@ canvas {
 }
 
 #feedback-container span p {
-  float: left
+  float: left;
+  margin-right: 5px;
   vertical-align: middle;
 }
 
@@ -118,9 +119,11 @@ canvas {
   float: left;
 }
 .player-info > div > h4 {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 .player-info > div > p {
+  margin-bottom: 0px;
+  font-size: 14px;
 }
 
 #client-status img {

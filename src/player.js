@@ -23,7 +23,10 @@ Player.prototype = {
     this.globalScore += amount
     this.gameScore += amount
     this.raise('ScoreChanged', this.gameScore)
-    this.socket.emit('globalscorechanged', this.globalScore)
+    this.socket.emit('globalscorechanged', {
+        score: this.globalScore,
+        gameScore: this.gameScore
+     })
   },
   startDrawing: function(word) {
     this.socket.emit('status', {

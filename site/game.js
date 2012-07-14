@@ -44,8 +44,8 @@
     onPersonalInfoReceived: function(player) {
       this.raise('PersonalInfoReceived', player)
     },
-    onGlobalScoreChanged: function(score) {
-      this.raise('GlobalScoreChanged', score)
+    onGlobalScoreChanged: function(data) {
+      this.raise('GlobalScoreChanged', data)
     },
     onScoreChanges: function(changes) {
       this.raise('ScoresUpdated', changes)

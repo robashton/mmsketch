@@ -66,7 +66,7 @@
             $('<p/>').text(player.displayName)
           )
           .append(
-            $('<p/>').addClass('score').text("" + player.gameScore)
+            $('<p/>').html('( <span class="score">' + player.gameScore + '</span> )')
           )
           .data('userid', player.id)
        this.playerList.append(element)
