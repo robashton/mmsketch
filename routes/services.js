@@ -1,5 +1,6 @@
 module.exports = function(app, game) {
-  var playerData = []
+  var playerData = [],
+      lobby = game.lobby
     
   app.get('/players', function(req, res) {
     res.send(playerData) 
@@ -7,7 +8,7 @@ module.exports = function(app, game) {
 
   function refreshPlayerData() {
     playerData = []
-    var players = game.lobby.getPlayers()
+    var players = lobby.getPlayers()
     for(var i in players) {
       var player = players[i]
       playerData.push(player.getJSON())
@@ -15,6 +16,6 @@ module.exports = function(app, game) {
   }
   refreshPlayerData()
 
-  game.on('PlayerJoined', refreshPlayerData)
-  game.on('PlayerLeft', refreshPlayerData)
+  lobby.on('PlayerJoined', refreshPlayerData)
+  lobby.on('PlayerLeft', refreshPlayerData)
 }

@@ -97,11 +97,12 @@ Lobby.prototype = {
       winner = this.firstCorrectGuesser.displayName()
       this.firstCorrectGuesser = null
     }
-    this.io.sockets.emit('endround', {
+    var data = {
       winner: winner,
       word: this.currentWord
-    })
-    this.raise('RoundEnded')
+    }
+    this.io.sockets.emit('endround', data)
+    this.raise('RoundEnded', data)
     var self = this
     setTimeout(function() {
       self.startGameWithArtist(nextPlayer || self.chooseNewArtist())

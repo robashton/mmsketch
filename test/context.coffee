@@ -1,4 +1,4 @@
-debug = true
+debug = false
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils

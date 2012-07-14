@@ -13,6 +13,7 @@ var Player = function(lobby, socket) {
   this.socket.on('drawingend', this.onDrawingEnd.bind(this))
   this.socket.on('selectbrush', this.onBrushSelected.bind(this))
   this.socket.on('selectcolour', this.onColourSelected.bind(this))
+  this.on('DrawingEvent', this.onDrawingEvent.bind(this))
 }
 
 Player.prototype = {
@@ -100,23 +101,41 @@ Player.prototype = {
   },
   onDrawingStart: function(position) {
     if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingstart', position)
+    this.raise('DrawingEvent', {
+      event: 'drawingstart',
+      data: position
+    })
   },
   onDrawingMove: function(position) {
     if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingmove', position)
+    this.raise('DrawingEvent', {
+      event: 'drawingmove',
+      data: position
+    })
   },
   onDrawingEnd: function(position) {
     if(!this.isDrawing()) return
-    this.socket.broadcast.emit('drawingend', position)
+    this.raise('DrawingEvent', {
+      event: 'drawingend',
+      data: position
+    })
   },
   onBrushSelected: function(brush) {
     if(!this.isDrawing()) return
-    this.socket.broadcast.emit('selectbrush', brush)
+    this.raise('DrawingEvent', {
+      event: 'selectbrush',
+      data: brush
+    })
   },
   onColourSelected: function(colour) {
     if(!this.isDrawing()) return
-    this.socket.broadcast.emit('selectcolour', colour)
+    this.raise('DrawingEvent', {
+      event: 'selectcolour',
+      data: colour
+    })
+  },
+  onDrawingEvent: function(ev) {
+    this.socket.broadcast.emit(ev.event, ev.data)
   }
 }
 
