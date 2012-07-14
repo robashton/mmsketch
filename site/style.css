@@ -236,11 +236,28 @@ canvas {
 }
 
 
-@media all and (max-width: 1299px) {
+@media all 
+and (min-device-width: 768px) 
+and (min-device-height: 1024px)
+and (orientation: landscape)
+{
   canvas {
-    height: 70%;
+    height: 500px;
   }
   #feedback-container {
-    height: 70%;
+    height: 500px;
+  }
+}
+
+@media all 
+and (min-device-width: 768px) 
+and (min-device-height: 1024px)
+and (orientation: portrait)
+{
+  canvas {
+    height: 500px;
+  }
+  #feedback-container {
+    height: 500px;
   }
 }
