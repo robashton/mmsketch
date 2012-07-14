@@ -10,11 +10,11 @@ TestAuthenticationStore.prototype = {
       var cookieData = cookie.parseCookie(headers.cookie)
       var username = cookieData['test.cookie']
       if(!username) return cb(null, null)
-      cb(null, {
-        passport: {
-          user: { id: 'facebook:' + username, username: username, displayName: username + 'display' }
-        }
-      })
+      cb(null, { passport: { user: {
+        id: username,
+        displayName: username + 'display',
+        username: username
+      }}})
     } else {
       cb("No cookie", null)
     }

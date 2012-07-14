@@ -1,15 +1,14 @@
-var passport = require('passport')
-    config = require('../src/config')
-,   FacebookStrategy = require('passport-facebook').Strategy
-
-var users = {}
+var passport = require('passport'),
+    config = require('../src/config'),
+    FacebookStrategy = require('passport-facebook').Strategy,
+    persistence = null
 
 passport.serializeUser(function(user, done) {
- done(null, user);
+  done(null, user)
 })
 
-passport.deserializeUser(function(obj, done) {
-  done(null, obj);
+passport.deserializeUser(function(user, done) {
+  done(null, user);
 })
 
 function configurePassport() {
@@ -19,12 +18,18 @@ function configurePassport() {
 ,   callbackURL: config.fbcallback 
   },
   function(token, tokenSecret, profile, done) {
-    users[profile.id] = profile
-    done(null, profile)
+    var user = {
+      id: 'facebook:' + profile.id, 
+      displayName: profile.displayName,
+      username: profile.username
+    }
+    persistence.savePlayer(user.id, user)
+    done(null, user)
   }))
 }
 
-module.exports = function(app) {
+module.exports = function(app, game) {
+  persistence = game.persistence
   configurePassport()
   app.get('/auth/facebook', passport.authenticate('facebook'))
   app.get('/auth/facebook/callback', 

@@ -20,7 +20,7 @@ app.configure(function() {
 
 app.listen(process.env.port || config.port, notifyListenersReady)
 game.bootstrap(app)
-require('./routes/index')(app, game.lobby)
+require('./routes/index')(app, game)
 
 function notifyListenersReady() {
   if(process.send)

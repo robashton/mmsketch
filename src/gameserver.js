@@ -45,7 +45,6 @@ _.extend(GameServer.prototype, EventEmitter.prototype)
 
 module.exports = GameServer 
 
-
 function setupOptionalDependencies() {
   if(process.env.test) {
     AuthStore = require('./mocks/testauthenticationstore')

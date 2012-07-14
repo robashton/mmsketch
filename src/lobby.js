@@ -125,6 +125,7 @@ Lobby.prototype = {
       }
       if(!session.passport.user)
         return accept('Not logged in yet, please log in!', false)
+      console.log(session.passport)
       data.user = session.passport.user
       accept(null, true)
     })

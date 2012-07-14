@@ -7,7 +7,7 @@ module.exports = function(app, game) {
 
   function refreshPlayerData() {
     playerData = []
-    var players = game.getPlayers()
+    var players = game.lobby.getPlayers()
     for(var i in players) {
       var player = players[i]
       playerData.push(player.getJSON())
