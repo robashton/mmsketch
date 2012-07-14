@@ -14,6 +14,7 @@
     <script src="eventable.js"></script>
     <script src="statusdisplay.js"></script>
     <script src="feedbackdisplay.js"></script>
+    <script src="feedbacktabs.js"></script>
     <script src="playerlistdisplay.js"></script>
     <script src="game.js"></script>
     <script src="input.js"></script>
@@ -66,10 +67,10 @@
         <div class="span4">
           <div id="feedback-container">
           <ul class="nav nav-tabs">
-            <li class="active">
+            <li id="client-feedback-tab" class="active">
               <a href="#">Log</a>
             </li>
-            <li><a href="#">Room</a></li>
+            <li id="room-feedback-tab"><a href="#">Room</a></li>
           </ul>
           <div id="client-feedback">
 
@@ -101,7 +102,8 @@
             <img src="" id="player-avatar"/>
             <div>
               <h4 id="player-name"></h4>
-              <p><strong>EXP earned</strong>: <span id="player-score"></span>xp</p>
+              <p><strong>Total points</strong>: <span id="player-score"></span></p>
+              <p>This game: <span id="player-game-score"></span></p>
             </div>
           </div>
         </div>
@@ -118,6 +120,7 @@
       ,   feedbackDisplay = null
       ,   roomScoresDisplay = null
       ,   personalStatusDisplay = null
+      ,   feedbackTabs = null
       ,   playerListDisplay = null
       ,   artPad = null
       ,   input = null
@@ -150,6 +153,7 @@
         feedbackDisplay = new FeedbackDisplay(game)
         personalStatusDisplay = new PersonalStatusDisplay(game)
         playerListDisplay = new PlayerListDisplay(game)
+        feedbackTabs = new FeedbackTabs()
         input = new Input(game)
         artPad = new ArtPad(game)
         timer = new Timer(game)

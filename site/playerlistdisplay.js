@@ -5,19 +5,50 @@
     this.initialised = false
     this.playerElements = {}
     this.playerList = $('#room-feedback')
-    this.downloadInitialList()
   }
 
   PlayerListDisplay.prototype = {
+    onStarted: function() {
+      this.downloadInitialList()
+    },
     downloadInitialList: function() {
       var self = this
       $.getJSON('/players', function(data) {
-        for(i in data)
+        for(var i in data)
           self.addPlayer(data[i])
         self.initialised = true
       })
     },
+    onScoresUpdated: function(data) {
+      for(var i in data) {
+        var item = data[i]
+        this.updatePlayerScore(item.player, item.score)
+      }
+    },
+    updatePlayerScore: function(player, score) {
+      var element = this.playerElements[player]
+      if(!element) return
+      element.find('.score').text(score)
+
+      var target = this.findTargetElementAfterScoring(score, element.prev()) 
+      if(target)
+        element.insertBefore(target)
+
+    },
+    findTargetElementAfterScoring: function(score, current, target) {
+      if(current.length === 0) return target
+
+      var scoreText = current.find('.score').text()
+      var previousScore = parseInt(scoreText, 10)
+      if(previousScore < score) {
+        target = current
+        current  = target.prev()
+        return this.findTargetElementAfterScoring(score, current, target)
+      }
+      return target
+    },
     onPlayerJoined: function(data) {
+      if(!this.initialised) return
       this.addPlayer(data)
     },
     onPlayerLeft: function(data) {
@@ -34,17 +65,20 @@
           .append(
             $('<p/>').text(player.displayName)
           )
+          .append(
+            $('<p/>').html('( <span class="score">' + player.gameScore + '</span> )')
+          )
           .data('userid', player.id)
        this.playerList.append(element)
        this.playerElements[player.id] = element
     },
     removePlayer: function(player) {
-      console.log('Removing', player.id, this.playerElements)
       var element = this.playerElements[player.id]
+      if(!element) return
       delete this.playerElements[player.id]
       element.remove()
     }
   }
   exports.PlayerListDisplay = PlayerListDisplay
-})(this)
+}(this))
 

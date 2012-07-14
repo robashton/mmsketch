@@ -18,6 +18,11 @@ app.configure(function() {
   app.use(express.static(WEBROOT))
 })
 
-app.listen(process.env.port || config.port)
+app.listen(process.env.port || config.port, notifyListenersReady)
 game.bootstrap(app)
 require('./routes/index')(app, game.lobby)
+
+function notifyListenersReady() {
+  if(process.send)
+    process.send({ command: 'ready'})
+}

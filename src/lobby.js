@@ -30,6 +30,7 @@ Lobby.prototype = {
 
     this.players[player.id()] = player
     this.updatePlayerCount(this.playerCount+1)
+
     if(this.gamestarted) {
       player.startGuessing()
     }
@@ -127,6 +128,9 @@ Lobby.prototype = {
       data.user = session.passport.user
       accept(null, true)
     })
+  },
+  sendScoreUpdate: function(changes) {
+    this.io.sockets.emit('scorechanges', changes)
   },
   notifyOfCorrectGuess: function(player) {
     if(this.firstCorrectGuesser === null) {

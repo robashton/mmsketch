@@ -6,6 +6,7 @@ var Player = function(lobby, socket) {
   this.lobby = lobby
   this.socket = socket
   this.globalScore = null
+  this.gameScore = 0
   this.socket.on('guess', this.onGuess.bind(this))
   this.socket.on('drawingstart', this.onDrawingStart.bind(this))
   this.socket.on('drawingmove', this.onDrawingMove.bind(this))
@@ -20,7 +21,12 @@ Player.prototype = {
   },
   addToScore: function(amount) {
     this.globalScore += amount
-    this.socket.emit('globalscorechanged', this.globalScore)
+    this.gameScore += amount
+    this.raise('ScoreChanged', this.gameScore)
+    this.socket.emit('globalscorechanged', {
+        score: this.globalScore,
+        gameScore: this.gameScore
+     })
   },
   startDrawing: function(word) {
     this.socket.emit('status', {
@@ -65,7 +71,8 @@ Player.prototype = {
       id: this.id(),
       displayName: this.displayName(),
       displayPicture: this.displayPicture(),
-      globalScore: this.globalScore
+      globalScore: this.globalScore,
+      gameScore: this.gameScore
     }
   },
   displayName: function() {
