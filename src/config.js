@@ -6,7 +6,8 @@ var config = {
     port: 8080,
     secret: 'i like coffee',
     roundTime: 90,
-    roundIntervalTime: 10
+    roundIntervalTime: 10,
+    redisport: null
   },
   'prod': {
     fbcallback: 'http://wedrawthings.com/auth/facebook/callback',
@@ -15,7 +16,9 @@ var config = {
     port: 8004,
     secret: '23g24ngk2mtg23ntgi23ngk2gn23g22',
     roundTime: 90,
-    roundIntervalTime: 10
+    roundIntervalTime: 10,
+    persistence: 'redis',
+    redisport: null
   }
 }
 

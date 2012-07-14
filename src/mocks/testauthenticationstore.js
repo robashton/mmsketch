@@ -12,7 +12,7 @@ TestAuthenticationStore.prototype = {
       if(!username) return cb(null, null)
       cb(null, {
         passport: {
-          user: { id:  username, username: username, displayName: username + 'display' }
+          user: { id: 'facebook:' + username, username: username, displayName: username + 'display' }
         }
       })
     } else {

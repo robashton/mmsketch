@@ -56,6 +56,6 @@ function setupOptionalDependencies() {
     AuthStore = require('./expressauthenticationstore')
     GameEnder = require('./timedgameender')
     WordSource = require('./fixedwordsource')
-    Persistence = require('./mocks/inmemorypersistence')
+    Persistence = require('./redispersistence')
   }
 }
