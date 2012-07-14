@@ -24,4 +24,4 @@
   }
 
   exports.PersonalStatusDisplay = PersonalStatusDisplay
-}.call(this, this))
+}(this))
