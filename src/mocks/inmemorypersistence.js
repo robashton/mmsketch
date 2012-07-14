@@ -40,8 +40,9 @@ InMemoryPersistence.prototype = {
   logDrawEvent: function(roundId, ev) {
     this.rounds[roundId].events.push(ev)
   },
-  savePlayer: function(id, data) {
+  savePlayer: function(id, data, cb) {
     this.users[id] = data
+    process.nextTick(cb)
   },
   getPlayer: function(id, cb) {
     cb(this.users[id])

@@ -53,7 +53,7 @@ function setupOptionalDependencies() {
     AuthStore = require('./mocks/testauthenticationstore')
     GameEnder = require('./mocks/manualgameender')
     WordSource = require('./mocks/sequentialwordsource')
-    if(process.env.redis) {
+    if(process.env.redis === true) {
       Persistence = require('./redispersistence')
     }
     else {

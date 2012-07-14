@@ -1,9 +1,10 @@
 var redis = require('redis'),
     config = require('./config'),
-    client = redis.createClient(config.redisport)
+    client = null
 
 var RedisPersistence = function() {
-  
+  if(!client)
+    client = redis.createClient(config.redisport)
 }
 
 RedisPersistence.prototype = {
