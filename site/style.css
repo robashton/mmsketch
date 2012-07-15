@@ -57,6 +57,18 @@ canvas {
   margin-right: 15px;
 }
 
+#recent-games {
+  padding: 5px 5px 5px 5px;
+}
+
+#recent-games img {
+  width: 100px;
+  height: 80px;
+  float: left;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
 #paintbrush-brushes span.selected {
   box-shadow: 0 0 8px rgba(0, 0, 0, .8);
   -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);

@@ -25,6 +25,7 @@ RedisPersistence.prototype = {
   getRound: function(id, cb) {
     client.hgetall(id, function(err, round) {
       if(err) throw err
+      if(!round) return cb(null, null)
       client.hgetall(round.player, function(err, player) {
         if(err) throw err
         client.lrange(id + ':events', 0, 1000, function(err, events) {
