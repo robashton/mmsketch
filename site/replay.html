@@ -79,7 +79,7 @@
       </div>
       <div class="row-fluid">
         <div class="span8">
-          <div class="btn" id="share-drawing"><a href="">Share this drawing</a></div>
+          <div class="btn" id="share-art"><span href="">Share this drawing</span></div>
         </div>
       </div>
       
@@ -93,9 +93,13 @@
             playerAvatar = $('#player-avatar'),
             playerPoints = $('#player-points'),
             recentGames = $('#recent-games'),
-            drawnWord = $('#drawn-word')
+            drawnWord = $('#drawn-word'),
+            shareButton = $('#share-art'),
+            roundId = parseRoundIdFromUrl(),
+            artData = null
 
-        $.getJSON('/round/' + parseRoundIdFromUrl(), function(data) {
+        $.getJSON('/round/' + roundId, function(data) {
+          artData = data
           playerName.text(data.player.displayName)
           playerAvatar.attr('src', 'https://graph.facebook.com/' + 
             data.player.username + '/picture')
@@ -103,6 +107,8 @@
           drawnWord.text(data.word + ' by ' + data.player.displayName)
           $('#loading').hide()
           $('#content').show()
+          shareButton.show()
+          shareButton.click(shareDrawing) 
           var replayGame = new ReplayGame(data.events)
           var artPad = new ArtPad(replayGame)
           replayGame.start()
@@ -112,8 +118,24 @@
           var url = document.location.pathname
           return url.substr(url.lastIndexOf('/') + 1)
         }
+
+        function shareDrawing() {
+          var obj = {
+            method: 'feed',
+            link: 'http://wedrawthings.com/viewround/' + roundId,
+            picture: 'http://wedrawthings.com/drawings/' + roundId,
+            name: 'We Draw Things',
+            caption: 'A drawing of "' + artData.word + '" by "' + artData.player.displayName  + '"',
+            display: 'popup'
+          };
+
+          FB.ui(obj, function() {
+
+          });
+        }
       })
     </script>
     <script src="http://connect.facebook.net/en_US/all.js"></script>
+    <script src="/fb.js"></script>
   </body>
 </html>

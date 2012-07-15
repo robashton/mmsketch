@@ -1,3 +1,5 @@
+var config = require('../src/config')
+
 module.exports = function(app, game) {
   var playerData = [],
       lobby = game.lobby
@@ -9,6 +11,12 @@ module.exports = function(app, game) {
   app.get('/round/:id', function(req, res) {
     game.persistence.getRound(req.params.id, function(err, round) {
       res.send(round) 
+    })
+  })
+
+  app.get('/config', function(req, res) {
+    res.send({
+      appId: config.fbclientid
     })
   })
 

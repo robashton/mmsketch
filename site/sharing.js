@@ -9,14 +9,11 @@
   }
 
   Sharing.prototype = {
-    onPersonalInfoReceived: function(data) {
-      FB.init({appId: data.appId, status: true, cookie: true}); 
-    },
     onRoundStarted: function() {
       this.shareButton.hide()
     },
     onRoundEnded: function(word) {
-      this.lastWord = data.word
+      this.lastWord = word
     },
     onLastRoundId: function(id) {
       this.lastRoundId = id

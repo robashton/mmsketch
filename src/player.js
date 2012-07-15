@@ -58,9 +58,7 @@ Player.prototype = {
   },
   sendGlobalScore: function(score) {
     this.globalScore = score
-    var player = this.getJSON()
-    player.appId = config.fbclientid
-    this.socket.emit('you', player)
+    this.socket.emit('you', this.getJSON())
     this.raise('Loaded')
   },
   rejectAsDuplicate: function() {
