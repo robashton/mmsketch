@@ -24,7 +24,7 @@ TimedGameEnder.prototype = {
     var now = new Date()
     var diff = this.gameTime - Math.floor((now - this.lastStartTime) / 1000);
     if(diff <= 0)
-      this.game.nextGame(this.intervalTime)
+      this.game.nextGame(this.intervalTime * 1000)
     else 
       this.warnClientsOfImpendingDoom(diff)
   },

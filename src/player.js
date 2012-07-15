@@ -1,5 +1,6 @@
 var Eventable = require('./eventable')
 var _ = require('underscore')
+var config = require('./config')
 
 var Player = function(lobby, socket) {
   Eventable.call(this)
@@ -57,7 +58,9 @@ Player.prototype = {
   },
   sendGlobalScore: function(score) {
     this.globalScore = score
-    this.socket.emit('you', this.getJSON())
+    var player = this.getJSON()
+    player.appId = config.fbclientid
+    this.socket.emit('you', player)
     this.raise('Loaded')
   },
   rejectAsDuplicate: function() {

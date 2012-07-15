@@ -171,4 +171,40 @@ Scenario "Game ends with nobody guessing the word", ->
 
   And "a new word is chosen", ->
     newartist.clientStatus().should.include 'pie'
-    
+
+  after (done) ->
+    context.dispose(done)
+
+Scenario "Everybody guesses the word", ->
+  context = new ManualContext()
+  bob = null
+  alice = null
+  james = null
+  artist = null
+  guessers = null
+
+  Given "three people are playing a game together", (done) ->
+    context.next_word 'flibble'
+    context.next_word 'pie'
+    context.start ->
+      bob = context.add_client_called 'bob'
+      alice = context.add_client_called 'alice'
+      james = context.add_client_called 'james'
+      context.wait_for_all_clients ->
+        artist = find_artist [bob, alice, james]
+        guessers = (player for player in [alice, bob, james] when !player.isDrawing())
+        done()
+
+  When "everybody guesses the word", (done) ->
+    guesser[0].guess 'flibble', ->
+      guesser[1].guess 'flibble', done
+
+  Then "the first guesser becomes the artist", ->
+    (guesser[0] is find_artist [bob, alice, james]).
+      should.equal(true)
+
+  And "a new word is chosen", ->
+    guesser[0].clientStatus().should.include('pie')
+  
+  after (done) ->
+    context.dispose(done)

@@ -28,12 +28,16 @@
       this.socket.on('playerjoined', _.bind(this.onPlayerJoined, this))
       this.socket.on('playerleft', _.bind(this.onPlayerLeft, this))
       this.socket.on('scorechanges', _.bind(this.onScoreChanges, this))
+      this.socket.on('lastroundid', _.bind(this.onLastRoundId, this))
     },
     stop: function() {
       this.socket.disconnect()
     },
     submitWord: function(word) {
       this.socket.emit('guess', word)
+    },
+    onLastRoundId: function(id) {
+      this.raise('LastRoundId', id)
     },
     onPlayerJoined: function(player) {
       this.raise('PlayerJoined', player)

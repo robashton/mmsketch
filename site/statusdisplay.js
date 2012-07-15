@@ -53,5 +53,5 @@
     }
   }
   exports.StatusDisplay = StatusDisplay
-}).call(this, this)
+}(this))
 

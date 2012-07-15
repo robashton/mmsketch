@@ -130,6 +130,9 @@ Lobby.prototype = {
       accept(null, true)
     })
   },
+  sendRoundIdToClients: function(id) {
+    this.io.sockets.emit('lastroundid', id)
+  },
   sendScoreUpdate: function(changes) {
     this.io.sockets.emit('scorechanges', changes)
   },

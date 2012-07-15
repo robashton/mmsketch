@@ -31,7 +31,6 @@ function notifyListenersReady() {
     process.send({ command: 'ready'})
 }
 
-
 process.on('message', function(msg) {
   if(msg.command === 'SetGlobalScore')
     game.persistence.setGlobalScoreForPlayer(msg.userid, msg.score)

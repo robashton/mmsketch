@@ -16,6 +16,7 @@
     <script src="feedbackdisplay.js"></script>
     <script src="feedbacktabs.js"></script>
     <script src="playerlistdisplay.js"></script>
+    <script src="sharing.js"></script>
     <script src="game.js"></script>
     <script src="input.js"></script>
     <script src="artpad.js"></script>
@@ -25,6 +26,7 @@
    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
   </head>
   <body>
+    <div id="fb-root"></div>
     <div id="loading">
       <h1>We Draw Things</h1>
       <div id="loading-spinner">
@@ -63,6 +65,7 @@
           <canvas id="surface" width="800" height="600">
             Your browser doesn't support Canvas wtf dude?
           </canvas>
+          <div class="btn hidden" id="share-drawing"><a href="">Share this drawing</a></div>
         </div>
         <div class="span4">
           <div id="feedback-container">
@@ -122,6 +125,7 @@
       ,   personalStatusDisplay = null
       ,   feedbackTabs = null
       ,   playerListDisplay = null
+      ,   sharing = null
       ,   artPad = null
       ,   input = null
       ,   timer = null
@@ -153,6 +157,7 @@
         feedbackDisplay = new FeedbackDisplay(game)
         personalStatusDisplay = new PersonalStatusDisplay(game)
         playerListDisplay = new PlayerListDisplay(game)
+        sharing = new Sharing(game)
         feedbackTabs = new FeedbackTabs()
         input = new Input(game)
         artPad = new ArtPad(game)
@@ -161,5 +166,6 @@
         game.start()
       }
     </script>
+    <script src="http://connect.facebook.net/en_US/all.js"></script>
   </body>
 </html>

@@ -5,7 +5,7 @@ var config = {
     fbclientsecret: 'b5290692796e002d8a442bf346e810db',
     port: 8080,
     secret: 'i like coffee',
-    roundTime: 90,
+    roundTime: 10,
     roundIntervalTime: 10,
     redisport: null
   },

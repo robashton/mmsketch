@@ -33,8 +33,12 @@ GameServer.prototype = {
     this.scoreKeeper = new ScoreKeeper(this.persistence, this.lobby)
     this.gametimer = this.createGameTimer()
     this.gamelogger = new GameLogger(this)
-  }
-, createWordSource: function() {
+    this.gamelogger.on('RoundSaved', this.onRoundSaved, this)
+  },
+  onRoundSaved: function(id) {
+    this.lobby.sendRoundIdToClients(id)
+  },
+  createWordSource: function() {
     return new WordSource()
   },
   createSessionStore: function() {
