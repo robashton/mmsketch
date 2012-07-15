@@ -6,7 +6,7 @@ var config = {
     port: 8080,
     secret: 'i like coffee',
     roundTime: 10,
-    roundIntervalTime: 10,
+    roundIntervalTime: 10000,
     redisport: null
   },
   'prod': {
@@ -16,11 +16,13 @@ var config = {
     port: 8004,
     secret: '23g24ngk2mtg23ntgi23ngk2gn23g22',
     roundTime: 90,
-    roundIntervalTime: 10,
+    roundIntervalTime: 10000,
     persistence: 'redis',
     redisport: null
   }
 }
+var cfg = config[process.env.node_env || 'dev']
+if(process.env.test)
+  cfg.roundIntervalTime = 0
 
-module.exports = config[process.env.node_env || 'dev']
-
+module.exports = cfg

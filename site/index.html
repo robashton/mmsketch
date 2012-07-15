@@ -65,7 +65,7 @@
           <canvas id="surface" width="800" height="600">
             Your browser doesn't support Canvas wtf dude?
           </canvas>
-          <div class="btn hidden" id="share-drawing"><a href="">Share this drawing</a></div>
+          <div class="btn hidden" id="share-drawing"><span>Share this drawing</span></div>
         </div>
         <div class="span4">
           <div id="feedback-container">
@@ -148,6 +148,7 @@
           $(document).ready(startGame)
         }
       } else {
+        initializeFacebook()
         $(document).ready(startGame)
       }
 
@@ -166,6 +167,6 @@
         game.start()
       }
     </script>
-    <script src="http://connect.facebook.net/en_US/all.js"></script>
+    <script src="/fb.js"></script>
   </body>
 </html>

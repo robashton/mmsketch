@@ -3,6 +3,7 @@ var socketio = require('socket.io')
 ,   Player = require('./player')
 ,   Eventable = require('./eventable')
 ,   _ = require('underscore')
+,   config = require('./config')
 
 var Lobby = function(server, authentication, wordSource) {
   Eventable.call(this)
@@ -14,6 +15,7 @@ var Lobby = function(server, authentication, wordSource) {
   this.gamestarted = false
   this.currentArtist = null
   this.firstCorrectGuesser = null
+  this.correctGuesserCount = 0 
   this.currentWord = ''
   this.authentication = authentication
   this.startListening()
@@ -89,7 +91,7 @@ Lobby.prototype = {
   startGame: function() {
     this.startGameWithArtist(this.chooseNewArtist())
   },
-  nextGame: function(delay) {
+  nextGame: function() {
     var nextPlayer = null
     var winner = null
     if(this.firstCorrectGuesser) {
@@ -106,7 +108,7 @@ Lobby.prototype = {
     var self = this
     setTimeout(function() {
       self.startGameWithArtist(nextPlayer || self.chooseNewArtist())
-    }, delay)
+    }, config.roundIntervalTime)
   },
   notifyClientsOfTimeLeft: function(timeLeft) {
     this.io.sockets.emit('countdown', timeLeft)
@@ -140,7 +142,10 @@ Lobby.prototype = {
     if(this.firstCorrectGuesser === null) {
       this.firstCorrectGuesser = player
     }
+    this.correctGuesserCount++
     this.raise('CorrectGuess', player)
+    if((this.correctGuesserCount / this.playerCount) > 0.60)
+      this.nextGame()
   },
   handleNewSocket: function(socket) {
     var player = new Player(this, socket)

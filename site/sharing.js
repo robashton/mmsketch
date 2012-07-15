@@ -4,6 +4,7 @@
     this.game = game
     this.game.autoHook(this)
     this.lastRoundId = null
+    this.lastArtist = null
     this.shareButton = $('#share-drawing')
     this.shareButton.on('click', _.bind(this.onShareClicked, this))
   }
@@ -12,8 +13,8 @@
     onRoundStarted: function() {
       this.shareButton.hide()
     },
-    onRoundEnded: function(word) {
-      this.lastWord = word
+    onRoundEnded: function(data) {
+      this.lastWord = data.word
     },
     onLastRoundId: function(id) {
       this.lastRoundId = id
