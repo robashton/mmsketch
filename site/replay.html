@@ -1,0 +1,119 @@
+<DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/style.css"></link>
+    <script src="/underscore-min.js"></script>
+    <script src="/jquery.js"></script>
+    <script src="/hammer.js"></script>
+    <script src="/jquery.hammer.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/eventable.js"></script>
+    <script src="/statusdisplay.js"></script>
+    <script src="/feedbackdisplay.js"></script>
+    <script src="/feedbacktabs.js"></script>
+    <script src="/playerlistdisplay.js"></script>
+    <script src="/sharing.js"></script>
+    <script src="/game.js"></script>
+    <script src="/input.js"></script>
+    <script src="/artpad.js"></script>
+    <script src="/timer.js"></script>
+    <script src="/personalstatus.js"></script>
+    <script src="/replaygame.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+   <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <div id="loading">
+      <h1>We Draw Things</h1>
+      <div id="loading-spinner">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+        <div class="bar4"></div>
+        <div class="bar5"></div>
+        <div class="bar6"></div>
+        <div class="bar7"></div>
+        <div class="bar8"></div>
+        <div class="bar9"></div>
+        <div class="bar10"></div>
+        <div class="bar11"></div>
+        <div class="bar12"></div>
+      </div>
+      <div id="loading-text">
+        <p>Loading - please wait</p>
+      </div>
+    </div>
+    <div id="content" class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <h2 id="drawn-word"></h2>
+        </div>
+        <div class="span3"></div>
+        <div class="span2">
+          <h4 id="timer-text"></h4>
+        </div>
+        <div class="span4">
+          <h4 id="client-count"></h4>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span8">
+          <canvas id="surface" width="800" height="600">
+            Your browser doesn't support Canvas wtf dude?
+          </canvas>
+        </div>
+        <div class="span4">
+          <div id="side-info">
+            <div id="player-info">
+              <img id="player-avatar" src=""></img> 
+              <p><strong>Artist</strong>: <span id="player-name"></span></p>
+              <p><strong>Total Points</strong>: <span id="player-points"></span></p>
+            </div>
+            <div id="recent-games">
+              <h4>Random Games</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span8">
+          <div class="btn" id="share-drawing"><a href="">Share this drawing</a></div>
+        </div>
+      </div>
+      
+      <div id="footnote">
+        <p>Copyright <a href="http://twitter.com/robashton">@robashton</a> 2012</p>
+      </div>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var playerName = $('#player-name'),
+            playerAvatar = $('#player-avatar'),
+            playerPoints = $('#player-points'),
+            recentGames = $('#recent-games'),
+            drawnWord = $('#drawn-word')
+
+        $.getJSON('/round/' + parseRoundIdFromUrl(), function(data) {
+          playerName.text(data.player.displayName)
+          playerAvatar.attr('src', 'https://graph.facebook.com/' + 
+            data.player.username + '/picture')
+          playerPoints.text(data.player.score)
+          drawnWord.text(data.word + ' by ' + data.player.displayName)
+          $('#loading').hide()
+          $('#content').show()
+          var replayGame = new ReplayGame(data.events)
+          var artPad = new ArtPad(replayGame)
+          replayGame.start()
+        })
+
+        function parseRoundIdFromUrl() {
+          var url = document.location.pathname
+          return url.substr(url.lastIndexOf('/') + 1)
+        }
+      })
+    </script>
+    <script src="http://connect.facebook.net/en_US/all.js"></script>
+  </body>
+</html>

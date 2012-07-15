@@ -82,7 +82,7 @@ canvas {
 
 }
 
-#feedback-container {
+#feedback-container, #side-info {
   margin-top: 0px;
   background-color: #FFF;
   border: 1px solid #DDD;
@@ -111,6 +111,25 @@ canvas {
   vertical-align: middle;
 }
 
+#player-info {
+  padding: 5px 5px 5px 5px;
+  border-bottom: 2px solid #EEE;
+}
+#player-info > img {
+  float: left; 
+  margin-right: 10px;
+}
+
+#player-info > p {
+  
+}
+
+#recent-games h4 {
+  margin-top: 20px;
+  text-align: center;
+}
+
+
 .player-info {
   margin-top: 10px;
   background-color: #FFF;
@@ -125,6 +144,7 @@ canvas {
   margin-top: 5px;
   float: left;
 }
+
 
 .player-info > div {
   margin-left: 10px;
@@ -245,6 +265,9 @@ canvas {
   #feedback-container {
     height: 80%;
   }
+  #side-info {
+    height: 80%;
+  }
 }
 
 
@@ -257,6 +280,9 @@ and (orientation: landscape)
     height: 500px;
   }
   #feedback-container {
+    height: 500px;
+  }
+  #side-info {
     height: 500px;
   }
 }
@@ -272,4 +298,8 @@ and (orientation: portrait)
   #feedback-container {
     height: 500px;
   }
+  #side-info {
+    height: 500px;
+  }
 }
+

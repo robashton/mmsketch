@@ -17,6 +17,7 @@ app.configure(function() {
   app.use(app.router)
   app.use(express.static(WEBROOT))
 })
+app.WEBROOT = WEBROOT
 
 app.listen(process.env.port || config.port, notifyListenersReady)
 game.bootstrap(app)

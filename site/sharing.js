@@ -15,6 +15,9 @@
     onRoundStarted: function() {
       this.shareButton.hide()
     },
+    onRoundEnded: function(word) {
+      this.lastWord = data.word
+    },
     onLastRoundId: function(id) {
       this.lastRoundId = id
       this.shareButton.show()
@@ -23,10 +26,10 @@
       var obj = {
         method: 'feed',
         link: 'http://wedrawthings.com/viewround/' + this.lastRoundId,
-        picture: 'http://fbrell.com/f8.jpg',
+        picture: 'http://wedrawthings.com/drawings/' + this.lastRoundId,
         name: 'We Draw Things',
-        caption: 'We drew something',
-        description: 'Take a look at this!'
+        caption: 'A drawing of "' + this.lastWord + '"',
+        display: 'popup'
       };
 
       FB.ui(obj, function() {
