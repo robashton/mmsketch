@@ -12,6 +12,7 @@ class ManualContext
     @clients = {}
     @pendingClients = 0
     @words = []
+    @closed_listener = null
     @last_round_id = -1
 
   next_word: (word) =>
@@ -32,6 +33,9 @@ class ManualContext
         @wait_for_sockets_to_be_ready(done)
       if(msg.command == 'lastround')
         @last_round_id = msg.id
+
+  wait_for_closed: (done) =>
+    @closed_listener = done
 
   wait_for_sockets_to_be_ready: (done) =>
     try_get_socket_io = =>
@@ -81,6 +85,8 @@ class ManualContext
 
   dispose: (done) =>
     @server.kill('SIGKILL')
+    if(@closed_listener)
+      @closed_listener()
     done()
 
   wait_for_sockets: (done) =>
