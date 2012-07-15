@@ -7,6 +7,8 @@
     this.canvas = canvas
     this.context = context
     this.selectedColour = null
+    this.totalDistanceMoved = 0
+    this.distanceLastMoved = 0
   }
 
   ArtPad.prototype = {
@@ -16,9 +18,11 @@
     },
     startDrawing: function(position) {
       this.lastPosition = position
-      this.drawLine(position, position)
+      this.totalDistanceMoved = 0
+      this.distanceLastMoved = 0
     },
     draw: function(position) {
+      this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
     },
@@ -27,7 +31,7 @@
     },
     drawLine: function(from, to) { 
       this.context.strokeStyle = this.selectedColour 
-      this.context.lineWidth = this.selectedBrush 
+      this.context.lineWidth = this.adjustBrushOnMovement(this.selectedBrush)
       this.context.lineCap = 'round'
       this.context.lineJoin = 'bevel'
       this.context.beginPath()
@@ -35,11 +39,27 @@
       this.context.lineTo(to.x, to.y)
       this.context.stroke()
     },
+    adjustBrushOnMovement: function(pix) {
+      var startingPerc = 100 - (Math.max((100 - this.totalDistanceMoved), 0))
+      var distanceAdjust = this.distanceLastMoved < 1.0 ? 1.0 :
+                           this.distanceLastMoved > 20.0 ? 20.0 :
+                           this.distanceLastMoved
+      var distancePerc = 100 - (5 * Math.max((20 - distanceAdjust), 0))
+      var perc = (startingPerc + (distancePerc * 3)) / 400
+
+      return pix * Math.max(perc, 0.1)
+    },
     setBrushThickness: function(thickness) {
       this.selectedBrush = thickness
     },
     setBrushColour: function(colour) {
       this.selectedColour = colour
+    },
+    addToDistances: function(position) {
+      var diffx = position.x - this.lastPosition.x
+      var diffy = position.y - this.lastPosition.y
+      this.distanceLastMoved = Math.sqrt( diffx * diffx + diffy * diffy)
+      this.totalDistanceMoved += this.distanceLastMoved
     }
   }
 
