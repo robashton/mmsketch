@@ -49,6 +49,9 @@
         <p>Loading - please wait</p>
       </div>
     </div>
+    <div style="display:none;" id="image-for-facebook">
+      <img src=""></img>
+    </div>
     <div id="content" class="container-fluid">
       <div class="row-fluid">
         <div class="span3">
@@ -101,6 +104,9 @@
             shareButton = $('#share-art'),
             roundId = parseRoundIdFromUrl(),
             artData = null
+
+        $('#image-for-facebook > img')
+          .attr('src', '/drawings/' + roundId)
 
         $.getJSON('/round/' + roundId, function(data) {
           artData = data
