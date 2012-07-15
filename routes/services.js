@@ -19,6 +19,10 @@ module.exports = function(app, game) {
     res.send(recentRounds)
   })
 
+  app.get('/drawings/:id', function(req, res) {
+    res.sendfile(config.imageDir + req.params.id + '.png')
+  })
+
   app.get('/config', function(req, res) {
     res.send({
       appId: config.fbclientid

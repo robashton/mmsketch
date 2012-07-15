@@ -7,7 +7,8 @@ var config = {
     secret: 'i like coffee',
     roundTime: 10,
     roundIntervalTime: 10000,
-    redisport: null
+    redisport: null,
+    imageDir: '/home/robashton/working/images/'
   },
   'prod': {
     fbcallback: 'http://wedrawthings.com/auth/facebook/callback',
@@ -18,7 +19,8 @@ var config = {
     roundTime: 90,
     roundIntervalTime: 10000,
     persistence: 'redis',
-    redisport: null
+    redisport: null,
+    imageDir: '/home/robashton/working/images/'
   }
 }
 var cfg = config[process.env.node_env || 'dev']

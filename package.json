@@ -13,6 +13,7 @@
     "should": "",
     "underscore": "",
     "passport-facebook": "",
-    "redis": "~0.7.2"
+    "redis": "~0.7.2",
+    "canvas": "~0.12.1"
   }
 }

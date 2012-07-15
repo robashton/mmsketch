@@ -1,12 +1,12 @@
 (function(exports) {
 
-  var ArtPad = function(game) {
+  var ArtPadInput = function(game) {
     this.game = game
     this.game.autoHook(this)
     this.reset()
   }
 
-  ArtPad.prototype = {
+  ArtPadInput.prototype = {
     onDrawingStart: function(position) {
       this.drawingStart = position
     },
@@ -77,6 +77,6 @@
       this.wiped = false
     }
   }
-  exports.ArtPad = ArtPad
+  exports.ArtPadInput = ArtPadInput
   
 }).call(this, window)

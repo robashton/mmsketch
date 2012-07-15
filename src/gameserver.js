@@ -4,7 +4,8 @@ var EventEmitter = require('events').EventEmitter,
     config = require('./config'),
     MemoryStore = require('connect').middleware.session.MemoryStore,
     ScoreKeeper = require('./scorekeeper'),
-    GameLogger = require('./gamelogger')
+    GameLogger = require('./gamelogger'),
+    ImageGenerator = require('./imagegenerator')
     
 var WordSource = null,
     AuthStore = null,
@@ -19,6 +20,7 @@ var GameServer = function() {
   this.persistence = null
   this.scoreKeeper = null
   this.gamelogger = null
+  this.imageGenerator = null
   setupOptionalDependencies()
 }
 
@@ -33,6 +35,7 @@ GameServer.prototype = {
     this.scoreKeeper = new ScoreKeeper(this.persistence, this.lobby)
     this.gametimer = this.createGameTimer()
     this.gamelogger = new GameLogger(this)
+    this.imageGenerator = new ImageGenerator(this)
     this.gamelogger.on('RoundSaved', this.onRoundSaved, this)
   },
   onRoundSaved: function(id) {

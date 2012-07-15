@@ -17,6 +17,7 @@
     <script src="/game.js"></script>
     <script src="/input.js"></script>
     <script src="/artpad.js"></script>
+    <script src="/artpadinput.js"></script>
     <script src="/timer.js"></script>
     <script src="/personalstatus.js"></script>
     <script src="/replaygame.js"></script>
@@ -110,7 +111,7 @@
           shareButton.show()
           shareButton.click(shareDrawing) 
           var replayGame = new ReplayGame(data.events)
-          var artPad = new ArtPad(replayGame)
+          var artPad = new ArtPadInput(replayGame)
           replayGame.start()
         })
 
