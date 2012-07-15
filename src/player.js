@@ -6,6 +6,7 @@ var Player = function(lobby, socket) {
   Eventable.call(this)
   this.lobby = lobby
   this.socket = socket
+  this.user = socket.handshake.user
   this.globalScore = null
   this.gameScore = 0
   this.socket.on('guess', this.onGuess.bind(this))
@@ -66,7 +67,7 @@ Player.prototype = {
     this.socket.disconnect()
   },
   id: function() {
-    return this.socket.handshake.user.id
+    return this.user.id
   },
   getJSON: function() {
     return {
@@ -78,11 +79,11 @@ Player.prototype = {
     }
   },
   displayName: function() {
-    return this.socket.handshake.user.displayName
+    return this.user.displayName
   },
   displayPicture: function() {
     return 'https://graph.facebook.com/' + 
-            this.socket.handshake.user.username + '/picture'
+            this.user.username + '/picture'
   },
   onGuess: function(word) {
     if(word.toUpperCase() === this.lobby.currentWord.toUpperCase()) {
