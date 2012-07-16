@@ -7,6 +7,7 @@
     this.canvas = canvas
     this.context = context
     this.selectedColour = null
+    this.history = []
     this.totalDistanceMoved = 0
     this.distanceLastMoved = 0
   }
@@ -28,15 +29,19 @@
     },
     stopDrawing: function() {
       this.lastPosition = null
+      this.history = []
     },
     drawLine: function(from, to) { 
       this.context.strokeStyle = this.selectedColour 
-      this.context.lineWidth = this.adjustBrushOnMovement(this.selectedBrush)
       this.context.lineCap = 'round'
+      this.context.lineWidth = this.selectedBrush 
+      this.context.globalAlpha = 0.05
       this.context.lineJoin = 'bevel'
       this.context.beginPath()
-      this.context.moveTo(from.x, from.y)
-      this.context.lineTo(to.x, to.y)
+      this.context.moveTo(this.history[0].x, this.history[0].y)
+      for(var i = 1; i < this.history.length; i++) {
+        this.context.lineTo(this.history[i].x, this.history[i].y)
+      }
       this.context.stroke()
     },
     adjustBrushOnMovement: function(pix) {
@@ -60,6 +65,9 @@
       var diffy = position.y - this.lastPosition.y
       this.distanceLastMoved = Math.sqrt( diffx * diffx + diffy * diffy)
       this.totalDistanceMoved += this.distanceLastMoved
+      this.history.push(position)
+      if(this.history.length > 5)
+        this.history.shift()
     }
   }
 
