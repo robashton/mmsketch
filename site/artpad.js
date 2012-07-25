@@ -34,7 +34,7 @@
     },
     drawLine: function(from, to) { 
       this.context.strokeStyle = this.selectedColour 
-      this.context.lineWidth = this.selectedBrush
+      this.context.lineWidth = this.adjustBrushOnMovement(this.selectedBrush)
       this.context.globalAlpha = 1
       this.context.lineJoin = 'bevel'
       this.context.beginPath()
@@ -43,16 +43,6 @@
         this.context.lineTo(this.history[i].x, this.history[i].y)
       }
       this.context.stroke()
-    },
-    adjustBrushOnMovement: function(pix) {
-      var startingPerc = 100 - (Math.max((100 - this.totalDistanceMoved), 0))
-      var distanceAdjust = this.distanceLastMoved < 1.0 ? 1.0 :
-                           this.distanceLastMoved > 20.0 ? 20.0 :
-                           this.distanceLastMoved
-      var distancePerc = 100 - (5 * Math.max((20 - distanceAdjust), 0))
-      var perc = (startingPerc + (distancePerc * 3)) / 400
-
-      return pix * Math.max(perc, 0.1)
     },
     setBrushThickness: function(thickness) {
       this.selectedBrush = thickness
