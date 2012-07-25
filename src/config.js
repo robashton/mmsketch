@@ -23,7 +23,7 @@ var config = {
     imageDir: '/home/robashton/working/images/'
   }
 }
-var cfg = config[process.env.node_env || 'dev']
+var cfg = config[process.env.NODE_ENV || 'dev']
 if(process.env.test)
   cfg.roundIntervalTime = 0
 

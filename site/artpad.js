@@ -15,6 +15,7 @@
   ArtPad.prototype = {
     clear: function() {
       this.context.fillStyle = '#FFF'
+      this.context.globalAlpha = 1.0
       this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     },
     startDrawing: function(position) {
@@ -33,9 +34,8 @@
     },
     drawLine: function(from, to) { 
       this.context.strokeStyle = this.selectedColour 
-      this.context.lineCap = 'round'
-      this.context.lineWidth = this.selectedBrush 
-      this.context.globalAlpha = 0.05
+      this.context.lineWidth = this.selectedBrush
+      this.context.globalAlpha = 1
       this.context.lineJoin = 'bevel'
       this.context.beginPath()
       this.context.moveTo(this.history[0].x, this.history[0].y)

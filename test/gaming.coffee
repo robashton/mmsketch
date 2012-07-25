@@ -128,16 +128,13 @@ Scenario "Players guessing the word", ->
   And "the artist is told that the guesser guessed it correctly", ->
     artist.lastGuess().should.include guesser2.displayName() + ' guessed the word'
   
-  And "guesser #2 can no longer see the text input", ->
-    guesser2.can_see_text_input().should.equal(false)
-
-  When "The game is over", (done) ->
-    context.force_round_over(done)
-
   And "the artist becomes the guesser", ->
     (artist is find_artist [alice, bob, james, hilda]).should.equal(false)
 
   And "guesser #1 becomes the artist", ->
+    newArtist = find_artist [alice, bob, james, hilda]
+    console.log('Current artist is', newArtist)
+    console.log('Guesser1 was', guesser1)
     (guesser1 is find_artist [alice, bob, james, hilda]).should.equal(true)
 
 

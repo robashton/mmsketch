@@ -144,7 +144,7 @@ Lobby.prototype = {
     }
     this.correctGuesserCount++
     this.raise('CorrectGuess', player)
-    if((this.correctGuesserCount / this.playerCount) > 0.60)
+    if((this.correctGuesserCount / (this.playerCount-1)) > 0.60)
       this.nextGame()
   },
   handleNewSocket: function(socket) {
