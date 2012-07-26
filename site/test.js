@@ -79,4 +79,4 @@
   }
   exports.ArtPadInput = ArtPadInput
   
-}).call(this, window)
+}(window))

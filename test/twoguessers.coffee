@@ -22,6 +22,7 @@ Scenario "Players guessing the word", ->
       james = context.add_client_called 'james'
       hilda = context.add_client_called 'hilda'
       context.wait_for_all_clients done
+      console.log 'arse'
 
   When "The wrong word is guessed", (done) ->
     artist = find_artist [alice, bob, james, hilda]
@@ -65,6 +66,4 @@ Scenario "Players guessing the word", ->
 
   And "guesser #1 becomes the artist", ->
     newArtist = find_artist [alice, bob, james, hilda]
-    console.log('Current artist is', newArtist)
-    console.log('Guesser1 was', guesser1)
     (guesser1 is find_artist [alice, bob, james, hilda]).should.equal(true)

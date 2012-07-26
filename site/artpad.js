@@ -34,7 +34,7 @@
     },
     drawLine: function(from, to) { 
       this.context.strokeStyle = this.selectedColour 
-      this.context.lineWidth = this.adjustBrushOnMovement(this.selectedBrush)
+      this.context.lineWidth = this.selectedBrush
       this.context.globalAlpha = 1
       this.context.lineJoin = 'bevel'
       this.context.beginPath()

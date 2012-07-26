@@ -90,11 +90,11 @@ class ManualContext
     done()
 
   wait_for_sockets: (done) =>
-    setTimeout done, 20
+    setTimeout done, 100
 
   force_round_over: (done) =>
     @server.send({ command: 'next-game'})
-    setTimeout done, 20
+    setTimeout done, 100
 
   set_global_score_of: (username, score) =>
     @server.send({
@@ -261,6 +261,6 @@ class ManualClient
   close: (done) =>
     @closed = true
     @browser.evaluate('closeSockets()')
-    setTimeout done, 20
+    setTimeout done, 100
 
 module.exports = ManualContext
