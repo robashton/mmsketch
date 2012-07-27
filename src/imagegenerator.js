@@ -36,7 +36,7 @@ ImageGenerator.prototype = {
       case 'drawingend':
         return this.pad.stopDrawing()
       case 'selectbrush':
-        return this.pad.setBrushThickness(ev.data)
+        return this.pad.setBrush(ev.data)
       case 'selectcolour':
         return this.pad.setBrushColour(ev.data)
     }

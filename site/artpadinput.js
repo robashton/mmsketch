@@ -12,7 +12,7 @@
     this.game.autoHook(this)
     this.createPalette()
     this.selectColour('#000')
-    this.selectBrush(20)
+    this.selectBrush('circle')
     this.hookDrawingInput()
   }
 
@@ -83,14 +83,9 @@
       this.addColour('#F0F')
       this.addColour('#0FF')
       this.addColour('#FFA500')
-      this.addBrush(5)
-      this.addBrush(10)
-      this.addBrush(15)
-      this.addBrush(20)
-      this.addBrush(25)
-      this.addBrush(30)
-      this.addBrush(35)
-      this.addBrush(40)
+      this.addBrush('circle')
+      this.addBrush('pencil')
+      this.addBrush('paint')
     },
     addColour: function(hex) {
       var element = $('<span/>')
@@ -112,17 +107,10 @@
       this.pad.setBrushColour(hex)
     },
     addBrush: function(brush) {
-      var halfPixels = brush / 2
-      var containerHeight = this.brushContainer.height()
       var element = $('<span/>')
-            .attr('data-brush', brush)
-            .css('height', brush + 'px')
-            .css('width', brush + 'px')
-            .css('border-radius', halfPixels + 'px') 
-            .css('-webkit-border-radius',  halfPixels + 'px')
-            .css('-moz-border-radius', halfPixels + 'px') 
-            .css('margin-top', (containerHeight - brush)/2  + 'px')
             .addClass('paintbrush-brush')
+            .addClass(brush)
+            .data('brush', brush)
       this.brushContainer.append(element)
       this.brushes[brush] = element
       return element
@@ -134,7 +122,7 @@
         this.selectedBrush.removeClass('selected')
       this.selectedBrush = element
       this.selectedBrush.addClass('selected')
-      this.pad.setBrushThickness(brush)
+      this.pad.setBrush(brush)
     },
     screenToCanvas: function(pos) {
       // TODO: Think about using different pixel sizes for different
@@ -156,4 +144,4 @@
   }
 
   exports.ArtPadInput = ArtPadInput
-}).call(this, this)
+}(this))

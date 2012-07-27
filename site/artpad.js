@@ -33,19 +33,12 @@
       this.history = []
     },
     drawLine: function(from, to) { 
-      this.context.strokeStyle = this.selectedColour 
-      this.context.lineWidth = this.selectedBrush
-      this.context.globalAlpha = 1
-      this.context.lineJoin = 'bevel'
-      this.context.beginPath()
-      this.context.moveTo(this.history[0].x, this.history[0].y)
-      for(var i = 1; i < this.history.length; i++) {
-        this.context.lineTo(this.history[i].x, this.history[i].y)
-      }
-      this.context.stroke()
+      this.context.save()
+      Brushes[this.selectedBrush](from, to, this)
+      this.context.restore()
     },
-    setBrushThickness: function(thickness) {
-      this.selectedBrush = thickness
+    setBrush: function(brush) {
+      this.selectedBrush = brush
     },
     setBrushColour: function(colour) {
       this.selectedColour = colour
@@ -58,6 +51,28 @@
       this.history.push(position)
       if(this.history.length > 5)
         this.history.shift()
+    }
+  }
+
+  var Brushes = {
+    circle: function(from, to, pad) {
+      pad.context.strokeStyle = pad.selectedColour 
+      pad.context.lineWidth = 10 
+      pad.context.globalAlpha = 1
+      pad.context.lineJoin = 'bevel'
+      pad.context.lineCap = 'round'
+      pad.context.beginPath()
+      pad.context.moveTo(pad.history[0].x, pad.history[0].y)
+      for(var i = 1; i < pad.history.length; i++) {
+        pad.context.lineTo(pad.history[i].x, pad.history[i].y)
+      }
+      pad.context.stroke()
+    },
+    paint: function(from, to, pad) {
+      Brushes.circle(from, to, pad)
+    },
+    pencil: function(from, to, pad) {
+      Brushes.circle(from, to, pad)
     }
   }
 
