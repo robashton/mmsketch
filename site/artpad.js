@@ -49,13 +49,12 @@
       this.distanceLastMoved = Math.sqrt( diffx * diffx + diffy * diffy)
       this.totalDistanceMoved += this.distanceLastMoved
       this.history.push(position)
-      if(this.history.length > 5)
-        this.history.shift()
     }
   }
 
   var Brushes = {
     circle: function(from, to, pad) {
+      if(pad.history.length < 10) return
       pad.context.strokeStyle = pad.selectedColour 
       pad.context.lineWidth = 10 
       pad.context.globalAlpha = 1
@@ -66,10 +65,20 @@
       for(var i = 1; i < pad.history.length; i++) {
         pad.context.lineTo(pad.history[i].x, pad.history[i].y)
       }
+      pad.history = []
+      pad.history.push(to)
       pad.context.stroke()
     },
     paint: function(from, to, pad) {
-      Brushes.circle(from, to, pad)
+      pad.context.strokeStyle = pad.selectedColour 
+      pad.context.lineWidth = 50 
+      pad.context.globalAlpha = 0.1 
+      pad.context.lineJoin = 'bevel'
+      pad.context.lineCap = 'round'
+      pad.context.beginPath()
+      pad.context.moveTo(from.x, from.y)
+      pad.context.lineTo(to.x, to.y)
+      pad.context.stroke()
     },
     pencil: function(from, to, pad) {
       Brushes.circle(from, to, pad)
