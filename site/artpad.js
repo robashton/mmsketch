@@ -10,6 +10,7 @@
     this.history = []
     this.totalDistanceMoved = 0
     this.distanceLastMoved = 0
+    this.status = null
   }
 
   ArtPad.prototype = {
@@ -22,13 +23,17 @@
       this.lastPosition = position
       this.totalDistanceMoved = 0
       this.distanceLastMoved = 0
+      this.status = 'starting'
     },
     draw: function(position) {
       this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
+      this.status = 'drawing'
     },
     stopDrawing: function() {
+      this.status = 'ending'
+      this.drawLine(this.lastPosition, this.lastPosition)
       this.lastPosition = null
       this.history = []
     },
@@ -54,11 +59,12 @@
 
   var Brushes = {
     circle: function(from, to, pad) {
-      if(pad.history.length < 10) return
+      var brushSize = pad.status === 'starting' || pad.status === 'ending' ? 3 : pad.totalDistanceMoved * 0.2
+      if(pad.history.length < 5 && pad.status !== 'ending') return
       pad.context.strokeStyle = pad.selectedColour 
-      pad.context.lineWidth = 10 
+      pad.context.lineWidth = brushSize 
       pad.context.globalAlpha = 1
-      pad.context.lineJoin = 'bevel'
+      pad.context.lineJoin = 'round'
       pad.context.lineCap = 'round'
       pad.context.beginPath()
       pad.context.moveTo(pad.history[0].x, pad.history[0].y)
@@ -66,6 +72,7 @@
         pad.context.lineTo(pad.history[i].x, pad.history[i].y)
       }
       pad.history = []
+      pad.totalDistanceMoved = 0
       pad.history.push(to)
       pad.context.stroke()
     },
