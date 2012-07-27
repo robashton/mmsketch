@@ -71,10 +71,26 @@
       for(var i = 1; i < pad.history.length; i++) {
         pad.context.lineTo(pad.history[i].x, pad.history[i].y)
       }
+      pad.context.stroke()
+
+      if(pad.status !== 'starting') {
+        // Fill in the size changes
+        // Should be able to work out the direction
+        // And the distance either size
+        // and draw then fill a path that blends the two sizes together
+        // LOL
+        pad.context.strokeStyle = '#F00'
+        pad.context.lineWidth = 5 
+        pad.context.beginPath()
+        pad.context.moveTo(pad.history[0].x, pad.history[0].y)
+        pad.context.lineTo(pad.history[1].x, pad.history[1].y)
+        pad.context.stroke()
+      }
+
       pad.history = []
       pad.totalDistanceMoved = 0
+      pad.lastBrushSize = brushSize
       pad.history.push(to)
-      pad.context.stroke()
     },
     paint: function(from, to, pad) {
       pad.context.strokeStyle = pad.selectedColour 
