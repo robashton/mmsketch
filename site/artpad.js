@@ -29,7 +29,6 @@
       this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
-      this.status = 'drawing'
     },
     stopDrawing: function() {
       this.status = 'ending'
@@ -61,11 +60,11 @@
     circle: function(from, to, pad) {
       var brushSize = pad.status === 'starting' || pad.status === 'ending' ? 3 : pad.totalDistanceMoved * 0.2
       if(pad.history.length < 5 && pad.status !== 'ending') return
+      
       pad.context.strokeStyle = pad.selectedColour 
       pad.context.lineWidth = brushSize 
       pad.context.globalAlpha = 1
       pad.context.lineJoin = 'round'
-      pad.context.lineCap = 'round'
       pad.context.beginPath()
       pad.context.moveTo(pad.history[0].x, pad.history[0].y)
       for(var i = 1; i < pad.history.length; i++) {
@@ -73,24 +72,53 @@
       }
       pad.context.stroke()
 
-      if(pad.status !== 'starting') {
+      if(pad.status !== 'starting' && pad.history.length > 0) {
         // Fill in the size changes
         // Should be able to work out the direction
         // And the distance either size
         // and draw then fill a path that blends the two sizes together
         // LOL
         pad.context.strokeStyle = '#F00'
-        pad.context.lineWidth = 5 
-        pad.context.beginPath()
-        pad.context.moveTo(pad.history[0].x, pad.history[0].y)
-        pad.context.lineTo(pad.history[1].x, pad.history[1].y)
-        pad.context.stroke()
+        pad.context.lineWidth = 2 
+
+        var patchFrom = pad.lastHistory[0]
+          , patchTo = pad.history[0]
+          , dx = patchTo.x - patchFrom.x
+          , dy = patchTo.y - patchFrom.y
+          , dmag = Math.sqrt((dx * dx) + (dy * dy))
+        
+         dx /= dmag
+         dy /= dmag
+
+         var nl = { x: -dy, y: dx }
+         ,  nr = { x: dy, y: -dx }
+         ,  bl = { x: patchFrom.x + (0.5 * pad.lastBrushSize * nl.x),
+                   y: patchFrom.y + (0.5 * pad.lastBrushSize * nl.y) }
+         ,  br = { x: patchFrom.x + (0.5 * pad.lastBrushSize * nr.x),
+                   y: patchFrom.y + (0.5 * pad.lastBrushSize * nr.y) }
+         ,  tl = { x: patchTo.x + (  0.5 *      brushSize *    nl.x),
+                   y: patchTo.y + (  0.5 *      brushSize *    nl.y) }
+         ,  tr = { x: patchTo.x + (  0.5 *      brushSize *    nr.x),
+                   y: patchTo.y + (  0.5 *      brushSize *    nr.y) }
+
+         pad.context.beginPath()
+         pad.context.moveTo(bl.x, bl.y)
+         pad.context.lineTo(tl.x, tl.y)
+         pad.context.lineTo(tr.x, tr.y)
+         pad.context.lineTo(br.x, br.y)
+         pad.context.stroke()
+
       }
 
+      pad.lastHistory = pad.history
+      pad.lastBrushSize = brushSize
       pad.history = []
       pad.totalDistanceMoved = 0
       pad.lastBrushSize = brushSize
       pad.history.push(to)
+      if(pad.status === 'starting') {
+        pad.status = 'drawing'
+      }
     },
     paint: function(from, to, pad) {
       pad.context.strokeStyle = pad.selectedColour 
