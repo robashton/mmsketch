@@ -113,11 +113,11 @@
 
       pad.context.beginPath()
       pad.context.moveTo(quadOne.tl.x, quadOne.tl.y)
-      pad.context.lineTo(quadTwo.tl.x, quadTwo.tl.y)
-      pad.context.lineTo(quadThree.tl.x, quadThree.tl.y)
+      pad.context.quadraticCurveTo(quadTwo.bl.x, quadTwo.bl.y, quadTwo.tl.x, quadTwo.tl.y)
+      pad.context.quadraticCurveTo(quadThree.bl.x, quadThree.bl.y, quadThree.tl.x, quadThree.tl.y)
       pad.context.lineTo(quadThree.tr.x, quadThree.tr.y)
-      pad.context.lineTo(quadTwo.tr.x, quadTwo.tr.y)
-      pad.context.lineTo(quadOne.tr.x, quadOne.tr.y)
+      pad.context.quadraticCurveTo(quadThree.br.x, quadThree.br.y, quadTwo.tr.x, quadTwo.tr.y)
+      pad.context.quadraticCurveTo(quadTwo.br.x, quadTwo.br.y, quadOne.tr.x, quadOne.tr.y)
       pad.context.lineTo(quadOne.tl.x, quadOne.tl.y)
 
       pad.context.closePath()
