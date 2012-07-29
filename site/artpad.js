@@ -11,6 +11,7 @@
     this.totalDistanceMoved = 0
     this.distanceLastMoved = 0
     this.numberOfSteps = 0
+    this.averageDistanceMoved = 0
     this.status = null
   }
 
@@ -56,7 +57,8 @@
       var diffy = position.y - this.lastPosition.y
       this.distanceLastMoved = Math.sqrt(diffx * diffx + diffy * diffy)
       this.totalDistanceMoved += this.distanceLastMoved
-      position.mag = this.totalDistanceMoved / this.numberOfSteps 
+      this.averageDistanceMoved = (this.distanceLastMoved + this.averageDistanceMoved * 4.0) / 5.0
+      position.mag = this.averageDistanceMoved
       this.history.push(position)
     }
   }
@@ -89,36 +91,37 @@
 
   var Brushes = {
     circle: function(from, to, pad) {
-      if(pad.lastQuad && pad.history.length < 3) return
-      if(!pad.lastQuad && pad.history.length < 4) return
+      if(pad.history.length < 5) return
 
       var quads = []
-
-      var quadOne,
-          quadTwo,
-          quadThree = null
       var index = 0
       if(pad.lastQuad)
-        quadOne = pad.lastQuad
+        quads[0] = pad.lastQuad
       else
-        quadOne = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
-      quadTwo = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
-      quadThree = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+        quads[0] = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+
+      while(index < pad.history.length-1) {
+        quads.push(calculateQuadFrom(pad.history[index++], pad.history[index], 0.5))
+      }
 
       pad.context.strokeStyle = pad.selectedColour 
       pad.context.fillStyle = pad.selectedColour
       pad.context.lineWidth = 1 
       pad.context.globalAlpha = 1.0 
-      pad.context.lineJoin = 'round'
+      pad.context.lineJoin = 'miter'
 
       pad.context.beginPath()
-      pad.context.moveTo(quadOne.tl.x, quadOne.tl.y)
-      pad.context.quadraticCurveTo(quadTwo.bl.x, quadTwo.bl.y, quadTwo.tl.x, quadTwo.tl.y)
-      pad.context.quadraticCurveTo(quadThree.bl.x, quadThree.bl.y, quadThree.tl.x, quadThree.tl.y)
-      pad.context.lineTo(quadThree.tr.x, quadThree.tr.y)
-      pad.context.quadraticCurveTo(quadThree.br.x, quadThree.br.y, quadTwo.tr.x, quadTwo.tr.y)
-      pad.context.quadraticCurveTo(quadTwo.br.x, quadTwo.br.y, quadOne.tr.x, quadOne.tr.y)
-      pad.context.lineTo(quadOne.tl.x, quadOne.tl.y)
+      pad.context.moveTo(quads[0].tl.x, quads[0].tl.y)
+      
+      for(var i = 1 ; i < quads.length; i++)
+        pad.context.quadraticCurveTo(quads[i].bl.x, quads[i].bl.y, quads[i].tl.x, quads[i].tl.y)
+      
+      pad.context.lineTo(quads[quads.length-1].tr.x, quads[quads.length-1].tr.y)
+
+      for(i = quads.length-1 ; i > 0 ; i--)
+        pad.context.quadraticCurveTo(quads[i].br.x, quads[i].br.y, quads[i-1].tr.x, quads[i-1].tr.y)
+
+      pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
 
       pad.context.closePath()
       pad.context.fill()
@@ -128,7 +131,7 @@
         pad.status = 'drawing'
       }
 
-      pad.lastQuad = quadThree
+      pad.lastQuad = quads[quads.length-1]
       var lastHistory = pad.history
       pad.history = []
       pad.history.push(lastHistory.pop())
