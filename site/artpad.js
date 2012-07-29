@@ -10,6 +10,7 @@
     this.history = []
     this.totalDistanceMoved = 0
     this.distanceLastMoved = 0
+    this.numberOfSteps = 0
     this.status = null
   }
 
@@ -35,6 +36,8 @@
       this.drawLine(this.lastPosition, this.lastPosition)
       this.lastPosition = null
       this.history = []
+      this.lastQuad = null
+      this.numberOfSteps = 0
     },
     drawLine: function(from, to) { 
       this.context.save()
@@ -48,77 +51,87 @@
       this.selectedColour = colour
     },
     addToDistances: function(position) {
+      this.numberOfSteps++
       var diffx = position.x - this.lastPosition.x
       var diffy = position.y - this.lastPosition.y
-      this.distanceLastMoved = Math.sqrt( diffx * diffx + diffy * diffy)
+      this.distanceLastMoved = Math.sqrt(diffx * diffx + diffy * diffy)
       this.totalDistanceMoved += this.distanceLastMoved
+      position.mag = this.totalDistanceMoved / this.numberOfSteps 
       this.history.push(position)
+    }
+  }
+
+  function calculateQuadFrom(from, to, width) {
+    var dx = to.x - from.x
+      , dy = to.y - from.y
+      , dmag = Math.sqrt((dx * dx) + (dy * dy))
+    
+     dx /= dmag
+     dy /= dmag
+
+     var nl = { x: -dy, y: dx }
+     ,  nr = { x: dy, y: -dx }
+     ,  bl = { x: from.x + (width * from.mag * nl.x),
+               y: from.y + (width * from.mag * nl.y) }
+     ,  br = { x: from.x + (width * from.mag * nr.x),
+               y: from.y + (width * from.mag * nr.y) }
+     ,  tl = { x: to.x + (  width * to.mag *   nl.x),
+               y: to.y + (  width * to.mag *   nl.y) }
+     ,  tr = { x: to.x + (  width * to.mag *   nr.x),
+               y: to.y + (  width * to.mag *   nr.y) }
+    return {
+      bl: bl,
+      br: br,
+      tl: tl,
+      tr: tr
     }
   }
 
   var Brushes = {
     circle: function(from, to, pad) {
-      var brushSize = pad.status === 'starting' || pad.status === 'ending' ? 3 : pad.totalDistanceMoved * 0.2
-      if(pad.history.length < 5 && pad.status !== 'ending') return
-      
+      if(pad.lastQuad && pad.history.length < 3) return
+      if(!pad.lastQuad && pad.history.length < 4) return
+
+      var quads = []
+
+      var quadOne,
+          quadTwo,
+          quadThree = null
+      var index = 0
+      if(pad.lastQuad)
+        quadOne = pad.lastQuad
+      else
+        quadOne = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+      quadTwo = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+      quadThree = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+
       pad.context.strokeStyle = pad.selectedColour 
-      pad.context.lineWidth = brushSize 
-      pad.context.globalAlpha = 1
+      pad.context.fillStyle = pad.selectedColour
+      pad.context.lineWidth = 1 
+      pad.context.globalAlpha = 1.0 
       pad.context.lineJoin = 'round'
+
       pad.context.beginPath()
-      pad.context.moveTo(pad.history[0].x, pad.history[0].y)
-      for(var i = 1; i < pad.history.length; i++) {
-        pad.context.lineTo(pad.history[i].x, pad.history[i].y)
-      }
+      pad.context.moveTo(quadOne.tl.x, quadOne.tl.y)
+      pad.context.lineTo(quadTwo.tl.x, quadTwo.tl.y)
+      pad.context.lineTo(quadThree.tl.x, quadThree.tl.y)
+      pad.context.lineTo(quadThree.tr.x, quadThree.tr.y)
+      pad.context.lineTo(quadTwo.tr.x, quadTwo.tr.y)
+      pad.context.lineTo(quadOne.tr.x, quadOne.tr.y)
+      pad.context.lineTo(quadOne.tl.x, quadOne.tl.y)
+
+      pad.context.closePath()
+      pad.context.fill()
       pad.context.stroke()
 
-      if(pad.status !== 'starting' && pad.history.length > 0) {
-        // Fill in the size changes
-        // Should be able to work out the direction
-        // And the distance either size
-        // and draw then fill a path that blends the two sizes together
-        // LOL
-        pad.context.strokeStyle = '#F00'
-        pad.context.lineWidth = 2 
-
-        var patchFrom = pad.lastHistory[0]
-          , patchTo = pad.history[0]
-          , dx = patchTo.x - patchFrom.x
-          , dy = patchTo.y - patchFrom.y
-          , dmag = Math.sqrt((dx * dx) + (dy * dy))
-        
-         dx /= dmag
-         dy /= dmag
-
-         var nl = { x: -dy, y: dx }
-         ,  nr = { x: dy, y: -dx }
-         ,  bl = { x: patchFrom.x + (0.5 * pad.lastBrushSize * nl.x),
-                   y: patchFrom.y + (0.5 * pad.lastBrushSize * nl.y) }
-         ,  br = { x: patchFrom.x + (0.5 * pad.lastBrushSize * nr.x),
-                   y: patchFrom.y + (0.5 * pad.lastBrushSize * nr.y) }
-         ,  tl = { x: patchTo.x + (  0.5 *      brushSize *    nl.x),
-                   y: patchTo.y + (  0.5 *      brushSize *    nl.y) }
-         ,  tr = { x: patchTo.x + (  0.5 *      brushSize *    nr.x),
-                   y: patchTo.y + (  0.5 *      brushSize *    nr.y) }
-
-         pad.context.beginPath()
-         pad.context.moveTo(bl.x, bl.y)
-         pad.context.lineTo(tl.x, tl.y)
-         pad.context.lineTo(tr.x, tr.y)
-         pad.context.lineTo(br.x, br.y)
-         pad.context.stroke()
-
-      }
-
-      pad.lastHistory = pad.history
-      pad.lastBrushSize = brushSize
-      pad.history = []
-      pad.totalDistanceMoved = 0
-      pad.lastBrushSize = brushSize
-      pad.history.push(to)
       if(pad.status === 'starting') {
         pad.status = 'drawing'
       }
+
+      pad.lastQuad = quadThree
+      var lastHistory = pad.history
+      pad.history = []
+      pad.history.push(lastHistory.pop())
     },
     paint: function(from, to, pad) {
       pad.context.strokeStyle = pad.selectedColour 

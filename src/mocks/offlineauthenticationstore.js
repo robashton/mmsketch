@@ -6,7 +6,14 @@ var OfflineAuthenticationStore = function(store, persistence) {
     "bob",
     "alice",
     "james",
-    "whatsit"
+    "whatsit",
+    "billy",
+    "hilly",
+    "hilda",
+    "jo",
+    "robashton",
+    "dero",
+    "flo"
   ]
 }
 
