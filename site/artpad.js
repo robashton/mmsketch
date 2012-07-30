@@ -101,10 +101,10 @@
       if(pad.lastQuad)
         quads[0] = pad.lastQuad
       else
-        quads[0] = calculateQuadFrom(pad.history[index++], pad.history[index], 0.5)
+        quads[0] = calculateQuadFrom(pad.history[index++], pad.history[index], 0.25)
 
       while(index < pad.history.length-1) {
-        quads.push(calculateQuadFrom(pad.history[index++], pad.history[index], 0.5))
+        quads.push(calculateQuadFrom(pad.history[index++], pad.history[index], 0.25))
       }
 
       pad.context.strokeStyle = pad.selectedColour 
