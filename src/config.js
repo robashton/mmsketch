@@ -5,7 +5,7 @@ var config = {
     fbclientsecret: 'b5290692796e002d8a442bf346e810db',
     port: 8080,
     secret: 'i like coffee',
-    roundTime: 10,
+    roundTime: 90,
     roundIntervalTime: 10000,
     redisport: null,
     imageDir: '/home/robashton/working/images/'
