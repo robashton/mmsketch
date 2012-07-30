@@ -10,7 +10,7 @@ var config = {
     redisport: null,
     imageDir: '/home/robashton/working/images/'
   },
-  'prod': {
+  'production': {
     fbcallback: 'http://wedrawthings.com/auth/facebook/callback',
     fbclientid: '174303766035042',
     fbclientsecret: 'a6bea18ad44248eb94a348471eccc729',
