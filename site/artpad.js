@@ -85,7 +85,10 @@
       bl: bl,
       br: br,
       tl: tl,
-      tr: tr
+      tr: tr,
+      cx: (bl.x + tr.x) / 2,
+      cy: (bl.y + tr.y) / 2,
+      width: Math.abs(bl.x - tr.x)
     }
   }
 
@@ -137,15 +140,13 @@
       pad.history.push(lastHistory.pop())
     },
     paint: function(from, to, pad) {
-      pad.context.strokeStyle = pad.selectedColour 
-      pad.context.lineWidth = 50 
-      pad.context.globalAlpha = 0.1 
-      pad.context.lineJoin = 'bevel'
-      pad.context.lineCap = 'round'
+      var quad = calculateQuadFrom(from, to, 3.0) 
+      pad.context.fillStyle = pad.selectedColour
+      pad.context.globalAlpha = 0.03
       pad.context.beginPath()
-      pad.context.moveTo(from.x, from.y)
-      pad.context.lineTo(to.x, to.y)
-      pad.context.stroke()
+      pad.context.arc(quad.cx, quad.cy, quad.width / 2.0, 0, Math.PI * 2, true)
+      pad.context.closePath()
+      pad.context.fill()
     },
     pencil: function(from, to, pad) {
       Brushes.circle(from, to, pad)
