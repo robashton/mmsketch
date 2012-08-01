@@ -314,6 +314,9 @@
         result = 0
 
     hue = hue % 1.0
+
+    if(hue < 0)
+      hue = hue + 1.0
     
     if(hue < sixth)
       result = m1 + (m2-m1) * hue * 6.0
