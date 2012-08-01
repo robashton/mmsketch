@@ -4,6 +4,8 @@
     this.canvas.width = width || this.canvas.width
     this.canvas.height = height || this.canvas.height
     this.context = this.canvas.getContext('2d')
+    this.width = width
+    this.height = height
   }
   Canvas.prototype = {}
   exports.Canvas = Canvas

@@ -164,6 +164,7 @@
         0, 0, 100, 100)
 
       // Then we draw our desired picture to our other canvas too
+      pad.offscreencontext2.globalAlpha = 0.01
       pad.offscreencontext2.fillStyle = pad.selectedColour
       pad.offscreencontext2.beginPath()
       pad.offscreencontext2.arc(50, 50, 50, 0, Math.PI * 2, true)
@@ -200,6 +201,7 @@
       pad.offscreencontext3.putImageData(one, 0, 0)
 
       // Then draw that on top of the original canvas
+      pad.context.globalAlpha = 0.1
       pad.context.drawImage(
         pad.offscreen3.canvas,
         0, 0, 100, 100,
@@ -237,8 +239,8 @@
     }
     else {
       out[1] = 0.5 * (one[1] + two[1])
-      out[2] = (one[2] * two[2])
-      out[3] = Math.min(one[3] + two[3], 255)
+      out[2] = 0.5 * (one[2] + two[2])
+      out[3] = 255 
       var x = Math.cos(2.0 * pi * one[0]) + Math.cos(2.0 * pi * two[0])
       var y = Math.sin(2.0 * pi * one[0]) + Math.sin(2.0 * pi * two[0])
 
@@ -294,7 +296,7 @@
         m1 = 0
 
     if(hls[2] === 0) 
-      return [hls[1], hls[1], hls[1], hls[3]]
+      return [hls[1] * 255, hls[1] * 255, hls[1] * 255, hls[3]]
 
     if(hls[1] <= 0.5)
       m2 = hls[1] * (1.0 + hls[2])
