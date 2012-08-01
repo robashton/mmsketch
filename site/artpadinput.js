@@ -4,7 +4,7 @@
     this.game = game
     this.canvas = document.getElementById('surface')
     this.context = this.canvas.getContext('2d')
-    this.pad = new ArtPad(this.canvas, this.context)
+    this.pad = new ArtPad(Canvas)
     this.colourContainer = $('#paintbrush-colours')
     this.brushContainer = $('#paintbrush-brushes')
     this.colours = {}

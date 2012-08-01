@@ -1,4 +1,4 @@
-var Canvas = require('canvas'),
+var MemoryCanvas = require('./memorycanvas'),
     ArtPad = require('./artpad'),
     fs = require('fs'),
     config = require('./config')
@@ -7,9 +7,7 @@ var ImageGenerator = function(game) {
   this.game = game
   this.lobby = game.lobby
   this.logger = game.gamelogger
-  this.canvas = new Canvas(800, 600)
-  this.context = this.canvas.getContext('2d')
-  this.pad = new ArtPad(this.canvas, this.context)
+  this.pad = new ArtPad(MemoryCanvas)
   this.lobby.on('RoundStarted', this.onRoundStarted.bind(this))
   this.logger.on('RoundSaved', this.onRoundSaved.bind(this))
   this.onPlayerDrawEvent = this.onPlayerDrawEvent.bind(this)
@@ -43,7 +41,7 @@ ImageGenerator.prototype = {
   },
   saveImageData: function(id, cb) {
     var out = fs.createWriteStream(config.imageDir + id + '.png')
-      , stream = this.canvas.createPNGStream();
+      , stream = this.pad.canvas.canvas.createPNGStream();
 
     stream.on('data', function(chunk){
       out.write(chunk);

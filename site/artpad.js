@@ -1,11 +1,11 @@
 
 (function(exports) {
 
-  var ArtPad = function(canvas, context) {
+  var ArtPad = function(Canvas) {
     this.lastPosition = null
     this.selectedBrush = null
-    this.canvas = canvas
-    this.context = context
+    this.canvas = new Canvas('surface', 800, 600)
+    this.context = this.canvas.context
     this.selectedColour = null
     this.history = []
     this.totalDistanceMoved = 0
@@ -13,14 +13,13 @@
     this.numberOfSteps = 0
     this.averageDistanceMoved = 0
     this.status = null
-    this.offscreen1 = document.createElement('canvas')
-    this.offscreen1.width = 100
-    this.offscreen1.height = 100
-    this.offscreencontext1 = this.offscreen.getContext('2d')
-    this.offscreen2 = document.createElement('canvas')
-    this.offscreen2.width = 100
-    this.offscreen2.height = 100
-    this.offscreencontext2 = this.offscreen.getContext('2d')
+    this.offscreen1 = new Canvas('offscreen1', 100, 100)
+    this.offscreencontext1 = this.offscreen1.context
+    this.offscreen2 = new Canvas('offscreen2', 100, 100)
+    this.offscreencontext2 = this.offscreen2.context
+    this.offscreen3 = new Canvas('offscreen3', 100, 100)
+    this.offscreencontext3 = this.offscreen3.context
+    this.clear()
   }
 
   ArtPad.prototype = {
@@ -148,30 +147,32 @@
       pad.history.push(lastHistory.pop())
     },
     paint: function(from, to, pad) {
-      var quad = calculateQuadFrom(from, to, 3.0) 
-      pad.context.fillStyle = pad.selectedColour
-      pad.context.globalAlpha = 0.01
+      if(pad.history.length < 2) return
+      var quad = calculateQuadFrom(pad.history[0], pad.history[1], 3.0) 
+      pad.history = []
 
       // Okay, so first we draw to another canvas
       // rationale: We can actually make this canvas smaller
       // before getting the image data
-      pad.offscreencontext1.globalAlpha = 1.0
+      pad.offscreencontext3.clearRect(0, 0, 100, 100)
+      pad.offscreencontext2.clearRect(0, 0, 100, 100)
       pad.offscreencontext1.clearRect(0, 0, 100, 100)
+
       pad.offscreencontext1.drawImage(
-        pad.canvas,
-        quad.cx - 50, quad.cy - 50, 100, 100,
+        pad.canvas.canvas,
+        quad.cx - 50, quad.cy - 50, 100, 100, 
         0, 0, 100, 100)
 
-
       // Then we draw our desired picture to our other canvas too
+      pad.offscreencontext2.fillStyle = pad.selectedColour
       pad.offscreencontext2.beginPath()
       pad.offscreencontext2.arc(50, 50, 50, 0, Math.PI * 2, true)
       pad.offscreencontext2.closePath()
       pad.offscreencontext2.fill()
 
       // Then we get the pixel data from that offscreen canvas
-      var one = pad.offscreencontext.createImageData(100, 100);
-      var two = pad.offscreencontext.createImageData(100, 100);
+      var one = pad.offscreencontext1.getImageData(0, 0, 100, 100);
+      var two = pad.offscreencontext2.getImageData(0, 0, 100, 100);
       
       var pixelOne = [0,0,0,0];
       var pixelTwo = [0,0,0,0];
@@ -184,24 +185,23 @@
 
           // We fill the array for that pixel
           for(var p = 0; p < 4; p++) {
-            pixelOne[p] = one[index + p]
-            pixelTwo[p] = two[index + p]
+            pixelOne[p] = one.data[index + p]
+            pixelTwo[p] = two.data[index + p]
           }
+
           // We blend the fuckers
-          blendRgb(pixelOne, pixelTwo, pixelOutput)
+          pixelOutput = blendRgb(pixelOne, pixelTwo, pixelOutput)
 
           // And we write back to canvas one array
           for(p = 0; p < 4; p++)
-            one[index + p] = pixelOutput[p]
+            one.data[index + p] = pixelOutput[p]
         }
       }
-
-      // Then we copy back into canvas one
-      pad.offscreencontext1.putImageData(one, 0, 0);
+      pad.offscreencontext3.putImageData(one, 0, 0)
 
       // Then draw that on top of the original canvas
       pad.context.drawImage(
-        pad.offscreencontext1,
+        pad.offscreen3.canvas,
         0, 0, 100, 100,
         quad.cx - 50, quad.cy - 50, 100, 100)
     },
@@ -211,90 +211,126 @@
   }
 
   function blendRgb(one, two, out) {
-    rgb2hsl(one)
-    rgb2hsl(two)
+    one = rgb2hls(one)
+    two = rgb2hls(two)
 
-    for(var i = 0 ; i < 3 ; i++)
-      out[i] = (one[i] + two[i]) * 0.5
+    var pi = 3.1415
+    out[0] = 0.0
 
-    hsl2rgb(out)
-  }
+    if(one[3] === 0 && two[3] === 0) {
+      out[0] = 0
+      out[1] = 0
+      out[2] = 0
+      out[3] = 0 
+    }
+    else if(one[3] === 0 && two[3] !== 0) {
+      out[0] = two[0]
+      out[1] = two[1]
+      out[2] = two[2]
+      out[3] = two[3] 
+    }
+    else if(two[3] === 0 && one[3] !== 0) {
+      out[0] = one[0]
+      out[1] = one[1]
+      out[2] = one[2]
+      out[3] = one[3] 
+    }
+    else {
+      out[1] = 0.5 * (one[1] + two[1])
+      out[2] = (one[2] * two[2])
+      out[3] = Math.min(one[3] + two[3], 255)
+      var x = Math.cos(2.0 * pi * one[0]) + Math.cos(2.0 * pi * two[0])
+      var y = Math.sin(2.0 * pi * one[0]) + Math.sin(2.0 * pi * two[0])
 
-  function rgb2hsl(rgb) {
-    var r = rgb[0]/255,
-        g = rgb[1]/255,
-        b = rgb[2]/255,
-        min = Math.min(r, g, b),
-        max = Math.max(r, g, b),
-        delta = max - min,
-        h, s, l;
-
-    if (max === min)
-      h = 0;
-    else if (r === max) 
-      h = (g - b) / delta; 
-    else if (g === max)
-      h = 2 + (b - r) / delta; 
-    else if (b === max)
-      h = 4 + (r - g)/ delta;
-
-    h = Math.min(h * 60, 360);
-
-    if (h < 0)
-      h += 360;
-
-    l = (min + max) / 2;
-
-    if (max === min)
-      s = 0;
-    else if (l <= 0.5)
-      s = delta / (max + min);
-    else
-      s = delta / (2 - max - min);
-
-    rgb[0] = h;
-    rgb[1] = s * 100;
-    rgb[2] = l * 100;
-  }
-
-  function hsl2rgb(hsl) {
-    var h = hsl[0] / 360,
-        s = hsl[1] / 100,
-        l = hsl[2] / 100,
-        t1, t2, t3, rgb, val;
-
-    if (s === 0) {
-      val = l * 255;
-      h[0] = val;
-      h[1] = val;
-      h[2] = val;
-      return;
+      if(x !== 0 || y !== 0) {
+        out[0] = Math.atan2(y, x) / (2.0 * pi)
+      } else {
+        out[2] = 0.0
+      }
     }
 
-    if (l < 0.5)
-      t2 = l * (1 + s);
-    else
-      t2 = l + s - l * s;
-    t1 = 2 * l - t2;
-
-    rgb = [0, 0, 0];
-    for (var i = 0; i < 3; i++) {
-      t3 = h + 1 / 3 * - (i - 1);
-      t3 < 0 && t3++;
-      t3 > 1 && t3--;
-
-      if (6 * t3 < 1)
-        val = t1 + (t2 - t1) * 6 * t3;
-      else if (2 * t3 < 1)
-        val = t2;
-      else if (3 * t3 < 2)
-        val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-      else
-        val = t1;
-
-      hsl[i] = val * 255;
-    }
+    out = hls2rgb(out)
+    return out
   }
+
+  function rgb2hls(rgb) {
+    rgb[0] /= 255.0
+    rgb[1] /= 255.0
+    rgb[2] /= 255.0
+
+    var maxc = Math.max(rgb[0], rgb[1], rgb[2]),
+        minc = Math.min(rgb[0], rgb[1], rgb[2]),
+        l = (minc + maxc) / 2.0,
+        span = maxc - minc,
+        h = 0,
+        s = 0,
+        rc,gc,bc = 0
+
+    if(minc === maxc) return [ 0, l, 0, rgb[3]]
+
+    if(l <= 0.5)
+      s = span / (maxc + minc)
+    else
+      s = span / (2.0 - maxc - minc)
+
+    rc = (maxc - rgb[0]) / span
+    gc = (maxc - rgb[1]) / span
+    bc = (maxc - rgb[2]) / span
+
+    if(rgb[0] === maxc)
+      h = bc - gc
+    else if(rgb[1] === maxc)
+      h = 2.0 + rc - bc
+    else
+      h = 4.0 + gc - rc
+
+    h = (h / 6.0) % 1.0
+    return [h, l, s, rgb[3]]
+  }
+
+  function hls2rgb(hls) {
+    var third = 1.0 / 3.0,
+        m2 = 0,
+        m1 = 0
+
+    if(hls[2] === 0) 
+      return [hls[1], hls[1], hls[1], hls[3]]
+
+    if(hls[1] <= 0.5)
+      m2 = hls[1] * (1.0 + hls[2])
+    else
+      m2 = hls[1] + hls[2] - (hls[1] * hls[2])
+
+    m1 = 2.0 * hls[1] - m2
+    return [_v(m1, m2, hls[0] + third),
+            _v(m1, m2, hls[0])        ,
+            _v(m1, m2, hls[0] - third),
+            hls[3]]
+  }
+
+  function _v(m1, m2, hue) {
+    var sixth = 1.0 / 6.0,
+        twothirds = 2.0 / 3.0,
+        result = 0
+
+    hue = hue % 1.0
+    
+    if(hue < sixth)
+      result = m1 + (m2-m1) * hue * 6.0
+    else if(hue < 0.5)
+      result = m2
+    else if(hue < twothirds)
+      result = m1 + (m2-m1) * (twothirds-hue) * 6.0
+    else
+      result = m1
+
+    result *= 255.0
+    return result
+  }
+
+  ArtPad.hls2rgb = hls2rgb
+  ArtPad.rgb2hls = rgb2hls
+  ArtPad.blendRgb = blendRgb
 
   if(typeof module !== 'undefined' && module.exports) 
     module.exports = ArtPad
