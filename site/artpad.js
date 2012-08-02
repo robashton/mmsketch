@@ -18,14 +18,13 @@
     this.offscreencontext = this.offscreen.context
     this.paintBrushImage = Canvas.createImage('img/paintbrush.png')
     var pad = this
-    setTimeout(function() {
-    // Generate the alpha map
+    this.paintBrushImage.onload = function() {
     pad.offscreencontext.clearRect(0, 0, 100, 100)
     pad.offscreencontext.drawImage(
       pad.paintBrushImage,
       0, 0, 100, 100)
 
-    }, 500);
+    }
   }
 
   ArtPad.prototype = {
