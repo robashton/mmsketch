@@ -151,6 +151,14 @@
       var quad = calculateQuadFrom(pad.history[0], pad.history[1], 3.0) 
       pad.history = []
 
+      pad.context.globalAlpha = 0.01
+      pad.context.fillStyle = pad.selectedColour
+      pad.context.beginPath()
+      pad.context.arc(quad.cx, quad.cy, 50, 0, Math.PI * 2, true)
+      pad.context.closePath()
+      pad.context.fill()
+
+
       // Okay, so first we draw to another canvas
       // rationale: We can actually make this canvas smaller
       // before getting the image data
@@ -158,6 +166,7 @@
       pad.offscreencontext2.clearRect(0, 0, 100, 100)
       pad.offscreencontext1.clearRect(0, 0, 100, 100)
 
+      /*
       pad.offscreencontext1.drawImage(
         pad.canvas.canvas,
         quad.cx - 50, quad.cy - 50, 100, 100, 
@@ -201,11 +210,12 @@
       pad.offscreencontext3.putImageData(one, 0, 0)
 
       // Then draw that on top of the original canvas
-      pad.context.globalAlpha = 0.1
+      pad.context.globalAlpha = 1.0 
       pad.context.drawImage(
         pad.offscreen3.canvas,
         0, 0, 100, 100,
         quad.cx - 50, quad.cy - 50, 100, 100)
+      */
     },
     pencil: function(from, to, pad) {
       Brushes.circle(from, to, pad)
@@ -213,43 +223,31 @@
   }
 
   function blendRgb(one, two, out) {
-    one = rgb2hls(one)
-    two = rgb2hls(two)
+    rgb2hls(one)
+    rgb2hls(two)
 
-    var pi = 3.1415
-    out[0] = 0.0
+    // If we're blending with white, then we want to 
+    // interpolate from the same colour as we're drawing
+    if(one[1] >= 0.9)
+      one[0] = two[0]
 
-    if(one[3] === 0 && two[3] === 0) {
-      out[0] = 0
-      out[1] = 0
-      out[2] = 0
-      out[3] = 0 
-    }
-    else if(one[3] === 0 && two[3] !== 0) {
-      out[0] = two[0]
-      out[1] = two[1]
-      out[2] = two[2]
-      out[3] = two[3] 
-    }
-    else if(two[3] === 0 && one[3] !== 0) {
-      out[0] = one[0]
-      out[1] = one[1]
-      out[2] = one[2]
-      out[3] = one[3] 
-    }
-    else {
-      out[1] = 0.5 * (one[1] + two[1])
-      out[2] = 0.5 * (one[2] + two[2])
+    // If the destination is really light then we probably
+    // don't want to
+    //
+    // Blend one part paint with 19 parts canvas
+    out[0] = 0.05 * (one[0] * 19 + two[0])
+
+    // Blend the lightness, one part paint, 19 parts canvas
+    out[1] = 0.05 * (one[1] * 19 + two[1])
+
+    // Just add the saturation
+    out[2] = 0.5 * (one[2] + two[2])
+
+    // If our paint is transparent, then don't draw anything
+    if(two[3] === 0)
+      out[3] = 0
+    else
       out[3] = 255 
-      var x = Math.cos(2.0 * pi * one[0]) + Math.cos(2.0 * pi * two[0])
-      var y = Math.sin(2.0 * pi * one[0]) + Math.sin(2.0 * pi * two[0])
-
-      if(x !== 0 || y !== 0) {
-        out[0] = Math.atan2(y, x) / (2.0 * pi)
-      } else {
-        out[2] = 0.0
-      }
-    }
 
     out = hls2rgb(out)
     return out
@@ -268,7 +266,12 @@
         s = 0,
         rc,gc,bc = 0
 
-    if(minc === maxc) return [ 0, l, 0, rgb[3]]
+    if(minc === maxc) {
+      rgb[0] = 0
+      rgb[1] = l
+      rgb[2] = 0
+      return;
+    }
 
     if(l <= 0.5)
       s = span / (maxc + minc)
@@ -287,7 +290,9 @@
       h = 4.0 + gc - rc
 
     h = (h / 6.0) % 1.0
-    return [h, l, s, rgb[3]]
+    rgb[0] = h
+    rgb[1] = l
+    rgb[2] = s
   }
 
   function hls2rgb(hls) {
@@ -318,8 +323,8 @@
     hue = hue % 1.0
 
     if(hue < 0)
-      hue = hue + 1.0
-    
+      hue += 1.0
+
     if(hue < sixth)
       result = m1 + (m2-m1) * hue * 6.0
     else if(hue < 0.5)
