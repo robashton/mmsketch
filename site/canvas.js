@@ -7,6 +7,12 @@
     this.width = width
     this.height = height
   }
-  Canvas.prototype = {}
+  Canvas.prototype =  {
+  }
+  Canvas.createImage = function(path) {
+    var img = new Image()
+    img.src = path
+    return img
+  }
   exports.Canvas = Canvas
 }(window))

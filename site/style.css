@@ -7,7 +7,7 @@ body {
 }
 
 canvas {
-  background-color: #000;
+  background-color: #FFF;
   width: 100%;
   border: 1px solid #DDD;
   -webkit-box-shadow: 2px 2px 10px 1px rgba(128, 128, 128, 0.5);

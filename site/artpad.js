@@ -13,20 +13,26 @@
     this.numberOfSteps = 0
     this.averageDistanceMoved = 0
     this.status = null
-    this.offscreen1 = new Canvas('offscreen1', 100, 100)
-    this.offscreencontext1 = this.offscreen1.context
-    this.offscreen2 = new Canvas('offscreen2', 100, 100)
-    this.offscreencontext2 = this.offscreen2.context
-    this.offscreen3 = new Canvas('offscreen3', 100, 100)
-    this.offscreencontext3 = this.offscreen3.context
     this.clear()
+    this.offscreen = new Canvas('offscreen1', 100, 100)
+    this.offscreencontext = this.offscreen.context
+    this.paintBrushImage = Canvas.createImage('img/paintbrush.png')
+    var pad = this
+    setTimeout(function() {
+    // Generate the alpha map
+    pad.offscreencontext.clearRect(0, 0, 100, 100)
+    pad.offscreencontext.drawImage(
+      pad.paintBrushImage,
+      0, 0, 100, 100)
+
+    }, 500);
   }
 
   ArtPad.prototype = {
     clear: function() {
       this.context.fillStyle = '#FFF'
       this.context.globalAlpha = 1.0
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
     startDrawing: function(position) {
       this.lastPosition = position
@@ -150,72 +156,22 @@
       if(pad.history.length < 2) return
       var quad = calculateQuadFrom(pad.history[0], pad.history[1], 3.0) 
       pad.history = []
-
-      pad.context.globalAlpha = 0.01
-      pad.context.fillStyle = pad.selectedColour
-      pad.context.beginPath()
-      pad.context.arc(quad.cx, quad.cy, 50, 0, Math.PI * 2, true)
-      pad.context.closePath()
-      pad.context.fill()
-
-
-      // Okay, so first we draw to another canvas
-      // rationale: We can actually make this canvas smaller
-      // before getting the image data
-      pad.offscreencontext3.clearRect(0, 0, 100, 100)
-      pad.offscreencontext2.clearRect(0, 0, 100, 100)
-      pad.offscreencontext1.clearRect(0, 0, 100, 100)
-
-      /*
-      pad.offscreencontext1.drawImage(
-        pad.canvas.canvas,
-        quad.cx - 50, quad.cy - 50, 100, 100, 
-        0, 0, 100, 100)
-
-      // Then we draw our desired picture to our other canvas too
-      pad.offscreencontext2.globalAlpha = 0.01
-      pad.offscreencontext2.fillStyle = pad.selectedColour
-      pad.offscreencontext2.beginPath()
-      pad.offscreencontext2.arc(50, 50, 50, 0, Math.PI * 2, true)
-      pad.offscreencontext2.closePath()
-      pad.offscreencontext2.fill()
-
-      // Then we get the pixel data from that offscreen canvas
-      var one = pad.offscreencontext1.getImageData(0, 0, 100, 100);
-      var two = pad.offscreencontext2.getImageData(0, 0, 100, 100);
       
-      var pixelOne = [0,0,0,0];
-      var pixelTwo = [0,0,0,0];
-      var pixelOutput = [0,0,0,0];
 
-      // Then for every pixel
-      for(var i = 0 ; i < 100 ; i++) {
-        for(var j = 0; j < 100 ; j++) {
+      var source = pad.offscreencontext.getImageData(0, 0, 100, 100)
+      for(var i = 0;  i < 100 ; i++) {
+        for(var j = 0 ; j < 100 ; j++) {
           var index = (i + j * 100) * 4
-
-          // We fill the array for that pixel
-          for(var p = 0; p < 4; p++) {
-            pixelOne[p] = one.data[index + p]
-            pixelTwo[p] = two.data[index + p]
-          }
-
-          // We blend the fuckers
-          pixelOutput = blendRgb(pixelOne, pixelTwo, pixelOutput)
-
-          // And we write back to canvas one array
-          for(p = 0; p < 4; p++)
-            one.data[index + p] = pixelOutput[p]
+          source.data[index] = 255 
+          source.data[index+1] = 0
+          source.data[index+2] = 0
         }
       }
-      pad.offscreencontext3.putImageData(one, 0, 0)
 
-      // Then draw that on top of the original canvas
-      pad.context.globalAlpha = 1.0 
-      pad.context.drawImage(
-        pad.offscreen3.canvas,
-        0, 0, 100, 100,
+      pad.offscreencontext.putImageData(source, 0, 0) 
+      pad.context.globalAlpha = 0.02
+      pad.context.drawImage(pad.offscreen.canvas,
         quad.cx - 50, quad.cy - 50, 100, 100)
-      */
     },
     pencil: function(from, to, pad) {
       Brushes.circle(from, to, pad)
