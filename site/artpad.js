@@ -173,7 +173,22 @@
         quad.cx - 50, quad.cy - 50, 100, 100)
     },
     pencil: function(from, to, pad) {
-      Brushes.circle(from, to, pad)
+      if(pad.history.length < 5) return
+
+
+      pad.context.globalAlpha = 1.0 / (pad.averageDistanceMoved / 5)
+
+      pad.context.lineWidth = 2 
+      pad.context.strokeStyle = pad.selectedColour
+      pad.context.beginPath()
+      pad.context.moveTo(pad.history[0].x, pad.history[0].y)
+
+      for(var i = 1; i < pad.history.length; i++)
+        pad.context.lineTo(pad.history[i].x, pad.history[i].y)
+      pad.context.stroke()
+
+      var lastItem = pad.history[pad.history.length-1]
+      pad.history = [ lastItem ]
     }
   }
 
