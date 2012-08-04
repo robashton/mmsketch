@@ -19,7 +19,7 @@ Scenario "Replaying events from a finished game", ->
         done()
 
   When "the artist picks a brush", ->
-    artist.pad.doChooseBrush('hair')
+    artist.pad.doChooseBrush('paint')
 
   And "the artist picks a colour", ->
     artist.pad.doChooseColour('red')
@@ -45,7 +45,7 @@ Scenario "Replaying events from a finished game", ->
     
   And "the first event should be picking a brush", ->
     gameData.events[0].event.should.equal 'selectbrush'
-    gameData.events[0].data.should.equal 'hair'
+    gameData.events[0].data.should.equal 'paint'
 
   And "the second event should be picking a colour", ->
     gameData.events[1].event.should.equal 'selectcolour'

@@ -9,5 +9,4 @@ ManualGameEnder.prototype = {
 
 }
 
-
 module.exports = ManualGameEnder

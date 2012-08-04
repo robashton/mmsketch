@@ -1,4 +1,4 @@
-debug = false
+debug = true
 redis = false
 Browser = require 'zombie'
 fork = require('child_process').fork

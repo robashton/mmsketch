@@ -2,35 +2,31 @@ var EventEmitter = require('events').EventEmitter,
     GameInstance = require('./game'),
     _ = require('underscore'),
     config = require('./config'),
-    MemoryStore = require('connect').middleware.session.MemoryStore,
     ScoreKeeper = require('./scorekeeper'),
     GameLogger = require('./gamelogger'),
     ImageGenerator = require('./imagegenerator')
     
 var WordSource = null,
-    AuthStore = null,
-    GameEnder = null,
-    Persistence = null
+    GameEnder = null
    
-var GameServer = function() {
+var GameServer = function(io, sessions, persistence) {
   EventEmitter.call(this)
   this.app = null
   this.game = null
-  this.sessions = new MemoryStore()
-  this.persistence = null
+  this.sessions = sessions
+  this.io = io
+  this.persistence = persistence
   this.scoreKeeper = null
   this.gamelogger = null
   this.imageGenerator = null
   setupOptionalDependencies()
+  this.bootstrap()
 }
 
 GameServer.prototype = {
-  bootstrap: function(app) {
-    this.app = app
-    this.persistence = new Persistence()
+  bootstrap: function() {
     this.game = new GameInstance(
-        this.app, 
-        this.createSessionStore(), 
+        this.io,
         this.createWordSource())
     this.scoreKeeper = new ScoreKeeper(this.persistence, this.game)
     this.gametimer = this.createGameTimer()
@@ -44,9 +40,6 @@ GameServer.prototype = {
   createWordSource: function() {
     return new WordSource()
   },
-  createSessionStore: function() {
-    return new AuthStore(this.sessions, this.persistence)
-  },
   createGameTimer: function() {
     return new GameEnder(this.game)
   }
@@ -57,22 +50,10 @@ module.exports = GameServer
 
 function setupOptionalDependencies() {
   if(process.env.test) {
-    AuthStore = require('./mocks/testauthenticationstore')
     GameEnder = require('./mocks/manualgameender')
     WordSource = require('./mocks/sequentialwordsource')
-    if(process.env.redis === true) {
-      Persistence = require('./redispersistence')
-    }
-    else {
-      Persistence = require('./mocks/inmemorypersistence')
-    }
   } else {
-    if(process.env.offline)
-      AuthStore = require('./mocks/offlineauthenticationstore')
-    else
-      AuthStore = require('./expressauthenticationstore')
     GameEnder = require('./timedgameender')
     WordSource = require('./fixedwordsource')
-    Persistence = require('./redispersistence')
   }
 }

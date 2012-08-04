@@ -5,11 +5,11 @@ var socketio = require('socket.io')
 ,   _ = require('underscore')
 ,   config = require('./config')
 
-var Game = function(server, authentication, wordSource) {
+var Game = function(io, wordSource) {
   Eventable.call(this)
 
-  this.server = server
   this.players = {}
+  this.io = io
   this.wordSource = wordSource
   this.playerCount = 0
   this.gamestarted = false
@@ -17,8 +17,6 @@ var Game = function(server, authentication, wordSource) {
   this.firstCorrectGuesser = null
   this.correctGuesserCount = 0 
   this.currentWord = ''
-  this.authentication = authentication
-  this.startListening()
 }
 
 
@@ -121,17 +119,6 @@ Game.prototype = {
     this.io.sockets.emit('startround')
     this.raise('RoundStarted')
   },
-  handleAuthorization: function(data, accept) {
-    this.authentication.get(data.headers, function(err, session) {
-      if(err || !session) {
-        return accept("Couldn't find session, please re-login", false)
-      }
-      if(!session.passport.user)
-        return accept('Not logged in yet, please log in!', false)
-      data.user = session.passport.user
-      accept(null, true)
-    })
-  },
   sendRoundIdToClients: function(id) {
     this.io.sockets.emit('lastroundid', id)
   },
@@ -147,7 +134,7 @@ Game.prototype = {
     if((this.correctGuesserCount / (this.playerCount-1)) > 0.60)
       this.nextGame()
   },
-  handleNewSocket: function(socket) {
+  newSocket: function(socket) {
     var player = new Player(this, socket)
     this.addPlayer(player)
     this.hookDisconnection(socket, player)
@@ -160,13 +147,6 @@ Game.prototype = {
   },
   broadcast: function(msg, data) {
     this.io.sockets.emit(msg, data)
-  },
-  startListening: function() {
-    var io = socketio.listen(this.server)
-    this.io = io
-    io.set('log level', 0)
-    io.set('authorization', this.handleAuthorization.bind(this))
-    io.on('connection', this.handleNewSocket.bind(this))
   }
 }
 _.extend(Game.prototype, Eventable.prototype)
