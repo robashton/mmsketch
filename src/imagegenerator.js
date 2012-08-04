@@ -3,19 +3,19 @@ var MemoryCanvas = require('./memorycanvas'),
     fs = require('fs'),
     config = require('./config')
 
-var ImageGenerator = function(game) {
-  this.game = game
-  this.lobby = game.lobby
-  this.logger = game.gamelogger
+var ImageGenerator = function(server) {
+  this.server = server
+  this.game = server.game
+  this.logger = server.gamelogger
   this.pad = new ArtPad(MemoryCanvas)
-  this.lobby.on('RoundStarted', this.onRoundStarted.bind(this))
+  this.game.on('RoundStarted', this.onRoundStarted.bind(this))
   this.logger.on('RoundSaved', this.onRoundSaved.bind(this))
   this.onPlayerDrawEvent = this.onPlayerDrawEvent.bind(this)
 }
 
 ImageGenerator.prototype = {
   onRoundStarted: function() {
-    this.currentArtist = this.lobby.currentArtist
+    this.currentArtist = this.game.currentArtist
     this.currentArtist.on('DrawingEvent', this.onPlayerDrawEvent)
   },
   onRoundSaved: function(id) {

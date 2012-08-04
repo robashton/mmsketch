@@ -2,9 +2,9 @@ var Eventable = require('./eventable')
 var _ = require('underscore')
 var config = require('./config')
 
-var Player = function(lobby, socket) {
+var Player = function(game, socket) {
   Eventable.call(this)
-  this.lobby = lobby
+  this.game = game
   this.socket = socket
   this.user = socket.handshake.user
   this.globalScore = null
@@ -20,7 +20,7 @@ var Player = function(lobby, socket) {
 
 Player.prototype = {
   isDrawing: function() {
-    return this === this.lobby.currentArtist 
+    return this === this.game.currentArtist 
   },
   addToScore: function(amount) {
     this.globalScore += amount
@@ -33,28 +33,28 @@ Player.prototype = {
   },
   startDrawing: function(word) {
     this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
+      clientCount: this.game.playerCount,
       status: 'drawing',
       word: word,
       player: this.getJSON()
     })
     this.socket.broadcast.emit('status', {
-      clientCount: this.lobby.playerCount,
+      clientCount: this.game.playerCount,
       status: 'guessing',
       player: this.getJSON()
     })
   },
   startWaiting: function() {
     this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
+      clientCount: this.game.playerCount,
       status: 'waiting',
     })
   },
   startGuessing: function() {
     this.socket.emit('status', {
-      clientCount: this.lobby.playerCount,
+      clientCount: this.game.playerCount,
       status: 'guessing',
-      player: this.lobby.currentArtist.getJSON()
+      player: this.game.currentArtist.getJSON()
     })
   },
   sendGlobalScore: function(score) {
@@ -86,10 +86,10 @@ Player.prototype = {
             this.user.username + '/picture'
   },
   onGuess: function(word) {
-    if(word.toUpperCase() === this.lobby.currentWord.toUpperCase()) {
-      this.lobby.notifyOfCorrectGuess(this)
+    if(word.toUpperCase() === this.game.currentWord.toUpperCase()) {
+      this.game.notifyOfCorrectGuess(this)
       this.socket.emit('correct', {
-        word: this.lobby.currentWord,
+        word: this.game.currentWord,
         player: this.getJSON(),
         win: true
       })
