@@ -9,7 +9,7 @@ var EventEmitter = require('events').EventEmitter,
 var WordSource = null,
     GameEnder = null
    
-var GameServer = function(io, sessions, persistence) {
+var GameServer = function(io, index, sessions, persistence) {
   EventEmitter.call(this)
   this.app = null
   this.game = null
@@ -17,6 +17,7 @@ var GameServer = function(io, sessions, persistence) {
   this.io = io
   this.persistence = persistence
   this.scoreKeeper = null
+  this.index = index
   this.gamelogger = null
   this.imageGenerator = null
   setupOptionalDependencies()
@@ -27,6 +28,7 @@ GameServer.prototype = {
   bootstrap: function() {
     this.game = new GameInstance(
         this.io,
+        this.index,
         this.createWordSource())
     this.scoreKeeper = new ScoreKeeper(this.persistence, this.game)
     this.gametimer = this.createGameTimer()

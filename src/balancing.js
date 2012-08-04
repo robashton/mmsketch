@@ -34,11 +34,10 @@ Balancing.prototype = {
     }
 
     if(!availableServer) {
-      availableServer = new GameServer(this.io, this.sessions, this.persistence)
+      availableServer = new GameServer(this.io, this.games.length, this.sessions, this.persistence)
       this.games.push(availableServer)
       this.hookServerEvents(availableServer)
     }
-    console.log('games count', this.games.length)
     availableServer.game.newSocket(socket)
   },
   hookServerEvents: function(server) {

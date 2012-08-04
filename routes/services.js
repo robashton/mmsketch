@@ -6,7 +6,9 @@ module.exports = function(app, server) {
       game = server.game
     
   app.get('/players', function(req, res) {
-    res.send(playerData) 
+    if(!req.user)
+      return res.end(401)
+    res.send(playerData[req.user.gameIndex]) 
   })
 
   app.get('/round/:id', function(req, res) {
@@ -35,16 +37,15 @@ module.exports = function(app, server) {
     recentRounds.unshift(id)
   }
 
-  function refreshPlayerData() {
-    playerData = []
-    var players = server.getPlayers(0)
+  function refreshPlayerData(changedPlayer) {
+    var localPlayerData = []
+    var players = server.getPlayers(changedPlayer.gameIndex)
     for(var i in players) {
       var player = players[i]
-      playerData.push(player.getJSON())
+      localPlayerData.push(player.getJSON())
     }
-    console.log('got players', playerData)
+   playerData[changedPlayer.gameIndex] = localPlayerData
   }
-  refreshPlayerData()
 
   server.on('PlayerJoined', refreshPlayerData)
   server.on('PlayerLeft', refreshPlayerData)

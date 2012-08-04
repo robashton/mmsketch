@@ -7,6 +7,8 @@ var Player = function(game, socket) {
   this.game = game
   this.socket = socket
   this.user = socket.handshake.user
+  this.user.gameIndex = game.index
+  this.gameIndex = game.index
   this.globalScore = null
   this.gameScore = 0
   this.socket.on('guess', this.onGuess.bind(this))
