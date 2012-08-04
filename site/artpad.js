@@ -155,15 +155,32 @@
       if(pad.history.length < 2) return
       var quad = calculateQuadFrom(pad.history[0], pad.history[1], 3.0) 
       pad.history = []
-      
+
+      var rh, gh, bh = '',
+          r, g, b = 0
+
+      var colour = pad.selectedColour
+      if(colour.length === 4) {
+        rh = colour[1] + colour[1]
+        gh = colour[2] + colour[2]
+        bh = colour[3] + colour[3]
+      } else {
+        rh = colour.substr(1, 2)
+        gh = colour.substr(3, 2)
+        bh = colour.substr(5, 2)
+      }
+
+      r = parseInt(rh, 16)
+      g = parseInt(gh, 16)
+      b = parseInt(bh, 16)
 
       var source = pad.offscreencontext.getImageData(0, 0, 100, 100)
       for(var i = 0;  i < 100 ; i++) {
         for(var j = 0 ; j < 100 ; j++) {
           var index = (i + j * 100) * 4
-          source.data[index] = 255 
-          source.data[index+1] = 0
-          source.data[index+2] = 0
+          source.data[index] = r 
+          source.data[index+1] = g 
+          source.data[index+2] = b 
         }
       }
 

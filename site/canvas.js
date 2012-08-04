@@ -11,7 +11,7 @@
   }
   Canvas.createImage = function(path) {
     var img = new Image()
-    img.src = path
+    img.src = '/' + path
     return img
   }
   exports.Canvas = Canvas
