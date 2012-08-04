@@ -26,12 +26,13 @@ app.listen(process.env.port || config.port, notifyListenersReady)
 
 var balancing = new Balancing(app, sessions)
 
-require('./routes/index')(app, balancing.game)
+require('./routes/index')(app, balancing)
 
-balancing.game.gamelogger.on('RoundSaved', function(id) {
+balancing.on('RoundSaved', function(id) {
   if(process.send)
     try { process.send({ command: 'lastround', id: id}) } catch(e) { console.log(e)}
 })
+
 function notifyListenersReady() {
   if(process.send)
     process.send({ command: 'ready'})
@@ -39,5 +40,5 @@ function notifyListenersReady() {
 
 process.on('message', function(msg) {
   if(msg.command === 'SetGlobalScore')
-    balancing.game.persistence.setGlobalScoreForPlayer(msg.userid, msg.score)
+    balancing.persistence.setGlobalScoreForPlayer(msg.userid, msg.score)
 })

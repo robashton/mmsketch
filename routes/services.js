@@ -37,15 +37,16 @@ module.exports = function(app, server) {
 
   function refreshPlayerData() {
     playerData = []
-    var players = game.getPlayers()
+    var players = server.getPlayers(0)
     for(var i in players) {
       var player = players[i]
       playerData.push(player.getJSON())
     }
+    console.log('got players', playerData)
   }
   refreshPlayerData()
 
-  game.on('PlayerJoined', refreshPlayerData)
-  game.on('PlayerLeft', refreshPlayerData)
-  server.gamelogger.on('RoundSaved', onRoundSaved)
+  server.on('PlayerJoined', refreshPlayerData)
+  server.on('PlayerLeft', refreshPlayerData)
+  server.on('RoundSaved', onRoundSaved)
 }
