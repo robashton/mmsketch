@@ -5,7 +5,7 @@ var socketio = require('socket.io')
 ,   _ = require('underscore')
 ,   config = require('./config')
 
-var Lobby = function(server, authentication, wordSource) {
+var Game = function(server, authentication, wordSource) {
   Eventable.call(this)
 
   this.server = server
@@ -22,7 +22,7 @@ var Lobby = function(server, authentication, wordSource) {
 }
 
 
-Lobby.prototype = {
+Game.prototype = {
   getPlayers: function() {
     return this.players
   },
@@ -169,6 +169,6 @@ Lobby.prototype = {
     io.on('connection', this.handleNewSocket.bind(this))
   }
 }
-_.extend(Lobby.prototype, Eventable.prototype)
+_.extend(Game.prototype, Eventable.prototype)
 
-module.exports = Lobby
+module.exports = Game
