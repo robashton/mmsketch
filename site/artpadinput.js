@@ -83,9 +83,9 @@
       this.addColour('#F0F')
       this.addColour('#0FF')
       this.addColour('#FFA500')
-      this.addBrush('circle')
+      this.addBrush('pen')
       this.addBrush('pencil')
-      this.addBrush('paint')
+      this.addBrush('brush')
     },
     addColour: function(hex) {
       var element = $('<span/>')
@@ -103,7 +103,6 @@
         this.selectedColour.removeClass('selected')
       this.selectedColour = colour
       this.selectedColour.addClass('selected')
-      $('.paintbrush-brush').css('background-color', hex)
       this.pad.setBrushColour(hex)
     },
     addBrush: function(brush) {
@@ -111,6 +110,9 @@
             .addClass('paintbrush-brush')
             .addClass(brush)
             .data('brush', brush)
+          .append( 
+            $('<img/>')
+            .attr('src', '/img/' + brush + '.png'))
       this.brushContainer.append(element)
       this.brushes[brush] = element
       return element
@@ -125,9 +127,6 @@
       this.pad.setBrush(brush)
     },
     screenToCanvas: function(pos) {
-      // TODO: Think about using different pixel sizes for different
-      // Devices (sadly) and be a bit more creative about mapping using
-      // canvas scale tricks
       var canvasWidth = this.canvas.width
       var canvasHeight = this.canvas.height
       var screenWidth = $(this.canvas).width()
