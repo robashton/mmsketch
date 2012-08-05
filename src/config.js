@@ -21,7 +21,7 @@ var config = {
     roundIntervalTime: 10000,
     persistence: 'redis',
     redisport: null,
-    imageDir: '/root/data/mmsketchimages/'
+    imageDir: '/root/data/mmsketchimages/',
     roomSize: process.env.ROOM_SIZE || 15
   }
 }

@@ -62,9 +62,9 @@
       this.raise('Rejected')
       this.status = 'rejected'
     },
-    onError: function(msg) {
-      if(msg.toString().indexOf('502')) return
-      this.raise('NeedAuth')
+    onError: function(msg) { 
+      if(msg === 'handshake error')
+        this.raise('NeedAuth')
     },
     onCountdown: function(time) {
       this.raise('Countdown', time)
