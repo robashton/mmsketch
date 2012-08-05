@@ -5,12 +5,6 @@ module.exports = function(app, server) {
       recentRounds = [],
       game = server.game
     
-  app.get('/players', function(req, res) {
-    if(!req.user)
-      return res.end(401)
-    res.send(playerData[req.user.gameIndex]) 
-  })
-
   app.get('/round/:id', function(req, res) {
     server.persistence.getRound(req.params.id, function(err, round) {
       res.send(round) 
@@ -37,17 +31,5 @@ module.exports = function(app, server) {
     recentRounds.unshift(id)
   }
 
-  function refreshPlayerData(changedPlayer) {
-    var localPlayerData = []
-    var players = server.getPlayers(changedPlayer.gameIndex)
-    for(var i in players) {
-      var player = players[i]
-      localPlayerData.push(player.getJSON())
-    }
-   playerData[changedPlayer.gameIndex] = localPlayerData
-  }
-
-  server.on('PlayerJoined', refreshPlayerData)
-  server.on('PlayerLeft', refreshPlayerData)
   server.on('RoundSaved', onRoundSaved)
 }

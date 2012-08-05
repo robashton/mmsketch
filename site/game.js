@@ -29,6 +29,7 @@
       this.socket.on('playerleft', _.bind(this.onPlayerLeft, this))
       this.socket.on('scorechanges', _.bind(this.onScoreChanges, this))
       this.socket.on('lastroundid', _.bind(this.onLastRoundId, this))
+      this.socket.on('joinedgame', _.bind(this.onJoinedGame, this))
     },
     stop: function() {
       this.socket.disconnect()
@@ -44,6 +45,9 @@
     },
     onPlayerLeft: function(player) {
       this.raise('PlayerLeft', player)
+    },
+    onJoinedGame: function(data) {
+      this.raise('JoinedGame', data)
     },
     onPersonalInfoReceived: function(player) {
       this.raise('PersonalInfoReceived', player)
@@ -136,4 +140,4 @@
   _.extend(Game.prototype, Eventable.prototype)
 
   exports.Game = Game
-})(this)
+}(this))

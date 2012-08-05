@@ -7,7 +7,6 @@ var Player = function(game, socket) {
   this.game = game
   this.socket = socket
   this.user = socket.handshake.user
-  this.user.gameIndex = game.index
   this.gameIndex = game.index
   this.globalScore = null
   this.gameScore = 0
@@ -21,6 +20,13 @@ var Player = function(game, socket) {
 }
 
 Player.prototype = {
+  sendPlayerList: function() {
+    var playerData = []
+    for(var i in this.game.players) {
+      playerData.push(this.game.players[i].getJSON())
+    }
+    this.send('joinedgame', playerData) 
+  },
   isDrawing: function() {
     return this === this.game.currentArtist 
   },
@@ -28,32 +34,32 @@ Player.prototype = {
     this.globalScore += amount
     this.gameScore += amount
     this.raise('ScoreChanged', this.gameScore)
-    this.socket.emit('globalscorechanged', {
+    this.send('globalscorechanged', {
         score: this.globalScore,
         gameScore: this.gameScore
      })
   },
   startDrawing: function(word) {
-    this.socket.emit('status', {
+    this.send('status', {
       clientCount: this.game.playerCount,
       status: 'drawing',
       word: word,
       player: this.getJSON()
     })
-    this.socket.broadcast.emit('status', {
+    this.game.broadcast('status', {
       clientCount: this.game.playerCount,
       status: 'guessing',
       player: this.getJSON()
-    })
+    }, this)
   },
   startWaiting: function() {
-    this.socket.emit('status', {
+    this.send('status', {
       clientCount: this.game.playerCount,
       status: 'waiting',
     })
   },
   startGuessing: function() {
-    this.socket.emit('status', {
+    this.send('status', {
       clientCount: this.game.playerCount,
       status: 'guessing',
       player: this.game.currentArtist.getJSON()
@@ -61,11 +67,12 @@ Player.prototype = {
   },
   sendGlobalScore: function(score) {
     this.globalScore = score
-    this.socket.emit('you', this.getJSON())
+    this.send('you', this.getJSON())
     this.raise('Loaded')
+    this.sendPlayerList()
   },
   rejectAsDuplicate: function() {
-    this.socket.emit('reject', 'duplicate');
+    this.send('reject', 'duplicate');
     this.socket.disconnect()
   },
   id: function() {
@@ -90,18 +97,18 @@ Player.prototype = {
   onGuess: function(word) {
     if(word.toUpperCase() === this.game.currentWord.toUpperCase()) {
       this.game.notifyOfCorrectGuess(this)
-      this.socket.emit('correct', {
+      this.send('correct', {
         word: this.game.currentWord,
         player: this.getJSON(),
         win: true
       })
-      this.socket.broadcast.emit('correct', {
-        player: this.getJSON(),
+      this.game.broadcast('correct', {
+        player:  this.getJSON(),
         win: false
-      })
+      }, this)
     }
     else
-      this.socket.emit('wrong', word)
+      this.send('wrong', word)
   },
   onDrawingStart: function(position) {
     if(!this.isDrawing()) return
@@ -139,7 +146,10 @@ Player.prototype = {
     })
   },
   onDrawingEvent: function(ev) {
-    this.socket.broadcast.emit(ev.event, ev.data)
+    this.game.broadcast(ev.event, ev.data, this)
+  },
+  send: function(msg, data) {
+    this.socket.emit(msg, data)
   }
 }
 

@@ -53,7 +53,7 @@ Game.prototype = {
   },
   updatePlayerCount: function(count) {
     this.playerCount = count
-    this.io.sockets.emit('status', {
+    this.broadcast('status', {
       clientCount: this.playerCount
     })
   },
@@ -81,7 +81,7 @@ Game.prototype = {
     this.currentArtist = null
     this.currentWord = null
     this.gamestarted = false
-    this.io.sockets.emit('status', {
+    this.broadcast('status', {
       clientCount: this.playerCount,
       status: 'waiting'
     })
@@ -102,7 +102,7 @@ Game.prototype = {
       winner: winner,
       word: this.currentWord
     }
-    this.io.sockets.emit('endround', data)
+    this.broadcast('endround', data)
     this.raise('RoundEnded', data)
     var self = this
     setTimeout(function() {
@@ -110,21 +110,21 @@ Game.prototype = {
     }, config.roundIntervalTime)
   },
   notifyClientsOfTimeLeft: function(timeLeft) {
-    this.io.sockets.emit('countdown', timeLeft)
+    this.broadcast('countdown', timeLeft)
   },
   startGameWithArtist: function(artist) {
     this.currentArtist = artist 
     this.currentWord = this.wordSource.next() 
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
-    this.io.sockets.emit('startround')
+    this.broadcast('startround')
     this.raise('RoundStarted')
   },
   sendRoundIdToClients: function(id) {
-    this.io.sockets.emit('lastroundid', id)
+    this.broadcast('lastroundid', id)
   },
   sendScoreUpdate: function(changes) {
-    this.io.sockets.emit('scorechanges', changes)
+    this.broadcast('scorechanges', changes)
   },
   notifyOfCorrectGuess: function(player) {
     if(this.firstCorrectGuesser === null) {
@@ -146,8 +146,12 @@ Game.prototype = {
       self.removePlayer(player)
     })
   },
-  broadcast: function(msg, data) {
-    this.io.sockets.emit(msg, data)
+  broadcast: function(msg, data, sender) {
+    for(var i in this.players) {
+      var player = this.players[i]
+      if(player === sender) continue
+      player.send(msg, data)
+    }
   }
 }
 _.extend(Game.prototype, Eventable.prototype)

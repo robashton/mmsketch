@@ -20,10 +20,6 @@ var Balancing = function(app, sessions) {
 }
 
 Balancing.prototype = {
-  getPlayers: function(gameIndex) {
-    if(this.games.length === 0) return []
-    return this.games[gameIndex].game.getPlayers()
-  },
   handleNewSocket: function(socket) {
     var availableServer = null
     for(var i = 0; i < this.games.length; i++) {
@@ -41,17 +37,9 @@ Balancing.prototype = {
     availableServer.game.newSocket(socket)
   },
   hookServerEvents: function(server) {
-    server.game.on('PlayerJoined', this.onPlayerJoined, this)
-    server.game.on('PlayerLeft', this.onPlayerLeft, this)
     server.gamelogger.on('RoundSaved', this.onRoundSaved, this)
   },
-  onPlayerJoined: function(player, sender) {
-    this.raise('PlayerJoined', player, sender)
-  },
-  onPlayerLeft: function(player, sender) {
-    this.raise('PlayerLeft', player, sender)
-  },
-  RoundSaved: function(player, sender) {
+  onRoundSaved: function(player, sender) {
     this.raise('RoundSaved', player, sender)
   },
 
