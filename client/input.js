@@ -52,4 +52,4 @@
   }
 
   exports.Input = Input
-}).call(this, this)
+}).call(this, this);

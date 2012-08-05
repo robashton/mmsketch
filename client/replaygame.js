@@ -35,4 +35,4 @@
 
 
   exports.ReplayGame = ReplayGame
-}(this))
+}(this));

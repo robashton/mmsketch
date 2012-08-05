@@ -74,5 +74,4 @@
     }
   }
   exports.PlayerListDisplay = PlayerListDisplay
-}(this))
-
+}(this));

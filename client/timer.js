@@ -21,4 +21,4 @@
   }
 
   exports.Timer = Timer
-}.call(this, this))
+}.call(this, this));

@@ -15,4 +15,4 @@
     return img
   }
   exports.Canvas = Canvas
-}(window))
+}(window));

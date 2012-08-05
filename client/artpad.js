@@ -1,4 +1,3 @@
-
 (function(exports) {
 
   var ArtPad = function(Canvas) {
@@ -334,4 +333,4 @@
   else
     exports.ArtPad = ArtPad
 
-}( this))
+}( this));

@@ -79,4 +79,4 @@
   }
   exports.ArtPadInput = ArtPadInput
   
-}(window))
+}(window));

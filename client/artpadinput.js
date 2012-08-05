@@ -143,4 +143,4 @@
   }
 
   exports.ArtPadInput = ArtPadInput
-}(this))
+}(this));

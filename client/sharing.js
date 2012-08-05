@@ -37,4 +37,4 @@
   }
   exports.Sharing = Sharing
 
-}(this))
+}(this));

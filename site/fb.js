@@ -9,4 +9,4 @@ $(document).ready(function() {
       FB.init({appId: cfg.appId, status: true, cookie: true}); 
     })
   }
-})
+});

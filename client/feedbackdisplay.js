@@ -45,4 +45,4 @@
   }
 
   exports.FeedbackDisplay = FeedbackDisplay
-}(this))
+}(this));

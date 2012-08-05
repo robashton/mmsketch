@@ -101,4 +101,4 @@
   else
     exports.Eventable = Eventable
       
-}).call(this, this)
+}).call(this, this);

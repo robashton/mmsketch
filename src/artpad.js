@@ -1,1 +1,1 @@
-../site/artpad.js
+../client/artpad.js

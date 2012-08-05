@@ -24,4 +24,4 @@
     }
   }
   exports.FeedbackTabs = FeedbackTabs
-})(this)
+})(this);

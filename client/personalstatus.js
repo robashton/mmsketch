@@ -24,4 +24,4 @@
   }
 
   exports.PersonalStatusDisplay = PersonalStatusDisplay
-}(this))
+}(this));

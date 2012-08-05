@@ -53,5 +53,5 @@
     }
   }
   exports.StatusDisplay = StatusDisplay
-}(this))
+}(this));
 
