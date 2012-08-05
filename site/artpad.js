@@ -105,7 +105,7 @@
   }
 
   var Brushes = {
-    circle: function(from, to, pad) {
+    pen: function(from, to, pad) {
       if(pad.history.length < 5) return
 
       var quads = []
@@ -151,7 +151,7 @@
       pad.history = []
       pad.history.push(lastHistory.pop())
     },
-    paint: function(from, to, pad) {
+    brush: function(from, to, pad) {
       if(pad.history.length < 2) return
       var quad = calculateQuadFrom(pad.history[0], pad.history[1], 3.0) 
       pad.history = []
