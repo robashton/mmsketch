@@ -5,11 +5,12 @@ var socketio = require('socket.io')
 ,   _ = require('underscore')
 ,   config = require('./config')
 
-var Lobby = function(server, authentication, wordSource) {
+var Game = function(io, index, wordSource) {
   Eventable.call(this)
 
-  this.server = server
   this.players = {}
+  this.io = io
+  this.index = index
   this.wordSource = wordSource
   this.playerCount = 0
   this.gamestarted = false
@@ -17,12 +18,10 @@ var Lobby = function(server, authentication, wordSource) {
   this.firstCorrectGuesser = null
   this.correctGuesserCount = 0 
   this.currentWord = ''
-  this.authentication = authentication
-  this.startListening()
 }
 
 
-Lobby.prototype = {
+Game.prototype = {
   getPlayers: function() {
     return this.players
   },
@@ -54,7 +53,7 @@ Lobby.prototype = {
   },
   updatePlayerCount: function(count) {
     this.playerCount = count
-    this.io.sockets.emit('status', {
+    this.broadcast('status', {
       clientCount: this.playerCount
     })
   },
@@ -82,7 +81,7 @@ Lobby.prototype = {
     this.currentArtist = null
     this.currentWord = null
     this.gamestarted = false
-    this.io.sockets.emit('status', {
+    this.broadcast('status', {
       clientCount: this.playerCount,
       status: 'waiting'
     })
@@ -103,7 +102,7 @@ Lobby.prototype = {
       winner: winner,
       word: this.currentWord
     }
-    this.io.sockets.emit('endround', data)
+    this.broadcast('endround', data)
     this.raise('RoundEnded', data)
     var self = this
     setTimeout(function() {
@@ -111,32 +110,21 @@ Lobby.prototype = {
     }, config.roundIntervalTime)
   },
   notifyClientsOfTimeLeft: function(timeLeft) {
-    this.io.sockets.emit('countdown', timeLeft)
+    this.broadcast('countdown', timeLeft)
   },
   startGameWithArtist: function(artist) {
     this.currentArtist = artist 
     this.currentWord = this.wordSource.next() 
     this.currentArtist.startDrawing(this.currentWord)
     this.gamestarted = true
-    this.io.sockets.emit('startround')
+    this.broadcast('startround')
     this.raise('RoundStarted')
   },
-  handleAuthorization: function(data, accept) {
-    this.authentication.get(data.headers, function(err, session) {
-      if(err || !session) {
-        return accept("Couldn't find session, please re-login", false)
-      }
-      if(!session.passport.user)
-        return accept('Not logged in yet, please log in!', false)
-      data.user = session.passport.user
-      accept(null, true)
-    })
-  },
   sendRoundIdToClients: function(id) {
-    this.io.sockets.emit('lastroundid', id)
+    this.broadcast('lastroundid', id)
   },
   sendScoreUpdate: function(changes) {
-    this.io.sockets.emit('scorechanges', changes)
+    this.broadcast('scorechanges', changes)
   },
   notifyOfCorrectGuess: function(player) {
     if(this.firstCorrectGuesser === null) {
@@ -147,7 +135,7 @@ Lobby.prototype = {
     if((this.correctGuesserCount / (this.playerCount-1)) > 0.60)
       this.nextGame()
   },
-  handleNewSocket: function(socket) {
+  newSocket: function(socket) {
     var player = new Player(this, socket)
     this.addPlayer(player)
     this.hookDisconnection(socket, player)
@@ -158,17 +146,14 @@ Lobby.prototype = {
       self.removePlayer(player)
     })
   },
-  broadcast: function(msg, data) {
-    this.io.sockets.emit(msg, data)
-  },
-  startListening: function() {
-    var io = socketio.listen(this.server)
-    this.io = io
-    io.set('log level', 0)
-    io.set('authorization', this.handleAuthorization.bind(this))
-    io.on('connection', this.handleNewSocket.bind(this))
+  broadcast: function(msg, data, sender) {
+    for(var i in this.players) {
+      var player = this.players[i]
+      if(player === sender) continue
+      player.send(msg, data)
+    }
   }
 }
-_.extend(Lobby.prototype, Eventable.prototype)
+_.extend(Game.prototype, Eventable.prototype)
 
-module.exports = Lobby
+module.exports = Game

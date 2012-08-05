@@ -92,7 +92,6 @@ Scenario "Everybody guesses the word", ->
         done()
 
   When "everybody guesses the word", (done) ->
-    console.log('Artist is ' ,artist.name)
     guesser[0].guess 'flibble', ->
       guesser[1].guess 'flibble', done
 

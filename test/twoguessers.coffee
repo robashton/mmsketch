@@ -32,7 +32,13 @@ Scenario "Players guessing the word", ->
     guesser1.guess 'orange', done
 
   Then "The guesser is told that he guessed wrong", ->
-    guesser1.lastGuess().should.include 'orange is not the word'
+    guesser1.lastGuess().should.include 'orange'
+
+  And "the artist is told that he guessed wrong", ->
+    artist.lastGuess().should.include 'orange'
+
+  And "the other guesser is told that he guessed wrong", ->
+    guesser2.lastGuess().should.include 'orange'
 
   And "the artist is still the artist", ->
     (artist is find_artist [alice, bob, james, hilda]).should.equal(true)

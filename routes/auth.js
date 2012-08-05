@@ -28,8 +28,8 @@ function configurePassport() {
   }))
 }
 
-module.exports = function(app, game) {
-  persistence = game.persistence
+module.exports = function(app, server) {
+  persistence = server.persistence
   configurePassport()
   app.get('/auth/facebook', passport.authenticate('facebook'))
   app.get('/auth/facebook/callback', 

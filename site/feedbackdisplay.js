@@ -1,13 +1,16 @@
 (function(exports) {
   var FeedbackDisplay = function(game) {
+    this.feedbackContainer = $('#feedback-container')
     this.clientFeedback = $('#client-feedback')
     this.game = game
     this.game.autoHook(this)
   }
 
   FeedbackDisplay.prototype = {
-    onWrongGuess: function(word) {
-      this.addMessage('img/sadface.png', word + ' is not the word, guess again!')
+    onWrongGuess: function(data) {
+      this.addMessage(
+        data.player.displayPicture,
+        data.player.displayName + ': ' + data.word)
     },
     onMyCorrectGuess: function(data) {
       this.addMessage('img/happyface.png', 'You guessed ' +  data.word + ' correctly! Now let\'s wait for the slow mo\'s')
@@ -37,8 +40,9 @@
           )
           .append($('<p/>').text(message))
       this.clientFeedback.append(html)
+      this.feedbackContainer.get(0).scrollTop = this.feedbackContainer.get(0).scrollHeight
     }  
   }
 
   exports.FeedbackDisplay = FeedbackDisplay
-}).call(this, this)
+}(this))

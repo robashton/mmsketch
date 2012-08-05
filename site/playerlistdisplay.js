@@ -8,16 +8,10 @@
   }
 
   PlayerListDisplay.prototype = {
-    onStarted: function() {
-      this.downloadInitialList()
-    },
-    downloadInitialList: function() {
-      var self = this
-      $.getJSON('/players', function(data) {
-        for(var i in data)
-          self.addPlayer(data[i])
-        self.initialised = true
-      })
+    onJoinedGame: function(data) {
+      for(var i in data)
+        this.addPlayer(data[i])
+      this.initialised = true
     },
     onScoresUpdated: function(data) {
       for(var i in data) {

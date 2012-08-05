@@ -1,13 +1,12 @@
-var ManualGameEnder = function(lobby) {
+var ManualGameEnder = function(game) {
   process.on('message', function(m) {
     if(m.command === 'next-game')
-      lobby.nextGame(0)
+      game.nextGame(0)
   })
 }
 
 ManualGameEnder.prototype = {
 
 }
-
 
 module.exports = ManualGameEnder

@@ -8,7 +8,8 @@ var config = {
     roundTime: 90,
     roundIntervalTime: 10000,
     redisport: null,
-    imageDir: '/home/robashton/working/images/'
+    imageDir: '/home/robashton/working/images/',
+    roomSize: process.env.ROOM_SIZE || 15
   },
   'production': {
     fbcallback: 'http://wedrawthings.com/auth/facebook/callback',
@@ -21,6 +22,7 @@ var config = {
     persistence: 'redis',
     redisport: null,
     imageDir: '/root/data/mmsketchimages/'
+    roomSize: process.env.ROOM_SIZE || 15
   }
 }
 var cfg = config[process.env.NODE_ENV || 'dev']

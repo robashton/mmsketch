@@ -12,11 +12,15 @@ class ManualContext
     @clients = {}
     @pendingClients = 0
     @words = []
+    @room_size = 10
     @closed_listener = null
     @last_round_id = -1
 
   next_word: (word) =>
     @words.push word
+
+  set_room_size: (size) =>
+    @room_size = size
 
   start: (done) =>
     @server= fork(process.cwd() + '/server.js',[], {
@@ -25,7 +29,8 @@ class ManualContext
         port: @port
         test: true
         redis: redis
-        words: @words.join()
+        words: @words.join(),
+        ROOM_SIZE: @room_size
       }
     })
     @server.on 'message', (msg) =>

@@ -1,16 +1,12 @@
 var config = require('../src/config')
 
-module.exports = function(app, game) {
+module.exports = function(app, server) {
   var playerData = [],
       recentRounds = [],
-      lobby = game.lobby
+      game = server.game
     
-  app.get('/players', function(req, res) {
-    res.send(playerData) 
-  })
-
   app.get('/round/:id', function(req, res) {
-    game.persistence.getRound(req.params.id, function(err, round) {
+    server.persistence.getRound(req.params.id, function(err, round) {
       res.send(round) 
     })
   })
@@ -35,17 +31,5 @@ module.exports = function(app, game) {
     recentRounds.unshift(id)
   }
 
-  function refreshPlayerData() {
-    playerData = []
-    var players = lobby.getPlayers()
-    for(var i in players) {
-      var player = players[i]
-      playerData.push(player.getJSON())
-    }
-  }
-  refreshPlayerData()
-
-  lobby.on('PlayerJoined', refreshPlayerData)
-  lobby.on('PlayerLeft', refreshPlayerData)
-  game.gamelogger.on('RoundSaved', onRoundSaved)
+  server.on('RoundSaved', onRoundSaved)
 }
