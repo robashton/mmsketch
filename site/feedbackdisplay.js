@@ -1,5 +1,6 @@
 (function(exports) {
   var FeedbackDisplay = function(game) {
+    this.feedbackContainer = $('#feedback-container')
     this.clientFeedback = $('#client-feedback')
     this.game = game
     this.game.autoHook(this)
@@ -39,10 +40,9 @@
           )
           .append($('<p/>').text(message))
       this.clientFeedback.append(html)
-      this.clientFeedback.animate({ 
-          scrollTop: this.clientFeedback.attr("scrollHeight") }, 1000);
+      this.feedbackContainer.get(0).scrollTop = this.feedbackContainer.get(0).scrollHeight
     }  
   }
 
   exports.FeedbackDisplay = FeedbackDisplay
-}).call(this, this)
+}(this))
