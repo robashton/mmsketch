@@ -39,6 +39,8 @@
           )
           .append($('<p/>').text(message))
       this.clientFeedback.append(html)
+      this.clientFeedback.animate({ 
+          scrollTop: this.clientFeedback.attr("scrollHeight") }, 1000);
     }  
   }
 
