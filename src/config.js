@@ -20,7 +20,7 @@ var config = {
     roundIntervalTime: 10000,
     persistence: 'redis',
     redisport: null,
-    imageDir: '/home/robashton/working/images/'
+    imageDir: '/root/data/mmsketchimages/'
   }
 }
 var cfg = config[process.env.NODE_ENV || 'dev']
