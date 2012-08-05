@@ -108,7 +108,10 @@ Player.prototype = {
       }, this)
     }
     else
-      this.send('wrong', word)
+      this.game.broadcast('wrong', {
+        word: word,
+        player: this.getJSON()
+      })
   },
   onDrawingStart: function(position) {
     if(!this.isDrawing()) return

@@ -6,8 +6,10 @@
   }
 
   FeedbackDisplay.prototype = {
-    onWrongGuess: function(word) {
-      this.addMessage('img/sadface.png', word + ' is not the word, guess again!')
+    onWrongGuess: function(data) {
+      this.addMessage(
+        data.player.displayPicture,
+        data.player.displayName + ': ' + data.word)
     },
     onMyCorrectGuess: function(data) {
       this.addMessage('img/happyface.png', 'You guessed ' +  data.word + ' correctly! Now let\'s wait for the slow mo\'s')
