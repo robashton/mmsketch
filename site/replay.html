@@ -11,20 +11,7 @@
     <script src="/hammer.js"></script>
     <script src="/jquery.hammer.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/eventable.js"></script>
-    <script src="/statusdisplay.js"></script>
-    <script src="/feedbackdisplay.js"></script>
-    <script src="/feedbacktabs.js"></script>
-    <script src="/playerlistdisplay.js"></script>
-    <script src="/sharing.js"></script>
-    <script src="/game.js"></script>
-    <script src="/input.js"></script>
-    <script src="/artpad.js"></script>
-    <script src="/canvas.js"></script>
-    <script src="/artpadinput.js"></script>
-    <script src="/timer.js"></script>
-    <script src="/personalstatus.js"></script>
-    <script src="/replaygame.js"></script>
+    <script src="/replay.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
   </head>
@@ -96,68 +83,6 @@
         <p>Copyright <a href="http://twitter.com/robashton">@robashton</a> 2012</p>
       </div>
     </div>
-    <script type="text/javascript">
-      $(document).ready(function() {
-        var playerName = $('#player-name'),
-            playerAvatar = $('#player-avatar'),
-            playerPoints = $('#player-points'),
-            recentGames = $('#recent-games'),
-            drawnWord = $('#drawn-word'),
-            shareButton = $('#share-art'),
-            roundId = parseRoundIdFromUrl(),
-            artData = null
-
-        $('#image-for-facebook > img')
-          .attr('src', '/drawings/' + roundId)
-
-        $.getJSON('/round/' + roundId, function(data) {
-          artData = data
-          playerName.text(data.player.displayName)
-          playerAvatar.attr('src', 'https://graph.facebook.com/' + 
-            data.player.username + '/picture')
-          playerPoints.text(data.player.score)
-          drawnWord.text(data.word + ' by ' + data.player.displayName)
-          $('#loading').hide()
-          $('#content').show()
-          shareButton.show()
-          shareButton.click(shareDrawing) 
-          var replayGame = new ReplayGame(data.events)
-          var artPad = new ArtPadInput(replayGame)
-          replayGame.start()
-        })
-
-        $.getJSON('/recent', function(data) {
-          for(var i in data) {
-            var recentRoundId = data[i]
-            recentGames.append(
-              $('<a/>').html(
-                $('<img/>').attr('src', '/drawings/' + recentRoundId)
-              ).attr('href', '/viewround/' + recentRoundId)
-            )
-          }
-        })
-
-        function parseRoundIdFromUrl() {
-          var url = document.location.pathname
-          return url.substr(url.lastIndexOf('/') + 1)
-        }
-
-        function shareDrawing() {
-          var obj = {
-            method: 'feed',
-            link: 'http://wedrawthings.com/viewround/' + roundId,
-            picture: 'http://wedrawthings.com/drawings/' + roundId,
-            name: 'We Draw Things',
-            caption: 'A drawing of "' + artData.word + '" by "' + artData.player.displayName  + '"',
-            display: 'popup'
-          };
-
-          FB.ui(obj, function() {
-
-          });
-        }
-      })
-    </script>
     <script src="http://connect.facebook.net/en_US/all.js"></script>
     <script src="/fb.js"></script>
   </body>
