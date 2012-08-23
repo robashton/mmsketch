@@ -1,5 +1,5 @@
-debug = false
-redis = false
+debug = !!process.env.DEBUG
+redis = !!process.env.REDIS
 Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils

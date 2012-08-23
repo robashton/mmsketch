@@ -54,6 +54,9 @@ Scenario "Players drawing stuff", ->
   Then "the guesser should see that drawing finishes", ->
     guesser.pad.sawDrawEnd().should.equal(true)
 
+  And "the artist should see that drawing finishes", ->
+    artist.pad.sawDrawEnd().should.equal(true)
+
   When "the guessers tries to start drawing", (done) ->
     artist.pad.reset()
     guesser.pad.reset()

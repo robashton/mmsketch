@@ -1,4 +1,4 @@
-(function() {
+(function(exports) {
   var game = null
   ,   statusDisplay = null
   ,   feedbackDisplay = null
@@ -7,11 +7,10 @@
   ,   feedbackTabs = null
   ,   playerListDisplay = null
   ,   sharing = null
-  ,   artPad = null
   ,   input = null
   ,   timer = null
 
-  var closeSockets = function() {
+  exports.closeSockets = function() {
     game.stop()
   }
 
@@ -41,9 +40,9 @@
     sharing = new Sharing(game)
     feedbackTabs = new FeedbackTabs()
     input = new Input(game)
-    artPad = new ArtPadInput(game)
+    exports.artPad = new ArtPadInput(game)
     timer = new Timer(game)
     game.on('Started', onGameStarted)
     game.start()
   }
-  }());
+}(window));
