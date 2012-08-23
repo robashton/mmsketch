@@ -22,7 +22,6 @@
     pad.offscreencontext.drawImage(
       pad.paintBrushImage,
       0, 0, 100, 100)
-
     }
   }
 
@@ -53,7 +52,8 @@
     },
     drawLine: function(from, to) { 
       this.context.save()
-      Brushes[this.selectedBrush](from, to, this)
+      if(Brushes[this.selectedBrush])
+        Brushes[this.selectedBrush](from, to, this)
       this.context.restore()
     },
     setBrush: function(brush) {

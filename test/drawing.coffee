@@ -2,7 +2,6 @@ _ = require('underscore')
 find_artist = require('./util').find_artist
 ManualContext = require('./context')
 
-
 Scenario "Players drawing stuff", ->
   context = new ManualContext()
   bob = null
@@ -20,11 +19,11 @@ Scenario "Players drawing stuff", ->
         done()
 
   When "the artist chooses a brush", (done) ->
-    artist.pad.doChooseBrush 'paint'
+    artist.pad.doChooseBrush 'brush'
     context.wait_for_sockets done
 
   Then "the guesser sees that a brush was selected", ->
-    (guesser.pad.sawBrushChosen 'paint').should.equal(true)
+    (guesser.pad.sawBrushChosen 'brush').should.equal(true)
 
   When "the artist chooses a colour", (done) ->
     artist.pad.doChooseColour '#FFF'

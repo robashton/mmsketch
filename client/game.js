@@ -1,4 +1,5 @@
 (function(exports) {
+
   var Game = function() {
     Eventable.call(this)
     this.socket = null
@@ -90,6 +91,10 @@
     },
     onRoundStarted: function() {
       this.raise('RoundStarted')
+      if(this.status === 'drawing') {
+        this.sendSelectColour('#000')
+        this.sendSelectBrush('brush')
+      }
     },
     onRoundEnded: function(data) {
       this.raise('RoundEnded', data)

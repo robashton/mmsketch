@@ -352,6 +352,7 @@
 
 }(this));
 (function(exports) {
+
   var Game = function() {
     Eventable.call(this)
     this.socket = null
@@ -443,6 +444,10 @@
     },
     onRoundStarted: function() {
       this.raise('RoundStarted')
+      if(this.status === 'drawing') {
+        this.sendSelectColour('#000')
+        this.sendSelectBrush('brush')
+      }
     },
     onRoundEnded: function(data) {
       this.raise('RoundEnded', data)
@@ -592,7 +597,6 @@
     pad.offscreencontext.drawImage(
       pad.paintBrushImage,
       0, 0, 100, 100)
-
     }
   }
 
@@ -623,7 +627,8 @@
     },
     drawLine: function(from, to) { 
       this.context.save()
-      Brushes[this.selectedBrush](from, to, this)
+      if(Brushes[this.selectedBrush])
+        Brushes[this.selectedBrush](from, to, this)
       this.context.restore()
     },
     setBrush: function(brush) {
@@ -961,8 +966,6 @@
     },
     onRoundStarted: function() {
       this.pad.clear()
-      this.game.sendSelectBrush(this.selectedBrush.data('brush'))
-      this.game.sendSelectColour(this.selectedColour.data('colour'))
     },
     onDrawingStart: function(position) {
       this.pad.startDrawing(position)

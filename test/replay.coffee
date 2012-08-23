@@ -44,14 +44,14 @@ Scenario "Replaying events from a finished game", ->
     gameData.word.should.equal 'flibble'
     
   And "the first event should be picking a brush", ->
-    gameData.events[0].event.should.equal 'selectbrush'
-    gameData.events[0].data.should.equal 'brush'
+    gameData.events[2].event.should.equal 'selectbrush'
+    gameData.events[2].data.should.equal 'brush'
 
   And "the second event should be picking a colour", ->
-    gameData.events[1].event.should.equal 'selectcolour'
-    gameData.events[1].data.should.equal 'red'
+    gameData.events[3].event.should.equal 'selectcolour'
+    gameData.events[3].data.should.equal 'red'
 
   And "the 3/4/5th event should be drawing a line", ->
-    gameData.events[2].event.should.equal 'drawingstart'
-    gameData.events[3].event.should.equal 'drawingmove'
-    gameData.events[4].event.should.equal 'drawingend'
+    gameData.events[4].event.should.equal 'drawingstart'
+    gameData.events[5].event.should.equal 'drawingmove'
+    gameData.events[6].event.should.equal 'drawingend'

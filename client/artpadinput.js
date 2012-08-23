@@ -55,8 +55,6 @@
     },
     onRoundStarted: function() {
       this.pad.clear()
-      this.game.sendSelectBrush(this.selectedBrush.data('brush'))
-      this.game.sendSelectColour(this.selectedColour.data('colour'))
     },
     onDrawingStart: function(position) {
       this.pad.startDrawing(position)
