@@ -4,6 +4,7 @@ var socketio = require('socket.io')
 ,   Eventable = require('./eventable')
 ,   _ = require('underscore')
 ,   config = require('./config')
+,   winston = require('winston')
 
 var Game = function(io, index, wordSource) {
   Eventable.call(this)
@@ -18,6 +19,7 @@ var Game = function(io, index, wordSource) {
   this.firstCorrectGuesser = null
   this.correctGuesserCount = 0 
   this.currentWord = ''
+  winston.log('Creating game with id of ', this.index)
 }
 
 
@@ -32,6 +34,10 @@ Game.prototype = {
     this.players[player.id()] = player
     this.updatePlayerCount(this.playerCount+1)
 
+    winston.info('Adding player ' + player.id() + 
+      ' to game ' + this.index + 
+      ' now there are ' + this.playerCount + ' players')
+
     if(this.gamestarted) {
       player.startGuessing()
     }
@@ -43,11 +49,17 @@ Game.prototype = {
   },
   removePlayer: function(player) {
     delete this.players[player.id()]
+
+    winston.info('Removing player ' + player.id() + 
+      ' from game ' + this.index + 
+      ' now there are ' + this.playerCount + ' players')
+
     this.updatePlayerCount(this.playerCount-1)
     this.evaluateGameStatus()
     if(this.gamestarted && player === this.currentArtist) {
       this.currentArtist = this.chooseNewArtist()
       this.currentArtist.startDrawing(this.currentWord)
+      winston.info('Artist left game, choosing new artist')
     }
     this.raise('PlayerLeft', player)
   },
@@ -78,6 +90,8 @@ Game.prototype = {
       this.startGame()
   },
   suspendGaming: function() {
+    winston.info('Suspending game ' + this.index + 
+      ' due to lack of players')
     this.currentArtist = null
     this.currentWord = null
     this.gamestarted = false
@@ -88,6 +102,8 @@ Game.prototype = {
     this.raise('RoundEnded')
   },
   startGame: function() {
+    winston.info('Starting game ' + this.index + 
+      ' now it has some players in it')
     this.startGameWithArtist(this.chooseNewArtist())
   },
   nextGame: function() {
@@ -110,9 +126,13 @@ Game.prototype = {
     }, config.roundIntervalTime)
   },
   notifyClientsOfTimeLeft: function(timeLeft) {
+    winston.info('time left in game ' + this.index + 
+      ' ' + timeLeft)
     this.broadcast('countdown', timeLeft)
   },
   startGameWithArtist: function(artist) {
+    winston.log('starting game ' + this.index + 
+      ' with artist ' + artist.id())
     this.currentArtist = artist 
     this.currentWord = this.wordSource.next() 
     this.currentArtist.startDrawing(this.currentWord)
@@ -132,8 +152,10 @@ Game.prototype = {
     }
     this.correctGuesserCount++
     this.raise('CorrectGuess', player)
-    if((this.correctGuesserCount / (this.playerCount-1)) > 0.60)
+    if((this.correctGuesserCount / (this.playerCount-1)) > 0.60) {
+      winston.info('Enough players have guessed, starting game ' + this.index)
       this.nextGame()
+    }
   },
   newSocket: function(socket) {
     var player = new Player(this, socket)

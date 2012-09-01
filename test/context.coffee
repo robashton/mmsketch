@@ -5,6 +5,8 @@ fork = require('child_process').fork
 cookie = require('connect').utils
 http = require('http')
 
+alreadyRunning = false
+
 class ManualContext
   constructor: ->
     @server = null
@@ -23,6 +25,12 @@ class ManualContext
     @room_size = size
 
   start: (done) =>
+    if(alreadyRunning)
+      @reset_the_server done
+    else
+      @create_the_server done
+
+  create_the_server: (done) ->
     @server= fork(process.cwd() + '/server.js',[], {
       silent: !debug,
       env: {
@@ -38,6 +46,27 @@ class ManualContext
         @wait_for_sockets_to_be_ready(done)
       if(msg.command == 'lastround')
         @last_round_id = msg.id
+
+    process.on 'exit', =>
+      @kill_server()
+
+  reset_the_server: (done) ->
+    @server.send({
+      command: 'reset',
+      env: {
+        port: @port
+        test: true
+        redis: redis
+        words: @words.join(),
+        ROOM_SIZE: @room_size
+      }
+    })
+    done()
+
+  kill_server: ->
+    @server.kill('SIGKILL')
+    if(@closed_listener)
+      @closed_listener()
 
   wait_for_closed: (done) =>
     @closed_listener = done
@@ -89,9 +118,6 @@ class ManualContext
     @clients[name]
 
   dispose: (done) =>
-    @server.kill('SIGKILL')
-    if(@closed_listener)
-      @closed_listener()
     done()
 
   wait_for_sockets: (done) =>

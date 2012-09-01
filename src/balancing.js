@@ -5,6 +5,7 @@ var GameServer = require('./gameserver')
   , AuthStore = null
   , Persistence = null
   , config = require('./config')
+  , winston = require('winston')
 
 var Balancing = function(app, sessions) {
   Eventable.call(this)
@@ -30,10 +31,18 @@ Balancing.prototype = {
     }
 
     if(!availableServer) {
-      availableServer = new GameServer(this.io, this.games.length, this.sessions, this.persistence)
+      winston.log('Creating a new server, there are currently ', this.games.length)
+      availableServer = new GameServer(
+        this.io, 
+        this.games.length, 
+        this.sessions, 
+        this.persistence)
+
       this.games.push(availableServer)
       this.hookServerEvents(availableServer)
     }
+    else
+      winston.log('Using an existing server for player, there are ', this.games.length)
     availableServer.game.newSocket(socket)
   },
   hookServerEvents: function(server) {
@@ -53,24 +62,34 @@ Balancing.prototype = {
       data.user = session.passport.user
       accept(null, true)
     })
-  },
+  }
 }
 
 _.extend(Balancing.prototype, Eventable.prototype)
 
 if(process.env.test) {
+  winston.log('Starting in mode "test"')
   AuthStore = require('./mocks/testauthenticationstore')
 
-  if(process.env.redis === true)
+  if(process.env.redis === true) {
     Persistence = require('./redispersistence')
-  else
+    winston.log('Using redis persistence')
+  }
+  else {
     Persistence = require('./mocks/inmemorypersistence')
+    winston.log('Using in memory persistence')
+  }
 
 } else {
-  if(process.env.offline)
+  winston.log('Starting in mode "non-test"')
+  if(process.env.offline) {
     AuthStore = require('./mocks/offlineauthenticationstore')
-  else
+    winston.log('Starting in offline mode')
+  }
+  else {
     AuthStore = require('./expressauthenticationstore')
+    winston.log('Using express authentication store')
+  }
   Persistence = require('./redispersistence')
 }
 

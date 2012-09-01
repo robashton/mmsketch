@@ -2,63 +2,20 @@ var fork = require('child_process').fork,
     Browser = require('zombie'),
     http = require('http')
 
-var server = null,
-    port = 8001,
-    num_clients = 1000,
+var port = process.env.port,
+    num_clients = process.env.playercount,
     correct_word = 'blah',
     incorrect_word = 'nugget',
     clients = [],
-    clientTimerInteval = null
+    clientTimerInteval = null,
+    numConnected = 0
 
-function startServer(cb) {
-  server = fork(process.cwd() + '/server.js', [], {
-    silent: false,
-    env: {
-      port: port,
-      test: true,
-      redis: true,
-      words: ''
-    }
-  })
-  server.on('message', function(msg) {
-    if(msg.command === 'ready')
-      waitForServerReadiness(cb)
-  })
-  server.on('exit', function(x,y,z) {
-    clearInterval(clientTimerInteval)
-    console.log('Server down', x,y, z)
-  })
-}
-
-function waitForServerReadiness(cb) {
-  setTimeout(function() {
-    http.get({
-      host: 'localhost',
-      port: port,
-      path: '/socket.io/socket.io.js',
-      method: 'GET',
-    },function(res) { 
-      if(res.statusCode === 404)
-        waitForServerReadiness(cb)
-      else
-        cb()
-    })
-  }, 20)
-}
-
-startServer(function() {
-  for(var i = 0 ; i < num_clients; i++) {
-    clients.push(new TestingClient('client-' + i)) 
-  }
-  clientTimerInteval = setInterval(tickClients, 100)
-})
 
 function tickClients() {
   for(var i = 0 ; i < num_clients; i++) {
     clients[i].tick()
   }
 }
-
 
 var TestingClient = function(name) {
   this.name = name
@@ -71,16 +28,16 @@ var TestingClient = function(name) {
   this.pad = null
 }
 
-
 TestingClient.prototype = {
   connect: function() {
     this.status = 'connecting'
-    this.log('Connecting')
     this.browser = new Browser()
     this.browser.cookies('localhost', '/', { httpOnly: true})
           .set("test.cookie", this.name)
     this.browser.visit('http://localhost:' + port, this.onNavigated)
     this.browser.on('loaded', this.injectTestContent)
+    numConnected++
+    console.log(numConnected, ' players')
   },
   injectTestContent: function() {
     this.browser.evaluate('TEST = true')
@@ -104,6 +61,8 @@ TestingClient.prototype = {
     this.browser.evaluate('closeSockets()')
     this.browser = null
     this.status = 'disconnected'
+    numConnected--
+    console.log(numConnected, ' players')
   },
   tick: function() {
     if(Math.random() * 1000 > 200) return
@@ -113,7 +72,7 @@ TestingClient.prototype = {
       this.determineMove()
   },
   considerConnecting: function() {
-    var value = Math.random() * 1000
+    var value = Math.random() * 10000
     if(value < 5) 
       return this.connect()
   },
@@ -135,18 +94,17 @@ TestingClient.prototype = {
   },
   makeGuess: function() {
     var value = Math.random() * 1000
-    if(value < 100) {
+    if(value < 10) {
       this.log('Guessing correctly')
       this.browser.fill('#client-input', correct_word)
                   .pressButton('#client-input-button')
     } else {
-      this.log('Guessing badly')
       this.browser.fill('#client-input', incorrect_word)
                   .pressButton('#client-input-button')
     }
   },
   considerDisconnecting: function() {
-    var value = Math.random() * 2000
+    var value = Math.random() * 200000
     if(value < 50) {
       this.disconnect()
       return true
@@ -166,3 +124,9 @@ TestingClient.prototype = {
     console.log(this.name, msg)
   },
 }
+
+for(var i = 0 ; i < num_clients; i++) {
+  clients.push(new TestingClient('client-' + i)) 
+  clients[i].connect()
+}
+clientTimerInteval = setInterval(tickClients, 100)

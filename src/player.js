@@ -1,6 +1,7 @@
 var Eventable = require('./eventable')
 var _ = require('underscore')
 var config = require('./config')
+var winston = require('winston')
 
 var Player = function(game, socket) {
   Eventable.call(this)
@@ -38,6 +39,7 @@ Player.prototype = {
         score: this.globalScore,
         gameScore: this.gameScore
      })
+   this.log('Score changed ' + this.gameScore)
   },
   startDrawing: function(word) {
     this.send('status', {
@@ -51,12 +53,14 @@ Player.prototype = {
       status: 'guessing',
       player: this.getJSON()
     }, this)
+    this.log('Started drawing')
   },
   startWaiting: function() {
     this.send('status', {
       clientCount: this.game.playerCount,
       status: 'waiting',
     })
+   this.log('Started waiting')
   },
   startGuessing: function() {
     this.send('status', {
@@ -64,6 +68,7 @@ Player.prototype = {
       status: 'guessing',
       player: this.game.currentArtist.getJSON()
     })
+    this.log('Started guessing')
   },
   sendGlobalScore: function(score) {
     this.globalScore = score
@@ -74,6 +79,7 @@ Player.prototype = {
   rejectAsDuplicate: function() {
     this.send('reject', 'duplicate');
     this.socket.disconnect()
+    this.log('Rejecting duplicate player')
   },
   id: function() {
     return this.user.id
@@ -106,12 +112,15 @@ Player.prototype = {
         player:  this.getJSON(),
         win: false
       }, this)
+      this.log('Guessing correctly')
     }
-    else
+    else { 
       this.game.broadcast('wrong', {
         word: word,
         player: this.getJSON()
       })
+    }
+
   },
   onDrawingStart: function(position) {
     if(!this.isDrawing()) return
@@ -153,6 +162,10 @@ Player.prototype = {
   },
   send: function(msg, data) {
     this.socket.emit(msg, data)
+  },
+  log: function(msg) {
+    winston.info('Player: ' + this.id() +
+      ' : ' + this.gameIndex + ': ' + msg)
   }
 }
 
