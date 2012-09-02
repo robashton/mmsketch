@@ -104,28 +104,28 @@
     },
     sendDrawingStart: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingstart', position)
       this.onDrawingStart(position)
+      this.socket.emit('drawingstart', position)
     },
     sendDrawingMove: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingmove', position)
       this.onDrawingMove(position)
+      this.socket.emit('drawingmove', position)
     },
     sendDrawingEnd: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingend', position)
       this.onDrawingEnd(position)
+      this.socket.emit('drawingend', position)
     },
     sendSelectBrush: function(brush) {
       if(!this.isDrawing()) return
-      this.socket.emit('selectbrush', brush)
       this.onBrushSelected(brush)
+      this.socket.emit('selectbrush', brush)
     },
     sendSelectColour: function(colour) {
       if(!this.isDrawing()) return
-      this.socket.emit('selectcolour', colour)
       this.onColourSelected(colour)
+      this.socket.emit('selectcolour', colour)
     },
     onDrawingStart: function(position) {
       this.raise('DrawingStart', position)

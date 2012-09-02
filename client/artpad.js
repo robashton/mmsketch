@@ -12,24 +12,22 @@
     this.numberOfSteps = 0
     this.averageDistanceMoved = 0
     this.status = null
-    this.clear()
     this.offscreen = new Canvas('offscreen1', 100, 100)
     this.offscreencontext = this.offscreen.context
     this.paintBrushImage = Canvas.createImage('img/paintbrush.png')
     var pad = this
     this.paintBrushImage.onload = function() {
-    pad.offscreencontext.clearRect(0, 0, 100, 100)
-    pad.offscreencontext.drawImage(
-      pad.paintBrushImage,
-      0, 0, 100, 100)
+      pad.offscreencontext.clearRect(0, 0, 100, 100)
+      pad.offscreencontext.drawImage(pad.paintBrushImage, 0, 0, 100, 100)
     }
+    this.clear()
   }
 
   ArtPad.prototype = {
     clear: function() {
       this.context.fillStyle = '#FFF'
       this.context.globalAlpha = 1.0
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     },
     startDrawing: function(position) {
       this.lastPosition = position
@@ -38,9 +36,12 @@
       this.status = 'starting'
     },
     draw: function(position) {
+      var start = new Date().getTime()
       this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
+      var end = new Date().getTime()
+      var diff = end - start
     },
     stopDrawing: function() {
       this.status = 'ending'
@@ -52,8 +53,12 @@
     },
     drawLine: function(from, to) { 
       this.context.save()
+      try {
       if(Brushes[this.selectedBrush])
         Brushes[this.selectedBrush](from, to, this)
+      } catch(ex) {
+        console.log(ex)
+      }
       this.context.restore()
     },
     setBrush: function(brush) {
@@ -173,27 +178,42 @@
       g = parseInt(gh, 16)
       b = parseInt(bh, 16)
 
+      var dx = parseInt(quad.cx - 50, 10)
+        , dy = parseInt(quad.cy - 50, 10)
+        , dw = 100
+        , dh = 100
+
       var source = pad.offscreencontext.getImageData(0, 0, 100, 100)
+      var destination = pad.context.getImageData(dx, dy, dw, dh)
+
+      // You'd have thought that just doing a drawImage with a globalAlpha would be faster
+      // Cos you know, it's native and stuff - but no, doing direct pixel blending works better
+      // because chrome appears to glitch out doing successive drawImage with a canvas source
       for(var i = 0;  i < 100 ; i++) {
         for(var j = 0 ; j < 100 ; j++) {
           var index = (i + j * 100) * 4
-          source.data[index] = r 
-          source.data[index+1] = g 
-          source.data[index+2] = b 
+          var sourceMix = (source.data[index + 3] * 0.02) / 255
+          if(sourceMix < 0.01)
+            sourceMix = 0
+          var destinationMix = 1.0 - sourceMix
+
+          var dr = destination.data[index]
+          var dg = destination.data[index+1]
+          var db = destination.data[index+2]
+          var da = destination.data[index+3]
+
+          destination.data[index] = parseInt((r * sourceMix) + (dr * destinationMix), 10)
+          destination.data[index+1] = parseInt((g * sourceMix) + (dg * destinationMix), 10)
+          destination.data[index+2] = parseInt((b * sourceMix) + (db * destinationMix), 10) 
+          destination.data[index+3] = parseInt((255 * sourceMix) + (da * destinationMix), 10) 
         }
       }
-
-      pad.offscreencontext.putImageData(source, 0, 0) 
-      pad.context.globalAlpha = 0.02
-      pad.context.drawImage(pad.offscreen.canvas,
-        quad.cx - 50, quad.cy - 50, 100, 100)
+      pad.context.putImageData(destination, dx, dy)
     },
     pencil: function(from, to, pad) {
       if(pad.history.length < 5) return
 
-
       pad.context.globalAlpha = 1.0 / (pad.averageDistanceMoved / 5)
-
       pad.context.lineWidth = 2 
       pad.context.strokeStyle = pad.selectedColour
       pad.context.beginPath()

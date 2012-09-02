@@ -1,4 +1,4 @@
-(function(exports) {
+  (function(exports) {
 
   var ArtPadInput  = function(game) {
     this.game = game
@@ -16,13 +16,22 @@
     this.hookDrawingInput()
   }
 
+  var timing = false
+  var lastTime = new Date().getTime()
+  var logTime = function() {
+    var thisTime = new Date().getTime()
+    var diff = thisTime - lastTime
+    if(diff > 10)
+      console.log(diff)
+    lastTime = thisTime
+  }
+
   ArtPadInput.prototype = {
     hookDrawingInput: function() {
       var self = this
       $('#surface')
        .hammer({
         prevent_default: true,
-        drag_min_distance: 1
        })
       .on({
         dragstart: _.bind(this.onDragStart, this),
@@ -43,27 +52,42 @@
         }})
     },
     onDragStart: function(ev) {
+      console.log('Drag start')
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingStart(position)
+      timing = true
+      lastDate = new Date().getTime()
     },
     onDrag: function(ev) {
+      logTime()
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
+      console.log('Drag end')
+      timing = false
       this.game.sendDrawingEnd()
     },
     onRoundStarted: function() {
       this.pad.clear()
     },
     onDrawingStart: function(position) {
-      this.pad.startDrawing(position)
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.startDrawing(position)
+      })
     },
     onDrawingMove: function(position) {
-      this.pad.draw(position)
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.draw(position)
+      })
     },
     onDrawingEnd: function(data) {
-      this.pad.stopDrawing()
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.stopDrawing()
+      })
     },
     onBrushSelected: function(brush) {
       this.selectBrush(brush)

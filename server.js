@@ -7,6 +7,10 @@ var  config = require('./src/config')
    , WEBROOT = path.join(path.dirname(__filename), 'site')
    , MemoryStore = require('connect').middleware.session.MemoryStore
 
+var buildPath = 'sh ' + path.join(__dirname, 'build.sh');
+try {
+  require('child_process').spawn(buildPath);
+} catch (ex) { console.log(ex); }
 
 var balancing = null
   , app = null

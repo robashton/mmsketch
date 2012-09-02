@@ -457,28 +457,28 @@
     },
     sendDrawingStart: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingstart', position)
       this.onDrawingStart(position)
+      this.socket.emit('drawingstart', position)
     },
     sendDrawingMove: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingmove', position)
       this.onDrawingMove(position)
+      this.socket.emit('drawingmove', position)
     },
     sendDrawingEnd: function(position) {
       if(!this.isDrawing()) return
-      this.socket.emit('drawingend', position)
       this.onDrawingEnd(position)
+      this.socket.emit('drawingend', position)
     },
     sendSelectBrush: function(brush) {
       if(!this.isDrawing()) return
-      this.socket.emit('selectbrush', brush)
       this.onBrushSelected(brush)
+      this.socket.emit('selectbrush', brush)
     },
     sendSelectColour: function(colour) {
       if(!this.isDrawing()) return
-      this.socket.emit('selectcolour', colour)
       this.onColourSelected(colour)
+      this.socket.emit('selectcolour', colour)
     },
     onDrawingStart: function(position) {
       this.raise('DrawingStart', position)
@@ -587,24 +587,22 @@
     this.numberOfSteps = 0
     this.averageDistanceMoved = 0
     this.status = null
-    this.clear()
     this.offscreen = new Canvas('offscreen1', 100, 100)
     this.offscreencontext = this.offscreen.context
     this.paintBrushImage = Canvas.createImage('img/paintbrush.png')
     var pad = this
     this.paintBrushImage.onload = function() {
-    pad.offscreencontext.clearRect(0, 0, 100, 100)
-    pad.offscreencontext.drawImage(
-      pad.paintBrushImage,
-      0, 0, 100, 100)
+      pad.offscreencontext.clearRect(0, 0, 100, 100)
+      pad.offscreencontext.drawImage(pad.paintBrushImage, 0, 0, 100, 100)
     }
+    this.clear()
   }
 
   ArtPad.prototype = {
     clear: function() {
       this.context.fillStyle = '#FFF'
       this.context.globalAlpha = 1.0
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
     },
     startDrawing: function(position) {
       this.lastPosition = position
@@ -613,9 +611,12 @@
       this.status = 'starting'
     },
     draw: function(position) {
+      var start = new Date().getTime()
       this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
+      var end = new Date().getTime()
+      var diff = end - start
     },
     stopDrawing: function() {
       this.status = 'ending'
@@ -627,8 +628,12 @@
     },
     drawLine: function(from, to) { 
       this.context.save()
+      try {
       if(Brushes[this.selectedBrush])
         Brushes[this.selectedBrush](from, to, this)
+      } catch(ex) {
+        console.log(ex)
+      }
       this.context.restore()
     },
     setBrush: function(brush) {
@@ -748,27 +753,42 @@
       g = parseInt(gh, 16)
       b = parseInt(bh, 16)
 
+      var dx = parseInt(quad.cx - 50, 10)
+        , dy = parseInt(quad.cy - 50, 10)
+        , dw = 100
+        , dh = 100
+
       var source = pad.offscreencontext.getImageData(0, 0, 100, 100)
+      var destination = pad.context.getImageData(dx, dy, dw, dh)
+
+      // You'd have thought that just doing a drawImage with a globalAlpha would be faster
+      // Cos you know, it's native and stuff - but no, doing direct pixel blending works better
+      // because chrome appears to glitch out doing successive drawImage with a canvas source
       for(var i = 0;  i < 100 ; i++) {
         for(var j = 0 ; j < 100 ; j++) {
           var index = (i + j * 100) * 4
-          source.data[index] = r 
-          source.data[index+1] = g 
-          source.data[index+2] = b 
+          var sourceMix = (source.data[index + 3] * 0.02) / 255
+          if(sourceMix < 0.01)
+            sourceMix = 0
+          var destinationMix = 1.0 - sourceMix
+
+          var dr = destination.data[index]
+          var dg = destination.data[index+1]
+          var db = destination.data[index+2]
+          var da = destination.data[index+3]
+
+          destination.data[index] = parseInt((r * sourceMix) + (dr * destinationMix), 10)
+          destination.data[index+1] = parseInt((g * sourceMix) + (dg * destinationMix), 10)
+          destination.data[index+2] = parseInt((b * sourceMix) + (db * destinationMix), 10) 
+          destination.data[index+3] = parseInt((255 * sourceMix) + (da * destinationMix), 10) 
         }
       }
-
-      pad.offscreencontext.putImageData(source, 0, 0) 
-      pad.context.globalAlpha = 0.02
-      pad.context.drawImage(pad.offscreen.canvas,
-        quad.cx - 50, quad.cy - 50, 100, 100)
+      pad.context.putImageData(destination, dx, dy)
     },
     pencil: function(from, to, pad) {
       if(pad.history.length < 5) return
 
-
       pad.context.globalAlpha = 1.0 / (pad.averageDistanceMoved / 5)
-
       pad.context.lineWidth = 2 
       pad.context.strokeStyle = pad.selectedColour
       pad.context.beginPath()
@@ -909,7 +929,7 @@
     exports.ArtPad = ArtPad
 
 }( this));
-(function(exports) {
+  (function(exports) {
 
   var ArtPadInput  = function(game) {
     this.game = game
@@ -927,13 +947,22 @@
     this.hookDrawingInput()
   }
 
+  var timing = false
+  var lastTime = new Date().getTime()
+  var logTime = function() {
+    var thisTime = new Date().getTime()
+    var diff = thisTime - lastTime
+    if(diff > 10)
+      console.log(diff)
+    lastTime = thisTime
+  }
+
   ArtPadInput.prototype = {
     hookDrawingInput: function() {
       var self = this
       $('#surface')
        .hammer({
         prevent_default: true,
-        drag_min_distance: 1
        })
       .on({
         dragstart: _.bind(this.onDragStart, this),
@@ -954,27 +983,42 @@
         }})
     },
     onDragStart: function(ev) {
+      console.log('Drag start')
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingStart(position)
+      timing = true
+      lastDate = new Date().getTime()
     },
     onDrag: function(ev) {
+      logTime()
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
+      console.log('Drag end')
+      timing = false
       this.game.sendDrawingEnd()
     },
     onRoundStarted: function() {
       this.pad.clear()
     },
     onDrawingStart: function(position) {
-      this.pad.startDrawing(position)
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.startDrawing(position)
+      })
     },
     onDrawingMove: function(position) {
-      this.pad.draw(position)
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.draw(position)
+      })
     },
     onDrawingEnd: function(data) {
-      this.pad.stopDrawing()
+      var self = this
+      webkitRequestAnimationFrame(function() {
+        self.pad.stopDrawing()
+      })
     },
     onBrushSelected: function(brush) {
       this.selectBrush(brush)
