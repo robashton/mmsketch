@@ -648,9 +648,10 @@
   }
 
   function calculateQuadFrom(from, to, width) {
-    var dx = to.x - from.x
-      , dy = to.y - from.y
+    var dx = (to.x - from.x) || 0.01
+      , dy = (to.y - from.y) || 0.01
       , dmag = Math.sqrt((dx * dx) + (dy * dy))
+
     
      dx /= dmag
      dy /= dmag
@@ -665,7 +666,7 @@
                y: to.y + (  width * to.mag *   nl.y) }
      ,  tr = { x: to.x + (  width * to.mag *   nr.x),
                y: to.y + (  width * to.mag *   nr.y) }
-    return {
+    var quad = {
       bl: bl,
       br: br,
       tl: tl,
@@ -674,6 +675,7 @@
       cy: (bl.y + tr.y) / 2,
       width: Math.abs(bl.x - tr.x)
     }
+    return quad
   }
 
   var Brushes = {
@@ -695,26 +697,8 @@
       pad.context.fillStyle = pad.selectedColour
       pad.context.lineWidth = 1 
       pad.context.globalAlpha = 1.0 
-      pad.context.lineJoin = 'miter'
+      pad.context.lineJoin = 'round'
 
-      pad.context.beginPath()
-      pad.context.moveTo(quads[0].tl.x, quads[0].tl.y)
-
-      for(var i = 1 ; i < quads.length ; i++) {
-        pad.context.lineTo(quads[i].bl.x, quads[i].bl.y)
-        pad.context.lineTo(quads[i].tl.x, quads[i].tl.y)
-      }
-
-      pad.context.lineTo(quads[quads.length-1].tr.x, quads[quads.length-1].tr.y)
-
-      for(i = quads.length-1 ; i > 0; i--) {
-        pad.context.lineTo(quads[i].br.x, quads[i].br.y)
-        pad.context.lineTo(quads[i-1].tr.x, quads[i-1].tr.y)
-      }
-
-      pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
-
-      /*
       
       for(var i = 1 ; i < quads.length; i++)
         pad.context.quadraticCurveTo(quads[i].bl.x, quads[i].bl.y, quads[i].tl.x, quads[i].tl.y)
@@ -725,8 +709,6 @@
         pad.context.quadraticCurveTo(quads[i].br.x, quads[i].br.y, quads[i-1].tr.x, quads[i-1].tr.y)
 
       pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
-
-      */
 
       pad.context.closePath()
       pad.context.fill()
@@ -1189,7 +1171,11 @@
       if(this.current >= this.events.length) return
       var ev = this.events[this.current++]
       var mapped = this.map[ev.event]
+      try {
       this.raise(mapped, ev.data)
+      } catch(ex) {
+        console.log(ex)
+      }
       setTimeout(this.playNextEvent, this.intervalTime)
     },
     map: {

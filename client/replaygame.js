@@ -18,7 +18,11 @@
       if(this.current >= this.events.length) return
       var ev = this.events[this.current++]
       var mapped = this.map[ev.event]
+      try {
       this.raise(mapped, ev.data)
+      } catch(ex) {
+        console.log(ex)
+      }
       setTimeout(this.playNextEvent, this.intervalTime)
     },
     map: {
