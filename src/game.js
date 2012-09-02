@@ -49,12 +49,12 @@ Game.prototype = {
   },
   removePlayer: function(player) {
     delete this.players[player.id()]
+    this.updatePlayerCount(this.playerCount-1)
 
     winston.info('Removing player ' + player.id() + 
       ' from game ' + this.index + 
       ' now there are ' + this.playerCount + ' players')
 
-    this.updatePlayerCount(this.playerCount-1)
     this.evaluateGameStatus()
     if(this.gamestarted && player === this.currentArtist) {
       this.currentArtist = this.chooseNewArtist()

@@ -42,7 +42,6 @@
         }})
     },
     onDragStart: function(ev) {
-      console.log('Drag start')
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingStart(position)
     },
@@ -51,7 +50,6 @@
       this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
-      console.log('Drag end')
       this.game.sendDrawingEnd()
     },
     onRoundStarted: function() {
