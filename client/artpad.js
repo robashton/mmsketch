@@ -73,9 +73,12 @@
   }
 
   function calculateQuadFrom(from, to, width) {
-    var dx = to.x - from.x
-      , dy = to.y - from.y
+    console.log('quad from', from, to, width)
+    var dx = (to.x - from.x) || 0.01
+      , dy = (to.y - from.y) || 0.01
       , dmag = Math.sqrt((dx * dx) + (dy * dy))
+
+    console.log('delta', dx, dy, dmag)
     
      dx /= dmag
      dy /= dmag
@@ -90,7 +93,7 @@
                y: to.y + (  width * to.mag *   nl.y) }
      ,  tr = { x: to.x + (  width * to.mag *   nr.x),
                y: to.y + (  width * to.mag *   nr.y) }
-    return {
+    var quad = {
       bl: bl,
       br: br,
       tl: tl,
@@ -99,6 +102,8 @@
       cy: (bl.y + tr.y) / 2,
       width: Math.abs(bl.x - tr.x)
     }
+    console.log('quad is', quad)
+    return quad
   }
 
   var Brushes = {
@@ -120,10 +125,36 @@
       pad.context.fillStyle = pad.selectedColour
       pad.context.lineWidth = 1 
       pad.context.globalAlpha = 1.0 
-      pad.context.lineJoin = 'miter'
+      pad.context.lineJoin = 'round'
+
+      var moveTo = function(x, y) {
+        console.log('move to', x ,y)
+        pad.context.moveTo(x, y)
+      }
+
+      var lineTo = function(x, y) {
+        console.log('line to', x, y)
+        pad.context.lineTo(x, y)
+      }
 
       pad.context.beginPath()
-      pad.context.moveTo(quads[0].tl.x, quads[0].tl.y)
+      moveTo(quads[0].tl.x, quads[0].tl.y)
+
+      for(var i = 1 ; i < quads.length ; i++) {
+        lineTo(quads[i].bl.x, quads[i].bl.y)
+        lineTo(quads[i].tl.x, quads[i].tl.y)
+      }
+
+      lineTo(quads[quads.length-1].tr.x, quads[quads.length-1].tr.y)
+
+      for(i = quads.length-1 ; i > 0; i--) {
+        lineTo(quads[i].br.x, quads[i].br.y)
+        lineTo(quads[i-1].tr.x, quads[i-1].tr.y)
+      }
+
+      lineTo(quads[0].tl.x, quads[0].tl.y)
+
+      /*
       
       for(var i = 1 ; i < quads.length; i++)
         pad.context.quadraticCurveTo(quads[i].bl.x, quads[i].bl.y, quads[i].tl.x, quads[i].tl.y)
@@ -134,6 +165,8 @@
         pad.context.quadraticCurveTo(quads[i].br.x, quads[i].br.y, quads[i-1].tr.x, quads[i-1].tr.y)
 
       pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
+
+      */
 
       pad.context.closePath()
       pad.context.fill()

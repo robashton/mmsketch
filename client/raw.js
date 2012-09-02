@@ -699,6 +699,22 @@
 
       pad.context.beginPath()
       pad.context.moveTo(quads[0].tl.x, quads[0].tl.y)
+
+      for(var i = 1 ; i < quads.length ; i++) {
+        pad.context.lineTo(quads[i].bl.x, quads[i].bl.y)
+        pad.context.lineTo(quads[i].tl.x, quads[i].tl.y)
+      }
+
+      pad.context.lineTo(quads[quads.length-1].tr.x, quads[quads.length-1].tr.y)
+
+      for(i = quads.length-1 ; i > 0; i--) {
+        pad.context.lineTo(quads[i].br.x, quads[i].br.y)
+        pad.context.lineTo(quads[i-1].tr.x, quads[i-1].tr.y)
+      }
+
+      pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
+
+      /*
       
       for(var i = 1 ; i < quads.length; i++)
         pad.context.quadraticCurveTo(quads[i].bl.x, quads[i].bl.y, quads[i].tl.x, quads[i].tl.y)
@@ -709,6 +725,8 @@
         pad.context.quadraticCurveTo(quads[i].br.x, quads[i].br.y, quads[i-1].tr.x, quads[i-1].tr.y)
 
       pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
+
+      */
 
       pad.context.closePath()
       pad.context.fill()
@@ -1001,7 +1019,6 @@
         }})
     },
     onDragStart: function(ev) {
-      console.log('Drag start')
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingStart(position)
     },
@@ -1010,7 +1027,6 @@
       this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
-      console.log('Drag end')
       this.game.sendDrawingEnd()
     },
     onRoundStarted: function() {

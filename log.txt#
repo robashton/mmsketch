@@ -1,0 +1,11 @@
+info: socket.io started
+info: Loading route views
+info: Loading route auth
+info: Loading route login
+info: Loading route services
+info: Adding player flo to game 0 now there are 1 players
+info: Player: flo : 0: Started waiting
+info: Adding player dero to game 0 now there are 2 players
+info: Player: dero : 0: Started waiting
+info: Starting game 0 now it has some players in it
+info: Player: flo : 0: Started drawing
