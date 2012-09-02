@@ -124,32 +124,6 @@
       pad.context.globalAlpha = 1.0 
       pad.context.lineJoin = 'round'
 
-      var moveTo = function(x, y) {
-        pad.context.moveTo(x, y)
-      }
-
-      var lineTo = function(x, y) {
-        pad.context.lineTo(x, y)
-      }
-
-      pad.context.beginPath()
-      moveTo(quads[0].tl.x, quads[0].tl.y)
-
-      for(var i = 1 ; i < quads.length ; i++) {
-        lineTo(quads[i].bl.x, quads[i].bl.y)
-        lineTo(quads[i].tl.x, quads[i].tl.y)
-      }
-
-      lineTo(quads[quads.length-1].tr.x, quads[quads.length-1].tr.y)
-
-      for(i = quads.length-1 ; i > 0; i--) {
-        lineTo(quads[i].br.x, quads[i].br.y)
-        lineTo(quads[i-1].tr.x, quads[i-1].tr.y)
-      }
-
-      lineTo(quads[0].tl.x, quads[0].tl.y)
-
-      /*
       
       for(var i = 1 ; i < quads.length; i++)
         pad.context.quadraticCurveTo(quads[i].bl.x, quads[i].bl.y, quads[i].tl.x, quads[i].tl.y)
@@ -160,8 +134,6 @@
         pad.context.quadraticCurveTo(quads[i].br.x, quads[i].br.y, quads[i-1].tr.x, quads[i-1].tr.y)
 
       pad.context.lineTo(quads[0].tl.x, quads[0].tl.y)
-
-      */
 
       pad.context.closePath()
       pad.context.fill()
