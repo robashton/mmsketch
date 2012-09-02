@@ -73,12 +73,10 @@
   }
 
   function calculateQuadFrom(from, to, width) {
-    console.log('quad from', from, to, width)
     var dx = (to.x - from.x) || 0.01
       , dy = (to.y - from.y) || 0.01
       , dmag = Math.sqrt((dx * dx) + (dy * dy))
 
-    console.log('delta', dx, dy, dmag)
     
      dx /= dmag
      dy /= dmag
@@ -102,7 +100,6 @@
       cy: (bl.y + tr.y) / 2,
       width: Math.abs(bl.x - tr.x)
     }
-    console.log('quad is', quad)
     return quad
   }
 
