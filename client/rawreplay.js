@@ -628,12 +628,8 @@
     },
     drawLine: function(from, to) { 
       this.context.save()
-      try {
       if(Brushes[this.selectedBrush])
         Brushes[this.selectedBrush](from, to, this)
-      } catch(ex) {
-        console.log(ex)
-      }
       this.context.restore()
     },
     setBrush: function(brush) {
@@ -757,16 +753,51 @@
         , dy = parseInt(quad.cy - 50, 10)
         , dw = 100
         , dh = 100
+        , sx = 0
+        , sy = 0
+        , sw = 100
+        , sh = 100
 
-      var source = pad.offscreencontext.getImageData(0, 0, 100, 100)
+
+      // We need to do this adjustment
+      // because node-canvas crashes outside of boundaries, goddamit
+      if(dx < 0) {
+        dw += dx
+        sx -= dx
+        sw += dx
+        dx = 0
+       
+      }
+
+      if(dy < 0) {
+        dh += dy
+        sy -= dy
+        sh += dy
+        dy = 0
+      }
+      
+      var diffw = (dx + dw) - pad.canvas.width
+      var diffy = (dy + dh) - pad.canvas.height
+      if(diffw > 0)  {
+        dw -= diffw
+        sw -= diffw
+      }
+
+      if(diffy > 0) {
+        dh -= diffy
+        sh -= diffy
+      }
+
+      var source = pad.offscreencontext.getImageData(sx, sy, sw, sh)
       var destination = pad.context.getImageData(dx, dy, dw, dh)
 
       // You'd have thought that just doing a drawImage with a globalAlpha would be faster
       // Cos you know, it's native and stuff - but no, doing direct pixel blending works better
-      // because chrome appears to glitch out doing successive drawImage with a canvas source
-      for(var i = 0;  i < 100 ; i++) {
-        for(var j = 0 ; j < 100 ; j++) {
-          var index = (i + j * 100) * 4
+      // because chrome appears to glitch out doing successive drawImage with a canvas element
+      // as a source
+      for(var i = 0;  i < sw ; i++) {
+        for(var j = 0 ; j < sh ; j++) {
+          var index = (i + j * sw) * 4
           var sourceMix = (source.data[index + 3] * 0.02) / 255
           if(sourceMix < 0.01)
             sourceMix = 0
