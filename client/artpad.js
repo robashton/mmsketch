@@ -36,12 +36,9 @@
       this.status = 'starting'
     },
     draw: function(position) {
-      var start = new Date().getTime()
       this.addToDistances(position)
       this.drawLine(this.lastPosition, position)
       this.lastPosition = position
-      var end = new Date().getTime()
-      var diff = end - start
     },
     stopDrawing: function() {
       this.status = 'ending'

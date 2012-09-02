@@ -16,16 +16,6 @@
     this.hookDrawingInput()
   }
 
-  var timing = false
-  var lastTime = new Date().getTime()
-  var logTime = function() {
-    var thisTime = new Date().getTime()
-    var diff = thisTime - lastTime
-    if(diff > 10)
-      console.log(diff)
-    lastTime = thisTime
-  }
-
   ArtPadInput.prototype = {
     hookDrawingInput: function() {
       var self = this
@@ -55,39 +45,26 @@
       console.log('Drag start')
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingStart(position)
-      timing = true
-      lastDate = new Date().getTime()
     },
     onDrag: function(ev) {
-      logTime()
       var position = this.screenToCanvas(ev.position)
       this.game.sendDrawingMove(position) 
     },
     onDragEnd: function(ev) {
       console.log('Drag end')
-      timing = false
       this.game.sendDrawingEnd()
     },
     onRoundStarted: function() {
       this.pad.clear()
     },
     onDrawingStart: function(position) {
-      var self = this
-      webkitRequestAnimationFrame(function() {
-        self.pad.startDrawing(position)
-      })
+      this.pad.startDrawing(position)
     },
     onDrawingMove: function(position) {
-      var self = this
-      webkitRequestAnimationFrame(function() {
-        self.pad.draw(position)
-      })
+      this.pad.draw(position)
     },
     onDrawingEnd: function(data) {
-      var self = this
-      webkitRequestAnimationFrame(function() {
-        self.pad.stopDrawing()
-      })
+      this.pad.stopDrawing()
     },
     onBrushSelected: function(brush) {
       this.selectBrush(brush)
