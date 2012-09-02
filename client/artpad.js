@@ -125,12 +125,10 @@
       pad.context.lineJoin = 'round'
 
       var moveTo = function(x, y) {
-        console.log('move to', x ,y)
         pad.context.moveTo(x, y)
       }
 
       var lineTo = function(x, y) {
-        console.log('line to', x, y)
         pad.context.lineTo(x, y)
       }
 
