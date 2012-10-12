@@ -12,6 +12,11 @@ if(!!process.env.BUILD)
 
 requirejs(['./src/web'],
   function(start) {
-  start(__dirname)
+  start(__dirname, onServerStarted)
 })
+
+function onServerStarted() {
+  if(process.send)
+    process.send({ msg: 'loaded'})
+}
  

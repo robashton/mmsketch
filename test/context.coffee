@@ -4,14 +4,20 @@ Browser = require 'zombie'
 fork = require('child_process').fork
 cookie = require('connect').utils
 http = require('http')
+_ = require 'underscore'
 
 alreadyRunning = false
 
 class ManualContext
   constructor: ->
     @server = null
+    @clients = {}
+    @pendingClients = 0
     @port = parseInt(Math.random() * 63000) + 1000
     @closed_listener = null
+
+  set_word_of_the_day: (word) =>
+    @word = word
 
   start: (done) =>
     @server= fork(process.cwd() + '/server.js',[], {
@@ -22,6 +28,10 @@ class ManualContext
         REDIS: redis
       }
     })
+    if(@word)
+      @server.send({ msg: 'setCurrentWord', word: @word})
+    @server.on 'message', (data) =>
+      if(data.msg == 'loaded') then done()
 
   add_client_called: (name, cb) =>
     @pendingClients++
@@ -66,9 +76,9 @@ class ManualClient
     @pad = null
     @context = context
 
-  loaded: => false
   was_redirected: => @browser.location.toString() != @page
   displayName: => (@name + 'display')
+  login: (name) => false
    
   wait: (test, cb) =>
     check = =>
@@ -81,15 +91,22 @@ class ManualClient
   load_index: (cb) =>
     @page = @base + '/'
     @browser.visit @page
-    @browser.on 'loaded', @hookCanvasElements
-    @wait @loaded, =>
-      setTimeout =>
-        try
-          @pad = @browser.evaluate('artPad')
-        catch ex
-        finally
-          cb()
-      ,20
+    @browser.on 'loaded', =>
+      @hookCanvasElements()
+      try
+        @pad = @browser.evaluate('artPad')
+      catch ex
+      finally
+        cb()
+
+  text: (selector) =>
+    @browser.querySelector(selector).textContent
+
+  page_title: =>
+    @text('h1')
+
+  word_of_the_day: =>
+    _.last(@text('.current-word').split(" "))
 
   hookCanvasElements: =>
     @browser.evaluate('TEST = true')

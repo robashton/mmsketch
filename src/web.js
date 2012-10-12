@@ -2,9 +2,11 @@ define(function(require) {
   var express = require('express'),
       stylus = require('stylus'),
       app = express(),
-      routes = require('./routes/index')
+      routes = require('./routes/index'),
+      config = require('./config'),
+      winston = require('winston')
 
-  return function(dir) {
+  return function(dir, cb) {
     app.set('view engine', 'jade')
     app.set('views', 'views')
     app.engine('jade', require('jade').__express)
@@ -14,6 +16,6 @@ define(function(require) {
       debug: true}))
     app.use(express.static(dir + '/site'));
     routes(app)
-    app.listen(8080)
+    app.listen(config.port, cb)
   }
 })
