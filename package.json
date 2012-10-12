@@ -18,5 +18,6 @@
     "winston" : "",
     "jade" : "",
     "requirejs": ""
+    "stylus": ""
   }
 }

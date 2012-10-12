@@ -4,8 +4,8 @@
   dir: 'site',
   optimize: 'none',
   paths: {
-    'jquery': 'external/jquery-1.7.2.min',
-    'underscore': '../../node_modules/underscore/underscore-min',
+    'jquery': ':empty',
+    'underscore': ':empty',
   },
   shim: {
     'jquery': { exports: '$'},
