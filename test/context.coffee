@@ -113,6 +113,11 @@ class ManualClient
   page_title: =>
     @text('h1')
 
+  select_brush: (brush, done) => done()
+  select_colour: (colour, done) => done()
+  selected_brush: () => ""
+  selected_colour: () => ""
+
   word_of_the_day: =>
     _.last(@text('.current-word').split(" "))
 
