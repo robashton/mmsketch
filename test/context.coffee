@@ -76,9 +76,13 @@ class ManualClient
     @pad = null
     @context = context
 
-  was_redirected: => @browser.location.toString() != @page
+  was_redirected_to: (url) =>
+    @browser.location.toString().indexOf(url) != -1
+
   displayName: => (@name + 'display')
-  login: (name) => false
+
+  login: (name) =>
+   @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", name)
    
   wait: (test, cb) =>
     check = =>
