@@ -76,6 +76,13 @@ class ManualClient
     @base = 'http://localhost:' + port
     @pad = null
     @context = context
+    @user = ''
+
+  navigate: (url, done) =>
+    @page = @base + url
+    @browser = new Browser({debug: debug})
+    @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", @user)
+    @browser.visit @page, done
 
   was_redirected_to: (url) =>
     @browser.location.toString().indexOf(url) != -1
@@ -83,19 +90,10 @@ class ManualClient
   displayName: => (@name + 'display')
 
   login: (name) =>
-   @browser.cookies('localhost', '/', { httpOnly: true} ).set("test.cookie", name)
+    @user = name
    
-  wait: (test, cb) =>
-    check = =>
-      if test()
-        cb()
-      else
-        setTimeout check, 50
-    check()
-
   load_index: (cb) =>
-    @page = @base + '/'
-    @browser.visit @page, =>
+    @navigate '/', =>
       @hookCanvasElements()
       try
         @pad = @browser.evaluate('artPad')
@@ -104,11 +102,13 @@ class ManualClient
         cb()
 
   navigate_to_artpad: (done) =>
-    @browser.visit '/artpad', =>
-      done()
-
+    @navigate '/artpad', done
+    
   text: (selector) =>
     @browser.querySelector(selector).textContent
+
+  count_visible_elements: (selector) =>
+    @browser.querySelectorAll(selector).length
 
   page_title: =>
     @text('h1')
