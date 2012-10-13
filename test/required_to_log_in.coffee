@@ -14,5 +14,5 @@ Scenario "Required to log in", ->
   Then "the anonymous user is re-directed to the log-in system", ->
     anonymous.was_redirected_to('/login').should.equal(true)
 
-  after ->
-    context.dispose()
+  after (done) ->
+    context.dispose done

@@ -30,6 +30,7 @@ class ManualContext
     })
     if(@word)
       @server.send({ msg: 'setCurrentWord', word: @word})
+
     @server.on 'message', (data) =>
       if(data.msg == 'loaded') then done()
 
@@ -46,7 +47,7 @@ class ManualContext
 
   add_anonymous_client: (cb) =>
     @pendingClients++
-    client = new ManualClient(this, @port)
+    client = new ManualClient(this, null, @port)
     client.load_index =>
       @pendingClients--
       if(cb)
