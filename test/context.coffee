@@ -94,14 +94,17 @@ class ManualClient
 
   load_index: (cb) =>
     @page = @base + '/'
-    @browser.visit @page
-    @browser.on 'loaded', =>
+    @browser.visit @page, =>
       @hookCanvasElements()
       try
         @pad = @browser.evaluate('artPad')
       catch ex
       finally
         cb()
+
+  navigate_to_artpad: (done) =>
+    @browser.visit '/artpad', =>
+      done()
 
   text: (selector) =>
     @browser.querySelector(selector).textContent
