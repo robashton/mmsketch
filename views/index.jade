@@ -2,11 +2,7 @@ extends master
 
 block content
   #content.container-fluid
-    .row-fluid
-      .span3
-        h1 drawmo
-      .span3
-        p.current-word Today's word is #{currentWord}
-      .span3
-        a(href='/draw') Draw it!
-    .row-fluid
+    #top
+      h1 drawmo
+      p.current-word Today's word is #{currentWord}
+      a(href='/draw') Draw it!

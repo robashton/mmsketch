@@ -4,12 +4,7 @@
   dir: 'site',
   optimize: 'none',
   paths: {
-    'jquery': ':empty',
-    'underscore': ':empty',
-  },
-  shim: {
-    'jquery': { exports: '$'},
-    'underscore': { exports: '_' },
+    'eventable': '../../lib/eventable'
   },
   modules: [
     {
