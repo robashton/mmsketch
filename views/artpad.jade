@@ -1,0 +1,24 @@
+extends master
+
+block content
+  #content.container-fluid
+    .row-fluid
+      .span3
+        h1 drawmo
+      .span3
+        p.current-word Today's word is #{currentWord}
+      .span3
+        a(href='#') Save &amp; Share
+
+    .row-fluid
+      .span9
+        canvas#surface(width="800", height="600")
+          Your browser isn't supported, sorry
+
+    .row-fluid
+      .span9
+        #client-paintbrush-container
+          #paintbrush-brushes
+          #paintbrush-colours
+
+

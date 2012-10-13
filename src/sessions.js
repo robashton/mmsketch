@@ -39,6 +39,8 @@ define(function(require) {
   return {
     store: store,
     check: function(req, res, next) {
+      if(process.env.OFFLINE)
+        return next()
       findCurrentUser(req, res, function(err, user) {
          if(user)  {
            next()
