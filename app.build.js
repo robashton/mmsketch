@@ -4,7 +4,9 @@
   dir: 'site',
   optimize: 'none',
   paths: {
-    'eventable': '../../lib/eventable'
+    'eventable': '../../lib/eventable',
+    'artpad': '../../lib/artpad',
+    'canvas': '../../lib/canvas'
   },
   modules: [
     {

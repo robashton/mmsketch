@@ -7,4 +7,7 @@ app.js
 ----------------
 /home/robashton/src/drawmo/lib/eventable.js
 tools.js
+artpadinput.js
+/home/robashton/src/drawmo/lib/canvas.js
+/home/robashton/src/drawmo/lib/artpad.js
 app.js

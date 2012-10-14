@@ -113,10 +113,21 @@ class ManualClient
   page_title: =>
     @text('h1')
 
-  select_brush: (brush, done) => done()
-  select_colour: (colour, done) => done()
-  selected_brush: () => ""
-  selected_colour: () => ""
+  select_brush: (brush, done) =>
+    brush = @browser.querySelector('.paintbrush-brush[data-brush=' + brush + ']')
+    @browser.fire 'click', brush, done
+    
+  select_colour: (colour, done) =>
+    colour = @browser.querySelector('.paintbrush-colour[data-colour=' + colour + ']')
+    @browser.fire 'click', colour, done
+
+  selected_brush: () =>
+    brush = @browser.querySelector('.paintbrush-brush.selected')
+    brush.getAttribute('data-brush')
+
+  selected_colour: () =>
+    brush = @browser.querySelector('.paintbrush-colour.selected')
+    brush.getAttribute('data-colour')
 
   word_of_the_day: =>
     _.last(@text('.current-word').split(" "))

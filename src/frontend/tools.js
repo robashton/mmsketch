@@ -8,25 +8,23 @@ define(function(require) {
     this.colours = {}
     this.brushes = {}
     this.createPalette()
-    this.selectColour('#000')
-    this.selectBrush('circle')
     this.hookToolEvents()
     this.on('BrushSelected', this.onBrushSelected, this)
     this.on('ColourSelected', this.onColourSelected, this)
+    this.selectColour('#FFF')
+    this.selectBrush('circle')
   }
 
   Tools.prototype = {
     hookToolEvents: function() {
       var self = this
       $('.paintbrush-brush')
-        .hammer({ prevent_defaults: true })
-        .on({tap: function() {
+        .on({click: function() {
           var brush = $(this).data('brush')
           self.selectBrush(brush)
         }})
       $('.paintbrush-colour')
-        .hammer({ prevent_defaults: true})
-        .on({tap: function() {
+        .on({click: function() {
           var colour = $(this).data('colour')
           self.selectColour(colour)
         }})
@@ -64,7 +62,7 @@ define(function(require) {
       var element = $('<span/>')
             .addClass('paintbrush-brush')
             .addClass(brush)
-            .data('brush', brush)
+            .attr('data-brush', brush)
           .append( 
             $('<img/>')
             .attr('src', '/img/' + brush + '.png'))
@@ -87,7 +85,6 @@ define(function(require) {
         this.selectedBrush.removeClass('selected')
       this.selectedBrush = element
       this.selectedBrush.addClass('selected')
-      this.pad.setBrush(brush)
     },
   }
   _.extend(Tools.prototype, Eventable.prototype)
